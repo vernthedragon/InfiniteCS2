@@ -1,0 +1,23 @@
+
+
+
+FOR ALL FUTURE DEVELOPERS
+
+
+NOTE:
+
+Memory Optimization
+1. Limit ammount of used bytes in a variable: (if an int never reached more than 127 in value use std::int_fast8_t or std::int8_t) 
+NOTE: MAX AND MIN VALUES IN A VARIABLE IS STORED AS A DEFINE
+2. Do not keep pointers and variables for longer than needed
+3. Avoid using tangled code (pointers not freed)
+
+Function Optimization:
+1. Do not make super long functions
+2. Follow code structures like in the rest of the code
+3. Avoid using function pointers when not required (can make code harder to debug)
+
+Speed Optimization:
+1. A quick google search can help you find far faster algorithms
+2. Learn some god damn math to speed up your code
+3. Use inline on functions called often 

@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Entry">
+      <UniqueIdentifier>{49e29c81-a385-40a3-92a6-35caa4db7dbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK">
+      <UniqueIdentifier>{07ba9da4-ad04-48e9-a818-51e1b10f2360}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\Interfaces">
+      <UniqueIdentifier>{4226d0d9-a013-48d2-9c90-28f775ae0293}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\Structs">
+      <UniqueIdentifier>{4ce74c6d-b41a-43be-9582-ceb8defb0082}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\Classes %28CS%29">
+      <UniqueIdentifier>{a8a405be-f58b-400b-8b55-a7387e2c1257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client">
+      <UniqueIdentifier>{7c87c0f8-c6f7-4d68-9d28-8173f0c87223}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Entrypoint.cpp">
+      <Filter>Entry</Filter>
+    </ClCompile>
+    <ClCompile Include="InitializeThread.cpp">
+      <Filter>Entry</Filter>
+    </ClCompile>
+    <ClCompile Include="Schema.cpp">
+      <Filter>SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="Vectors.cpp">
+      <Filter>SDK\Structs</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>SDK\Structs</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Interfaces.cpp">
+      <Filter>SDK\Interfaces</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="InitializeThread.h">
+      <Filter>Entry</Filter>
+    </ClInclude>
+    <ClInclude Include="Schema.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="CSGlobalVars.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IClient.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Vectors.h">
+      <Filter>SDK\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="IInput.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>SDK\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserCmd.h">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClInclude>
+    <ClInclude Include="QAngle.h">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Signatures.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngineClient.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IEntList.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IInputSystem.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ISchemaSystem.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Utl.h">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClInclude>
+    <ClInclude Include="ITrace.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities.h">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace.h">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="NotesForDevelopers.txt">
+      <Filter>Entry</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
