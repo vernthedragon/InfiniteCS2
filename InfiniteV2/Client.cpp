@@ -1,8 +1,62 @@
 #include "Client.h"
 #include "Interfaces.h"
+#include "minhook/MinHook.h"
+#include "Hooks.h"
+#include "Schema.h"
 CClient* Client = new CClient();
 
 #define CONSOLELOG
+
+static void* GetVirtualFunction(void* class_pointer, std::uint32_t index)
+{
+	void** vtable = *static_cast<void***>(class_pointer);
+	return vtable[index];
+}
+
+bool CClient::Hook(LPVOID Target, LPVOID Detour, LPVOID* OutOriginal, const char* Name) {
+	if (MH_CreateHook(Target, Detour, OutOriginal) != MH_OK)
+	{
+		Log("Failed to Hook: ");
+		Log(Name);
+		Log("\n");
+		return false;
+	}
+	Log("Hooked: ");
+	Log(Name);
+	Log("\n");
+	return true;
+}
+
+bool CClient::SetupHooks() {
+
+	if (MH_Initialize() != MH_OK)
+	{
+		Log("MinHook failed to initialize\n");
+		return false;
+	}
+
+	void* SwapChainPresent = GetVirtualFunction(g_Renderer->SwapChain, IRendererVTable::PRESENT);
+	void* SwapChainResizeBuffers = GetVirtualFunction(g_Renderer->SwapChain, IRendererVTable::RESIZE_BUFFERS);
+
+	if (!Hook(SwapChainPresent, &Hooks::SwapChainPresent, reinterpret_cast<void**>(&Hooks::oSwapChainPresent), "DIRECTX11->SwapChainPresent"))
+	{
+		return false;
+	}
+
+	if (!Hook(SwapChainResizeBuffers, &Hooks::SwapChainResizeBuffers, reinterpret_cast<void**>(&Hooks::oSwapChainResizeBuffers), "DIRECTX11->SwapChainResizeBuffers"))
+	{
+		return false;
+	}
+
+
+	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
+	{
+		return false;
+	}
+
+	Log("Client Hooks initialized successfully\n");
+	return true;
+}
 
 void CClient::Initialize() {
 #ifdef CONSOLELOG 
@@ -24,6 +78,18 @@ void CClient::Initialize() {
 	if (InitializeCSInterfaces()) {
 		Log("Successfully Setup CS Interfaces\n");
 	}
+
+	if (SchemaSystem::Initialize()) {
+		Log("Successfully Setup Netvars\n");
+	}
+
+	if (SetupHooks()) {
+		Log("Successfully Setup CS Hooks\n");
+	}
+
+	
+
+	MenuOpen = true;
 }
 void CClient::Close() {
 #ifdef CONSOLELOG 

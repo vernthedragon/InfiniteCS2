@@ -33,10 +33,13 @@
 class CClient {
 public:
 	void Initialize();
+	bool SetupHooks();
+	bool Hook(LPVOID Target, LPVOID Detour, LPVOID* OutOriginal, const char* Name);
 	void Close();
 	void Log(const char* message...);
 	std::uint8_t* FindPattern(HMODULE Module, const char* Signature);
 	std::uint8_t* ResolveRIP(std::uint8_t* address, std::uint32_t rva_offset, std::uint32_t rip_offset);
+	bool MenuOpen = false;
 };
 
 extern CClient* Client;

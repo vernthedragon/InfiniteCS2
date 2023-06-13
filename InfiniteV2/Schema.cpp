@@ -46,11 +46,11 @@ bool SchemaSystem::Initialize() {
 
 	if (schema_data.size() == 0)
 	{
-		Client->Log("Failed to Initialize Schema System\n");
+		Client->Log("Schema Data is 0\n");
 
 		return false;
 	}
-	Client->Log("Schema System Successfully Hooked\n");
+
 
 	return true;
 }
