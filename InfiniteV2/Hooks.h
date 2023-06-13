@@ -7,7 +7,8 @@
 #include <d3d11.h>
 #include <cstdint>
 #include <dxgi.h>
-
+#include "Client.h"
+#include "Interfaces.h"
 
 namespace Hooks {
 	static ID3D11Device* Device = nullptr;
