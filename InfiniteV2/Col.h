@@ -8,7 +8,10 @@ public:
 	Col();
 	Col(int r, int g, int b);
 	Col(int r, int g, int b, int a);
-	 unsigned int u32();
+	inline unsigned long u32()
+	{
+		return *((unsigned long*)Color);
+	}
 	inline void Reset();
 	inline unsigned char& operator[](int index)
 	{

@@ -18,9 +18,7 @@ Col::Col(int r, int g, int b, int a) {
 	Color[2] = b;
 	Color[3] = a;
 }
- unsigned int Col::u32() {
-	return ((unsigned int)(*((unsigned int*)Color)));
-}
+
 void Col::Reset() {
 	Color[0] = 255;
 	Color[1] = 255;

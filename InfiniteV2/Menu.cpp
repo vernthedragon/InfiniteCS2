@@ -2,7 +2,10 @@
 
 
 void CMenu::Draw() {
-	Render::FilledRect(200, 200, 600, 400, Col(3, 14, 9, 255));
+	if (Config->MenuOpen) {
+		Render::FilledRect(200, 200, 600, 400, Col(0,1,2, 255));
+
+	}
 }
 
 bool CMenu::IsHovered() {
