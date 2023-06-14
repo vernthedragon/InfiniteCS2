@@ -91,16 +91,16 @@
     <IntDir>$(SolutionDir)\Output\$(Configuration)\Temp\</IntDir>
     <OutDir>$(SolutionDir)\Output\$(Configuration)\</OutDir>
     <TargetName>Infinite</TargetName>
-    <LibraryPath>C:\Users\Lenovo\source\repos\Github\InfiniteV2\InfiniteV2\freetype\objs;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\Lenovo\source\repos\Github\InfiniteV2\InfiniteV2\freetype\include;C:\Users\Lenovo\source\repos\Github\InfiniteV2\InfiniteV2\Imgui;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)InfiniteV2\freetype\objs;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)InfiniteV2\Imgui;$(SolutionDir)InfiniteV2\freetype\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(SolutionDir)\Output\$(Configuration)\Temp\</IntDir>
     <OutDir>$(SolutionDir)\Output\$(Configuration)\</OutDir>
     <TargetName>Infinite</TargetName>
-    <IncludePath>C:\Users\Lenovo\source\repos\Github\InfiniteV2\InfiniteV2\freetype\include;C:\Users\Lenovo\source\repos\Github\InfiniteV2\InfiniteV2\Imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Lenovo\source\repos\Github\InfiniteV2\InfiniteV2\freetype\objs;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)InfiniteV2\Imgui;$(SolutionDir)InfiniteV2\freetype\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)InfiniteV2\freetype\objs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Developer (Debug)|Win32'">
     <ClCompile>
