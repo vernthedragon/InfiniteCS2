@@ -16,5 +16,5 @@
 #define CheckIfNonValidNumber(x) (fpclassify(x) == FP_INFINITE || fpclassify(x) == FP_NAN || fpclassify(x) == FP_SUBNORMAL)
 namespace Math {
 	float InvSqrt(float number);
-
+	float Clamp(float a, float min, float max);
 };

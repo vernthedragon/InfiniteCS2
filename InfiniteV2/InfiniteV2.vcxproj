@@ -198,6 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildConfig.h" />
+    <ClInclude Include="ByteData.h" />
     <ClInclude Include="CHandle.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Col.h" />
@@ -242,6 +243,7 @@
     <ClInclude Include="Signatures.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="STB_Image.h" />
     <ClInclude Include="Trace.h" />
     <ClInclude Include="UserCmd.h" />
     <ClInclude Include="Utl.h" />

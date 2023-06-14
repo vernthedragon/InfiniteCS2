@@ -45,6 +45,7 @@ public:
 	std::uint8_t* FindPattern(HMODULE Module, const char* Signature);
 	std::uint8_t* ResolveRIP(std::uint8_t* address, std::uint32_t rva_offset, std::uint32_t rip_offset);
 	void UpdateLocal();
+	std::string InfFolder;
 	class UserCmd* cmd;
 	class IPlayer* local;
 	class IController* controller;

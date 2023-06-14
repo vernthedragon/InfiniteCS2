@@ -1,6 +1,7 @@
 #include "Hooks.h"
 #include "Rendering.h"
 #include "Client.h"
+#include "Menu.h"
 #pragma comment(lib, "d3d11.lib")
 
 std::unique_ptr< VMTHook > Hooks::SwapChainVMTHook = nullptr;
@@ -45,9 +46,13 @@ HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint3
 
 		ImGui_ImplWin32_Init(Hooks::Window);
 		ImGui_ImplDX11_Init(Hooks::Device, Hooks::Context);
-		Render::Initialize();
+		
 	//we update screen size here
 	}
+	Render::Initialize();
+
+	if (Menu->ShouldAdjustDPI)
+		Menu->AdjustDPI();
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();

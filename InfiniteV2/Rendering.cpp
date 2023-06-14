@@ -1,9 +1,58 @@
 #include "Rendering.h"
 #include "Menu.h"
+#include "ByteData.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "STB_Image.h"
 #define NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = Math::InvSqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0
 #define FIXNORMAL2F_MAX_INVLEN2          100.0f // 500.0f (see #4053, #3366)
 #define FIXNORMAL2F(VX,VY)               { float d2 = VX*VX + VY*VY; if (d2 > 0.000001f) { float inv_len2 = 1.0f / d2; if (inv_len2 > FIXNORMAL2F_MAX_INVLEN2) inv_len2 = FIXNORMAL2F_MAX_INVLEN2; VX *= inv_len2; VY *= inv_len2; } } (void)0
 
+//function unsafe can cause crash
+bool Render::LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv)
+{
+	// Load from disk into a raw RGBA buffer
+	int image_width = 0;
+	int image_height = 0;
+	unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
+	if (image_data == NULL)
+		return false;
+
+	// Create texture
+	D3D11_TEXTURE2D_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.Width = image_width;
+	desc.Height = image_height;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+
+	ID3D11Texture2D* pTexture = NULL;
+	D3D11_SUBRESOURCE_DATA subResource;
+	subResource.pSysMem = image_data;
+	subResource.SysMemPitch = desc.Width * 4;
+	subResource.SysMemSlicePitch = 0;
+	Hooks::Device->CreateTexture2D(&desc, &subResource, &pTexture);
+
+	// Create texture view
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = desc.MipLevels;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	Hooks::Device->CreateShaderResourceView(pTexture, &srvDesc, out_srv);
+	pTexture->Release();
+
+
+	stbi_image_free(image_data);
+
+	return true;
+}
 void Render::DrawVertexes(Vertex* Vertices, int Count, bool antialiased ) {
 	if (Count < 3)
 		return;
@@ -165,6 +214,13 @@ void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned i
 void Render::FilledRoundedRect(float x, float y, float l, float w, Col color, float rounding) {
 	DrawList->AddRectFilled(ImVec2(x, y), ImVec2(x + l, y + w), color.u32(), rounding, ImDrawFlags_RoundCornersAll);
 }
+void  Render::DrawTexture(float x, float y, float l, float w, void* text, Col color) {
+	DrawList->AddImage(text, ImVec2(x, y), ImVec2(x + l, y + w), ImVec2(0, 0), ImVec2(1, 1), color.u32());
+}
+void  Render::DrawRoundedTexture(float x, float y, float l, float w , void* text, float rounding, Col color ) {
+	DrawList->AddImageRounded(text, ImVec2(x, y), ImVec2(x + l, y + w), ImVec2(0,0), ImVec2(1,1), color.u32(),rounding, ImDrawFlags_::ImDrawFlags_RoundCornersAll);
+}
+
 void Render::FilledRect(float x, float y, float l, float w, Col color) {
 	DrawList->AddRectFilled(ImVec2(x, y), ImVec2(x + l, y + w), color.u32());
 	//ImGui::GetBackgroundDrawList()->PushTextureID(Fonts::MenuMain->ContainerAtlas->TexID);
@@ -224,20 +280,45 @@ void Render::Initialize() {
 	//cfg.SizePixels = 13.f;
 
 	io.Fonts->Clear();
-	Fonts::MenuMain = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 22, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuMain50 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuIcons50 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuMain80 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f * 0.8f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuIcons80 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 0.8f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuMain100 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuIcons100 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f, &cfg, io.Fonts->GetGlyphRangesCyrillic()); //20 = 100%
+	Fonts::MenuMain140 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f * 1.4f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuIcons140 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 1.4f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuMain170 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f * 1.7f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuIcons170 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 1.7f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	//HERE WE SET THE DEFAULTS ALL TO 1
+	Fonts::MenuMain = Fonts::MenuMain100;
+	Fonts::MenuIcons = Fonts::MenuIcons100;
 	io.Fonts->Build();
 
 	//build table used for shapes with a curve
+	if (SinCosTable.empty()) {
+		for (float i = 0.f; i <= SinCosPoints; i++)
+			SinCosTable.emplace_back(
+				std::cos(2.f * FPI * (i / static_cast<float>(SinCosPoints))),
+				std::sin(2.f * FPI * (i / static_cast<float>(SinCosPoints)))
+			);
+	}
 
-	for (float i = 0.f; i <= SinCosPoints; i++)
-		SinCosTable.emplace_back(
-			std::cos(2.f * FPI * (i / static_cast<float>(SinCosPoints))),
-			std::sin(2.f * FPI * (i / static_cast<float>(SinCosPoints)))
-		);
-
+	
 	Initialized = true;
 }
 
 namespace Fonts {
 	ImFont* MenuMain = nullptr;
+	ImFont* MenuIcons = nullptr;
+	ImFont* MenuMain50 = nullptr;
+	ImFont* MenuIcons50 = nullptr;
+	ImFont* MenuMain80 = nullptr;
+	ImFont* MenuIcons80 = nullptr;
+	ImFont* MenuMain100 = nullptr;
+	ImFont* MenuIcons100 = nullptr;
+	ImFont* MenuMain140 = nullptr;
+	ImFont* MenuIcons140 = nullptr;
+	ImFont* MenuMain170 = nullptr;
+	ImFont* MenuIcons170 = nullptr;
 };

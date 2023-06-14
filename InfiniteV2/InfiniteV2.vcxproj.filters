@@ -51,6 +51,9 @@
     <Filter Include="Client\Features">
       <UniqueIdentifier>{b23b0875-bb96-47d9-9c24-11b44310dcc0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Image Processing">
+      <UniqueIdentifier>{230559c7-9289-4ceb-9e88-0c20895d242f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -294,6 +297,12 @@
     </ClInclude>
     <ClInclude Include="ICvar.h">
       <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ByteData.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="STB_Image.h">
+      <Filter>Rendering\Image Processing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

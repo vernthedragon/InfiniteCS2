@@ -16,3 +16,13 @@ float Math::InvSqrt(float number)
 	y = y * (threehalfs - (x2 * y * y));
 	return y;
 }
+
+float Math::Clamp(float a, float min, float max) {
+	if (a < min)
+		return min;
+
+	if (a > max)
+		return max;
+
+	return a;
+}

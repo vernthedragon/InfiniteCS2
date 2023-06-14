@@ -5,6 +5,7 @@
 #include "Schema.h"
 #include "BuildConfig.h"
 #include "Rendering.h"
+#include "Menu.h"
 CClient* Client = new CClient();
 
 #ifdef INFINITE_SHOW_CONSOLE
@@ -95,6 +96,8 @@ bool CClient::SetupHooks() {
 
 void CClient::Initialize() {
 	Render::Initialized = false;
+	Menu->SetuppedUser = false;
+	Menu->Scale = 1.f; 
 #ifdef CONSOLELOG 
 	AllocConsole();
 
@@ -105,6 +108,16 @@ void CClient::Initialize() {
 	SetConsoleTitle("Counter-Strike: 2 | Infinite.dev V2");
 #endif
 
+	TCHAR* path = new TCHAR[256];
+	
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, 0, path)))
+	{
+		InfFolder = std::string(path) + ("\\.Infinite");
+	}
+	else
+		Log("Failed to Get Infinite Config Folder\n");
+	delete[] path;
+	CreateDirectoryA(InfFolder.c_str(), NULL);
 	Log("Waiting for all CS Modules\n");
 
 	//possible detect here

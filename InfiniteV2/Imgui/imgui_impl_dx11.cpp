@@ -519,7 +519,14 @@ bool    ImGui_ImplDX11_CreateDeviceObjects()
 
     return true;
 }
-
+void ImGui_ImplDX11_ReCreateFontsTexture() {
+    ImGui_ImplDX11_Data* bd = ImGui_ImplDX11_GetBackendData();
+    if (!bd->pd3dDevice)
+        return;
+    if (bd->pFontSampler) { bd->pFontSampler->Release(); bd->pFontSampler = nullptr; }
+    if (bd->pFontTextureView) { bd->pFontTextureView->Release(); bd->pFontTextureView = nullptr; ImGui::GetIO().Fonts->SetTexID(0); } // We copied data->pFontTextureView to io.Fonts->TexID so let's clear that as well.
+    ImGui_ImplDX11_CreateFontsTexture();
+}
 void    ImGui_ImplDX11_InvalidateDeviceObjects()
 {
     ImGui_ImplDX11_Data* bd = ImGui_ImplDX11_GetBackendData();
