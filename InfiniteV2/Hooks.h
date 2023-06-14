@@ -17,6 +17,7 @@ namespace Hooks {
 	static ID3D11RenderTargetView* RenderView = nullptr;
 
 	extern std::unique_ptr< VMTHook > SwapChainVMTHook;
+	extern std::unique_ptr< VMTHook > InputVMTHook;
 
 	using SwapChainPresent_t = HRESULT(__fastcall*)(IDXGISwapChain*, std::uint32_t, std::uint32_t);
 	static SwapChainPresent_t oSwapChainPresent = nullptr;
@@ -28,4 +29,7 @@ namespace Hooks {
 	static WindowProcedure_t oWindowProcedure = nullptr;
 	LRESULT __stdcall WindowProcedure(HWND hwnd, std::uint32_t message, WPARAM wparam, LPARAM lparam);
 
+	using CreateMove_t = bool(__fastcall*)(IInput*, uint32_t, uint8_t);
+	static CreateMove_t oCreateMove = nullptr;
+	bool __fastcall CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint8_t a3);
 };

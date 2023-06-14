@@ -1,11 +1,13 @@
 #pragma once
 #include "Vectors.h"
 
-class QAngle
-{
-public:
-    char Pad[0x18];
-    Vec3 Angles;
+class pb_base {
+private:
+    PAD(0x18) // 0x0
 };
 
-static_assert(sizeof(QAngle) == 0x24, "QAngle size Wrong"); 
+class QAngle : public pb_base {
+public:
+    Vec3 angles; // 0x18
+};
+

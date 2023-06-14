@@ -117,6 +117,10 @@ typedef struct _schema_class_info_data_t
 	std::int16_t i_unk2;
 	std::int16_t i_unk3;
 	schema_class_field_data_t* fields;
+
+	auto GetName() {
+		return *reinterpret_cast<const char**>((uintptr_t)(this) + 0x8);
+	}
 } schema_class_info_data_t;
 
 typedef struct _SchemaType_t

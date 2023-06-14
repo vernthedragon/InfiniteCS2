@@ -2,6 +2,19 @@
 #include <cstdint>
 #include <string>
 
+template <typename T, typename ... args_t>
+inline constexpr T CallVFunc(void* thisptr, std::size_t nIndex, args_t... argList)
+{
+    using VirtualFn = T(__thiscall*)(void*, decltype(argList)...);
+    return (*(VirtualFn**)thisptr)[nIndex](thisptr, argList...);
+}
+
+template< typename T >
+T GetVFunc(void* vTable, int iIndex)
+{
+    return (*(T**)vTable)[iIndex];
+}
+
 namespace SchemaSystem
 {
     //NOTE: IF CRASHED IN SchemaOffset or GetSchema change uint16 to 32 (overflow)

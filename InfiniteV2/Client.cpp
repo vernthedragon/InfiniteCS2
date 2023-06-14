@@ -46,7 +46,16 @@ bool CClient::Hook(LPVOID Target, LPVOID Detour, LPVOID* OutOriginal, const char
 	Log("\n");
 	return true;
 }
-
+void CClient::UpdateLocal() {
+	if (!g_Engine->IsConnected() || !g_Engine->IsInGame())
+	{
+		local = nullptr;
+		controller = nullptr;
+		return;
+	}
+	local = g_EntList->GetLocalPlayer();
+	controller = g_EntList->GetLocalController();
+}
 bool CClient::SetupHooks() {
 
 	static auto GetVirtualFunction = [](void* class_pointer, std::uint32_t index)
@@ -62,12 +71,16 @@ bool CClient::SetupHooks() {
 	}
 
 	Hooks::SwapChainVMTHook = std::make_unique< VMTHook >();
+	Hooks::InputVMTHook = std::make_unique< VMTHook >();
 
 	Hooks::SwapChainVMTHook->Setup(g_Renderer->SwapChain);
+	Hooks::InputVMTHook->Setup(g_Input);
+
+
 	Hooks::SwapChainVMTHook->Hook(IRendererVTable::PRESENT, Hooks::SwapChainPresent);
 	Hooks::SwapChainVMTHook->Hook(IRendererVTable::RESIZE_BUFFERS, Hooks::SwapChainResizeBuffers);
 
-
+	Hooks::InputVMTHook->Hook(IInputVTable::CREATEMOVE, Hooks::CreateMove);
 
 
 

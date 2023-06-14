@@ -5,6 +5,8 @@
 #include "Schema.h"
 #include "Vectors.h"
 #include "Skeleton.h"
+#include "CHandle.h"
+#include "ISchemaSystem.h"
 
 #define	LIFE_ALIVE				0
 #define	LIFE_DYING				1
@@ -119,18 +121,18 @@ enum FrameStage_t : std::int32_t
 class IGameSceneNode
 {
 public:
-    SCHEMA("CGameSceneNode", "m_vecAbsOrigin", abs_origin, Vec3);
-    SCHEMA("CGameSceneNode", "m_vecOrigin", vec_origin, Vec3);
-    SCHEMA("CGameSceneNode", "m_bDormant", dormant, bool);
+    SCHEMA("CGameSceneNode", "m_vecAbsOrigin", m_vecAbsOrigin, Vec3);
+    SCHEMA("CGameSceneNode", "m_vecOrigin", m_vecOrigin, Vec3);
+    SCHEMA("CGameSceneNode", "m_bDormant", m_bDormant, bool);
 };
 
 class ICollisionProperty
 {
 public:
-    SCHEMA("CCollisionProperty", "m_vecMins", mins, Vec3);
-    SCHEMA("CCollisionProperty", "m_vecMaxs", maxs, Vec3);
+    SCHEMA("CCollisionProperty", "m_vecMins", m_vecMins, Vec3);
+    SCHEMA("CCollisionProperty", "m_vecMaxs", m_vecMaxs, Vec3);
 
-    std::uint16_t get_collision_mask()
+    std::uint16_t GetCollisionMask()
     {
         return *reinterpret_cast<std::uint16_t*>(reinterpret_cast<std::uintptr_t>(this) + 0x38);
     }
@@ -139,52 +141,85 @@ public:
 class IEconItemView
 {
 public:
-    SCHEMA("CEconItemView", "m_iItemIDHigh", item_id_high, std::int32_t);
+    SCHEMA("CEconItemView", "m_iItemIDHigh", m_iItemIDHigh, std::int32_t);
 };
 
 class IAttributeContainer
 {
 public:
-    SCHEMA("CAttributeContainer", "m_Item", item, IEconItemView*);
+    SCHEMA("CAttributeContainer", "m_Item", m_Item, IEconItemView*);
 };
 
 class IEconEntity
 {
 public:
-    SCHEMA("CEconEntity", "m_flFallbackWear", fallback_wear, float);
-    SCHEMA("CEconEntity", "m_nFallbackSeed", attribute_manager, IAttributeContainer*);
-    SCHEMA("CEconEntity", "m_nFallbackSeed", fallback_seed, std::int32_t);
-    SCHEMA("CEconEntity", "m_nFallbackPaintKit", fallback_paintkit, std::int32_t);
+    SCHEMA("CEconEntity", "m_flFallbackWear", m_flFallbackWear, float);
+    SCHEMA("CEconEntity", "m_nFallbackSeed", m_nFallbackSeed, IAttributeContainer*);
+    SCHEMA("CEconEntity", "m_nFallbackSeed", m_nFallbackSeed2, std::int32_t);
+    SCHEMA("CEconEntity", "m_nFallbackPaintKit", m_nFallbackPaintKit, std::int32_t);
 };
 
 class IWeaponServices
 {
 public:
-    SCHEMA("CPlayer_WeaponServices", "m_hMyWeapons", weapons, IEconEntity*);
+    SCHEMA("CPlayer_WeaponServices", "m_hMyWeapons", m_hMyWeapons, IEconEntity*);
 };
+struct BoundingBox {
+    float x, y, w, h;
+};
+class IEntityIdentity {
+public:
+    SCHEMA("CEntityIdentity", "m_designerName", m_designerName, const char*);
+};
+class IEntityInstance {
+public:
+    schema_class_info_data_t* Schema_DynamicBinding() {
+        return CallVFunc<schema_class_info_data_t*>(this, 0);
+    }
 
-class IEntity
+    auto GetRefEHandle() {
+        CHandle handle;
+        CallVFunc<void*>(this, 2, &handle);
+        return handle;
+    }
+
+    SCHEMA("CEntityInstance", "m_pEntity", m_pEntity, IEntityIdentity*);
+};
+class IEntity : IEntityInstance
 {
 public:
-    SCHEMA("C_BaseEntity", "m_pGameSceneNode", game_scene_node, IGameSceneNode*);
-    SCHEMA("C_BaseEntity", "m_pCollision", collision_property, ICollisionProperty*);
-    SCHEMA("C_BaseEntity", "m_hOwnerEntity", owner_handle, std::uint32_t);
-    SCHEMA("C_BaseEntity", "m_flSimulationTime", simulation_time, float);
+    bool IsBasePlayerController();
+    bool IsBasePlayerWeapon();
+    bool IsChicken();
+    bool IsViewModel();
+
+    const Vec3& GetOrigin();
+    bool GetBoundingBox(BoundingBox& out, bool computeSurroundingBox = false); //INPROGRESSZ
+    bool ComputeHitboxSurroundingBox(Vec3& mins, Vec3& maxs);
+    float DistanceToSquared(IEntity* pEntity); //INPROGRESS
+    SCHEMA("C_BaseEntity", "m_pGameSceneNode", m_pGameSceneNode, IGameSceneNode*);
+    SCHEMA("C_BaseEntity", "m_pCollision", m_pCollision, ICollisionProperty*);
+    SCHEMA("C_BaseEntity", "m_hOwnerEntity", m_hOwnerEntity, std::uint32_t);
+    SCHEMA("C_BaseEntity", "m_flSimulationTime", m_flSimulationTime, float);
+    SCHEMA("C_BaseEntity", "m_iTeamNum", m_iTeamNum, uint8_t);
+    SCHEMA("C_BaseEntity", "m_lifeState", m_lifeState, uint8_t);
+    SCHEMA("C_BaseEntity", "m_MoveType", m_MoveType, uint8_t);
+    SCHEMA("C_BaseEntity", "m_fFlags", m_fFlags, unsigned int);
 };
 
 class IPlayer : public IEntity
 {
 public:
-    SCHEMA("C_BasePlayerPawn", "m_pWeaponServices", weapon_services, IWeaponServices*);
-    SCHEMA("CCSPlayer_ItemServices", "m_bHasDefuser", has_defuser, bool);
-    SCHEMA("C_CSPlayerPawnBase", "m_bGunGameImmunity", has_gun_immunity, bool);
-    SCHEMA("C_BaseEntity", "m_iHealth", health, std::int32_t);
-    SCHEMA("C_BaseEntity", "m_iTeamNum", team, std::uint8_t);
-    SCHEMA("C_BaseModelEntity", "m_vecViewOffset", view_offset, Vec3);
-    SCHEMA("C_BasePlayerPawn", "m_hController", controller_handle, std::uint32_t);
+    SCHEMA("C_BasePlayerPawn", "m_pWeaponServices", m_pWeaponServices, IWeaponServices*);
+    SCHEMA("CCSPlayer_ItemServices", "m_bHasDefuser", m_bHasDefuser, bool);
+    SCHEMA("C_CSPlayerPawnBase", "m_bGunGameImmunity", m_bGunGameImmunity, bool);
+    SCHEMA("C_BaseEntity", "m_iHealth", m_iHealth, std::int32_t);
+    SCHEMA("C_BaseEntity", "m_iTeamNum", m_iTeamNum, std::uint8_t);
+    SCHEMA("C_BaseModelEntity", "m_vecViewOffset", m_vecViewOffset, Vec3);
+    SCHEMA("C_BasePlayerPawn", "m_hController", m_hController, std::uint32_t);
 
 
-    Vec3 get_eye_position()
+    Vec3 GetEyePosition()
     {
         Vec3 position;
         using function_t = void* (__fastcall*)(IPlayer*, Vec3&);
@@ -194,23 +229,19 @@ public:
         return position;
     }
 
-    Vec3 get_bone_position(std::int32_t bone_index)
-    {
-        // soon to follow
-        return this->get_eye_position();
-    }
+   
 
-    bool is_alive()
+    bool IsAlive()
     {
-        return this->health() > 0;
+        return this->m_iHealth() > 0;
     }
 };
 
 class IController
 {
 public:
-    SCHEMA("CBasePlayerController", "m_steamID", steam_id, std::uint64_t);
-    SCHEMA("CBasePlayerController", "m_hPawn", pawn_handle, std::uint32_t);
-    SCHEMA("CBasePlayerController", "m_bIsLocalPlayerController", is_local_player_controller, bool);
-    SCHEMA("CCSPlayerController", "m_sSanitizedPlayerName", name, const char*);
+    SCHEMA("CBasePlayerController", "m_steamID", m_steamID, std::uint64_t);
+    SCHEMA("CBasePlayerController", "m_hPawn", m_hPawn, std::uint32_t);
+    SCHEMA("CBasePlayerController", "m_bIsLocalPlayerController", m_bIsLocalPlayerController, bool);
+    SCHEMA("CCSPlayerController", "m_sSanitizedPlayerName", m_sSanitizedPlayerName, const char*);
 };

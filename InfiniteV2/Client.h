@@ -44,6 +44,11 @@ public:
 	bool KeyToggled( int VKEY);
 	std::uint8_t* FindPattern(HMODULE Module, const char* Signature);
 	std::uint8_t* ResolveRIP(std::uint8_t* address, std::uint32_t rva_offset, std::uint32_t rip_offset);
+	void UpdateLocal();
+	class UserCmd* cmd;
+	class IPlayer* local;
+	class IController* controller;
+	class ConVar* cl_sidespeed;
 	int ScrollAmmount = 0;
 	bool KeysPressed[256];
 	bool KeyStates[256];

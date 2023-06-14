@@ -9,6 +9,7 @@
 enum IInputVTable
 {
     CREATEMOVE = 5,
+    ON_INPUT = 9,
     MOUSE_INPUT = 10
 };
 
@@ -16,15 +17,20 @@ enum IInputVTable
 class IInput
 {
 public:
-    UserCmd* GetUserCmd(void* a1, std::uint32_t a2)
-    {
-        // 48 63 DA 4C 8B E1 4C 69 EB
-        std::int64_t v5 = 0x460 * a2;
-        std::int64_t v6 = *reinterpret_cast<std::int64_t*>(reinterpret_cast<std::uintptr_t>(a1) + v5 + 0x41E0);
-        std::int64_t v7 = 0x70 * (0x9A * a2 + v6 % 0x96) + reinterpret_cast<std::uintptr_t>(a1);
-        std::uint64_t split_screen = v7 + 0x10;
+    PAD(0x10); // 0x0
+    per_user_input per_user[1]; // 0x10
 
-        return reinterpret_cast<UserCmd*>(split_screen);
+    UserCmd* GetUserCmd(int split_screen_index) {
+        auto input = get_per_user_input(split_screen_index);
+        if (!input)
+            return nullptr;
+        return &input->cmds[input->SequenceNumber % std::size(input->cmds)];
+    }
+    per_user_input* get_per_user_input(int split_screen_index) {
+        if (split_screen_index >= 1) {
+            return nullptr;
+        }
+        return &per_user[split_screen_index];
     }
 
     void SetViewAngles(Vec3& angles)

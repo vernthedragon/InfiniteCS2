@@ -9,7 +9,7 @@
 #include "ISchemaSystem.h"
 #include "ITrace.h"
 #include "CSGlobalVars.h"
-
+#include "ICvar.h"
 
 extern IClient* g_Client;
 extern IInput* g_Input;
@@ -20,5 +20,6 @@ extern IRenderer* g_Renderer;
 extern ISchemaSystem* g_SchemaSystem;
 extern ITrace* g_Trace;
 extern CSGlobalVars* g_GlobalVars;
+extern ICvar* g_Cvar;
 
 bool InitializeCSInterfaces();

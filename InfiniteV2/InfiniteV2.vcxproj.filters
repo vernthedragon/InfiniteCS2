@@ -48,6 +48,9 @@
     <Filter Include="Client\Menu\GUI">
       <UniqueIdentifier>{ea603703-863b-4df4-8238-6a07e97d74fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Features">
+      <UniqueIdentifier>{b23b0875-bb96-47d9-9c24-11b44310dcc0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -121,6 +124,18 @@
     </ClCompile>
     <ClCompile Include="Menu.cpp">
       <Filter>Client\Menu\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Client\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities.cpp">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClCompile>
+    <ClCompile Include="CHandle.cpp">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement.cpp">
+      <Filter>Client\Features</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -267,6 +282,18 @@
     </ClInclude>
     <ClInclude Include="Menu.h">
       <Filter>Client\Menu\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CHandle.h">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement.h">
+      <Filter>Client\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="Features.h">
+      <Filter>Client\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="ICvar.h">
+      <Filter>SDK\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

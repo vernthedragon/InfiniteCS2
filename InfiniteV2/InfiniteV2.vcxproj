@@ -167,9 +167,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CHandle.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Col.cpp" />
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="Entities.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_draw.cpp" />
@@ -178,6 +180,7 @@
     <ClCompile Include="Imgui\imgui_tables.cpp" />
     <ClCompile Include="Imgui\imgui_widgets.cpp" />
     <ClCompile Include="InitializeThread.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Interfaces.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Matrix.cpp" />
@@ -186,6 +189,7 @@
     <ClCompile Include="minhook\hde\hde64.c" />
     <ClCompile Include="minhook\hook.c" />
     <ClCompile Include="minhook\trampoline.c" />
+    <ClCompile Include="Movement.cpp" />
     <ClCompile Include="RenderHook.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="Schema.cpp" />
@@ -194,13 +198,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildConfig.h" />
+    <ClInclude Include="CHandle.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Col.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="CSGlobalVars.h" />
     <ClInclude Include="Entities.h" />
+    <ClInclude Include="Features.h" />
     <ClInclude Include="Hooks.h" />
     <ClInclude Include="IClient.h" />
+    <ClInclude Include="ICvar.h" />
     <ClInclude Include="IEngineClient.h" />
     <ClInclude Include="IEntList.h" />
     <ClInclude Include="IInput.h" />
@@ -228,6 +235,7 @@
     <ClInclude Include="minhook\hde\table64.h" />
     <ClInclude Include="minhook\MinHook.h" />
     <ClInclude Include="minhook\trampoline.h" />
+    <ClInclude Include="Movement.h" />
     <ClInclude Include="QAngle.h" />
     <ClInclude Include="Rendering.h" />
     <ClInclude Include="Schema.h" />
