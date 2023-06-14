@@ -1,5 +1,7 @@
 #pragma once
-
+#include "Math.h"
+#include "Col.h"
+#include "Imgui/imgui.h"
 class Vec2;
 class Vec3;
 class Vec4;
@@ -14,6 +16,7 @@ public:
 	Vec2(float x, float y);
 	~Vec2();
 	inline void Zero();
+	inline ImVec2 ToImVec();
 };
 
 class Vec3 {

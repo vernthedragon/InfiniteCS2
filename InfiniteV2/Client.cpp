@@ -4,7 +4,7 @@
 #include "Hooks.h"
 #include "Schema.h"
 #include "BuildConfig.h"
-
+#include "Rendering.h"
 CClient* Client = new CClient();
 
 #ifdef INFINITE_SHOW_CONSOLE
@@ -81,6 +81,7 @@ bool CClient::SetupHooks() {
 }
 
 void CClient::Initialize() {
+	Render::Initialized = false;
 #ifdef CONSOLELOG 
 	AllocConsole();
 
@@ -93,8 +94,9 @@ void CClient::Initialize() {
 
 	Log("Waiting for all CS Modules\n");
 
-	while (!(Hooks::Window = FindWindowA(NULL, "Counter-Strike 2")))
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	//possible detect here
+	//while (!(Hooks::Window = FindWindowA(NULL, "Counter-Strike 2")))
+	//	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	while (!GetModuleHandleA("client.dll"))
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));

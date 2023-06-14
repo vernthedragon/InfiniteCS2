@@ -107,6 +107,12 @@
     <ClCompile Include="Config.cpp">
       <Filter>Client\Config</Filter>
     </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>SDK\Structs</Filter>
+    </ClCompile>
+    <ClCompile Include="Col.cpp">
+      <Filter>SDK\Structs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">
@@ -240,6 +246,12 @@
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Client\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>SDK\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Col.h">
+      <Filter>SDK\Structs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

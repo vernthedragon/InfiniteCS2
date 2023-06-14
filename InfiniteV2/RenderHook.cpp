@@ -45,7 +45,7 @@ HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint3
 
 		ImGui_ImplWin32_Init(Hooks::Window);
 		ImGui_ImplDX11_Init(Hooks::Device, Hooks::Context);
-
+		Render::Initialize();
 	//we update screen size here
 	}
 

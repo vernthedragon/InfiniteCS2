@@ -14,6 +14,10 @@ inline void Vec2::Zero() {
 	this->y = 0.f;
 }
 
+inline ImVec2  Vec2::ToImVec() {
+	return ImVec2(x, y);
+}
+
 Vec2::Vec2(float x, float y) {
 	this->x = x;
 	this->y = y;
