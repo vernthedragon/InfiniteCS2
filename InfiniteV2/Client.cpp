@@ -3,14 +3,34 @@
 #include "minhook/MinHook.h"
 #include "Hooks.h"
 #include "Schema.h"
+#include "BuildConfig.h"
+
 CClient* Client = new CClient();
 
+#ifdef INFINITE_SHOW_CONSOLE
 #define CONSOLELOG
+#endif
 
-static void* GetVirtualFunction(void* class_pointer, std::uint32_t index)
-{
-	void** vtable = *static_cast<void***>(class_pointer);
-	return vtable[index];
+bool CClient::KeyPressed( int VKEY) {
+	if (VKEY < 0 || VKEY > 256)
+		return false;
+	return KeyStates[VKEY];
+}
+bool CClient::KeyToggled( int VKEY) {
+	if (VKEY < 0 || VKEY > 256)
+		return false;
+	return KeyStates[VKEY] && !OldKeyStates[VKEY];
+}
+
+void CClient::UpdateKeyStates() {
+	std::copy(KeyStates, KeyStates + 255, OldKeyStates);
+	for (unsigned int i = 0; i < 255; i++)
+		KeyStates[i] = GetAsyncKeyState(i);
+	/*
+	std::copy(keystates, keystates + 255, oldstates);
+	for (auto i = 0; i < 255; i++)
+		keystates[i] = GetAsyncKeyState(i);
+		*/
 }
 
 bool CClient::Hook(LPVOID Target, LPVOID Detour, LPVOID* OutOriginal, const char* Name) {
@@ -29,24 +49,26 @@ bool CClient::Hook(LPVOID Target, LPVOID Detour, LPVOID* OutOriginal, const char
 
 bool CClient::SetupHooks() {
 
+	static auto GetVirtualFunction = [](void* class_pointer, std::uint32_t index)
+	{
+		void** vtable = *static_cast<void***>(class_pointer);
+		return vtable[index];
+	};
+
 	if (MH_Initialize() != MH_OK)
 	{
 		Log("MinHook failed to initialize\n");
 		return false;
 	}
 
-	void* SwapChainPresent = GetVirtualFunction(g_Renderer->SwapChain, IRendererVTable::PRESENT);
-	void* SwapChainResizeBuffers = GetVirtualFunction(g_Renderer->SwapChain, IRendererVTable::RESIZE_BUFFERS);
+	Hooks::SwapChainVMTHook = std::make_unique< VMTHook >();
 
-	if (!Hook(SwapChainPresent, &Hooks::SwapChainPresent, reinterpret_cast<void**>(&Hooks::oSwapChainPresent), "DIRECTX11->SwapChainPresent"))
-	{
-		return false;
-	}
+	Hooks::SwapChainVMTHook->Setup(g_Renderer->SwapChain);
+	Hooks::SwapChainVMTHook->Hook(IRendererVTable::PRESENT, Hooks::SwapChainPresent);
+	Hooks::SwapChainVMTHook->Hook(IRendererVTable::RESIZE_BUFFERS, Hooks::SwapChainResizeBuffers);
 
-	if (!Hook(SwapChainResizeBuffers, &Hooks::SwapChainResizeBuffers, reinterpret_cast<void**>(&Hooks::oSwapChainResizeBuffers), "DIRECTX11->SwapChainResizeBuffers"))
-	{
-		return false;
-	}
+
+
 
 
 	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
@@ -69,27 +91,39 @@ void CClient::Initialize() {
 	SetConsoleTitle("Counter-Strike: 2 | Infinite.dev V2");
 #endif
 
-//	Log("Successfully Loaded\n");
-	/*
-	while (true) {
+	Log("Waiting for all CS Modules\n");
 
-	}*/
+	while (!(Hooks::Window = FindWindowA(NULL, "Counter-Strike 2")))
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+	while (!GetModuleHandleA("client.dll"))
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	
+	while (!GetModuleHandleA("engine2.dll"))
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	if (InitializeCSInterfaces()) {
-		Log("Successfully Setup CS Interfaces\n");
+		Log("Successfully Setup all CS Interfaces\n");
 	}
+	else
+		Log("Failed to Setup all CS Interfaces\n");
+
 
 	if (SchemaSystem::Initialize()) {
-		Log("Successfully Setup Netvars\n");
+		Log("Successfully Setup all Netvars\n");
 	}
+	else
+		Log("Failed to  Setup all Netvars\n");
 
 	if (SetupHooks()) {
-		Log("Successfully Setup CS Hooks\n");
+		Log("Successfully Setup all CS Hooks\n");
 	}
-
+	else
+		Log("Failed to  Setup all CS Hooks\n");
 	
 
-	MenuOpen = true;
+	Config->ResetValues();
+	Config->MenuOpen = true;
 }
 void CClient::Close() {
 #ifdef CONSOLELOG 

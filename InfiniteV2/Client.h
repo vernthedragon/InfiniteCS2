@@ -29,7 +29,9 @@
 #include <iterator>
 #include <d3d9.h>
 #include <rpcndr.h>
-
+#include <thread>
+#include <chrono>
+#include "Config.h"
 class CClient {
 public:
 	void Initialize();
@@ -37,9 +39,15 @@ public:
 	bool Hook(LPVOID Target, LPVOID Detour, LPVOID* OutOriginal, const char* Name);
 	void Close();
 	void Log(const char* message...);
+	void UpdateKeyStates();
+	bool KeyPressed( int VKEY);
+	bool KeyToggled( int VKEY);
 	std::uint8_t* FindPattern(HMODULE Module, const char* Signature);
 	std::uint8_t* ResolveRIP(std::uint8_t* address, std::uint32_t rva_offset, std::uint32_t rip_offset);
-	bool MenuOpen = false;
+	int ScrollAmmount = 0;
+	bool KeysPressed[256];
+	bool KeyStates[256];
+	bool OldKeyStates[256];
 };
 
 extern CClient* Client;

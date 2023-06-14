@@ -39,6 +39,9 @@
     <Filter Include="Client\Hooks">
       <UniqueIdentifier>{f1f102de-8c8a-4a28-93e3-abda83665557}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Config">
+      <UniqueIdentifier>{5b1be44a-516d-4368-8a87-56f9c27e1ee5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="RenderHook.cpp">
       <Filter>Client\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Client\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +231,15 @@
     </ClInclude>
     <ClInclude Include="Hooks.h">
       <Filter>Client\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildConfig.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="VMTHook.h">
+      <Filter>Client\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Client\Config</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

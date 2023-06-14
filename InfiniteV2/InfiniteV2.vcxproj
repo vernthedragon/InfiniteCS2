@@ -168,6 +168,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_draw.cpp" />
@@ -189,7 +190,9 @@
     <ClCompile Include="Vectors.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BuildConfig.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="CSGlobalVars.h" />
     <ClInclude Include="Entities.h" />
     <ClInclude Include="Hooks.h" />
@@ -230,6 +233,7 @@
     <ClInclude Include="UserCmd.h" />
     <ClInclude Include="Utl.h" />
     <ClInclude Include="Vectors.h" />
+    <ClInclude Include="VMTHook.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="NotesForDevelopers.txt" />

@@ -9,12 +9,14 @@
 #include <dxgi.h>
 #include "Client.h"
 #include "Interfaces.h"
-
+#include "VMTHook.h"
 namespace Hooks {
 	static ID3D11Device* Device = nullptr;
 	static ID3D11DeviceContext* Context = nullptr;
 	static HWND Window = nullptr;
 	static ID3D11RenderTargetView* RenderView = nullptr;
+
+	extern std::unique_ptr< VMTHook > SwapChainVMTHook;
 
 	using SwapChainPresent_t = HRESULT(__fastcall*)(IDXGISwapChain*, std::uint32_t, std::uint32_t);
 	static SwapChainPresent_t oSwapChainPresent = nullptr;

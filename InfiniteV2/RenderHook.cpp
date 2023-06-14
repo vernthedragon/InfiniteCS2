@@ -1,8 +1,15 @@
 #include "Hooks.h"
 #include "Rendering.h"
 #include "Client.h"
+#pragma comment(lib, "d3d11.lib")
+
+std::unique_ptr< VMTHook > Hooks::SwapChainVMTHook = nullptr;
+
 HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint32_t SyncInterval, std::uint32_t Flags)
 {
+	if (!Hooks::oSwapChainPresent) {
+		Hooks::oSwapChainPresent = Hooks::SwapChainVMTHook->GetOriginal<Hooks::SwapChainPresent_t>(IRendererVTable::PRESENT);
+	}
 	if (!Hooks::Device)
 	{
 		ID3D11Texture2D* buffer = nullptr;
@@ -58,14 +65,26 @@ HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint3
 
 LRESULT __stdcall Hooks::WindowProcedure(HWND hwnd, std::uint32_t message, WPARAM wparam, LPARAM lparam)
 {
-	if (message == WM_KEYDOWN && LOWORD(wparam) == VK_INSERT)
-	{
-		Client->MenuOpen = !Client->MenuOpen;
+	static int ScrollDelta = 0;
+	if (message == WM_MOUSEWHEEL) {
+		ScrollDelta += GET_WHEEL_DELTA_WPARAM(wparam);
+		for (; ScrollDelta > WHEEL_DELTA; ScrollDelta -= WHEEL_DELTA)
+			Client->ScrollAmmount += 1;
+		for (; ScrollDelta < 0; ScrollDelta += WHEEL_DELTA)
+			Client->ScrollAmmount -= 1;
 	}
+
+	if (wparam > 0 && wparam < 256) {
+		if (message == WM_KEYDOWN)
+			Client->KeysPressed[wparam] = true;
+		else if (message == WM_KEYUP)
+			Client->KeysPressed[wparam] = false;
+	}
+
 
 	LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	ImGui_ImplWin32_WndProcHandler(hwnd, message, wparam, lparam);
-	if (Client->MenuOpen)
+	if (Config->MenuOpen)
 	{
 		switch (message)
 		{
@@ -104,6 +123,9 @@ LRESULT __stdcall Hooks::WindowProcedure(HWND hwnd, std::uint32_t message, WPARA
 
 HRESULT __fastcall Hooks::SwapChainResizeBuffers(IDXGISwapChain* SwapChain, std::uint32_t buffer_count, std::uint32_t width, std::uint32_t height, DXGI_FORMAT new_format, std::uint32_t SwapChain_Flags)
 {
+	if (!Hooks::oSwapChainResizeBuffers) {
+		Hooks::oSwapChainResizeBuffers = Hooks::SwapChainVMTHook->GetOriginal<Hooks::SwapChainResizeBuffers_t>(IRendererVTable::RESIZE_BUFFERS);
+	}
 	if (Hooks::RenderView)
 	{
 		Hooks::RenderView->Release();
