@@ -42,6 +42,12 @@
     <Filter Include="Client\Config">
       <UniqueIdentifier>{5b1be44a-516d-4368-8a87-56f9c27e1ee5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Menu">
+      <UniqueIdentifier>{8935a459-8509-400c-923c-5914bb1bd046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Menu\GUI">
+      <UniqueIdentifier>{ea603703-863b-4df4-8238-6a07e97d74fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -112,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="Col.cpp">
       <Filter>SDK\Structs</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>Client\Menu\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -252,6 +261,12 @@
     </ClInclude>
     <ClInclude Include="Col.h">
       <Filter>SDK\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>Client\Menu\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Client\Menu\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

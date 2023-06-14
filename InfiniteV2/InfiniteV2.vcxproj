@@ -190,6 +190,7 @@
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="Schema.cpp" />
     <ClCompile Include="Vectors.cpp" />
+    <ClCompile Include="Menu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildConfig.h" />
@@ -237,7 +238,9 @@
     <ClInclude Include="UserCmd.h" />
     <ClInclude Include="Utl.h" />
     <ClInclude Include="Vectors.h" />
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="VMTHook.h" />
+    <ClInclude Include="Menu.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="NotesForDevelopers.txt" />

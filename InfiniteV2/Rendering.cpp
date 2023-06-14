@@ -1,4 +1,5 @@
 #include "Rendering.h"
+#include "Menu.h"
 #define NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = Math::InvSqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0
 #define FIXNORMAL2F_MAX_INVLEN2          100.0f // 500.0f (see #4053, #3366)
 #define FIXNORMAL2F(VX,VY)               { float d2 = VX*VX + VY*VY; if (d2 > 0.000001f) { float inv_len2 = 1.0f / d2; if (inv_len2 > FIXNORMAL2F_MAX_INVLEN2) inv_len2 = FIXNORMAL2F_MAX_INVLEN2; VX *= inv_len2; VY *= inv_len2; } } (void)0
@@ -84,7 +85,96 @@ void Render::DrawVertexes(Vertex* Vertices, int Count, bool antialiased ) {
 		DrawList->_VtxCurrentIdx += (ImDrawIdx)vtx_count;
 	}
 }
+void Render::DrawString(float x, float y, Col color, ImFont* font, unsigned int flags, const char* message) {
+	
 
+
+	DrawList->PushTextureID(font->ContainerAtlas->TexID);
+	ImGui::PushFont(font);
+
+	auto size = ImGui::CalcTextSize(message);
+
+
+
+
+
+	if (!(flags & Render::centered_x))
+		size.x = 0;
+	if (!(flags & Render::centered_y))
+		size.y = 0;
+
+	ImVec2 pos = ImVec2(x - (size.x * .5), y - (size.y * .5));
+
+	if (flags & Render::outline)
+	{
+		Col outline_clr = Col(0, 0, 0, color[3]);
+		pos.y++;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.x++;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.y--;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.x--;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+	}
+
+	DrawList->AddText(pos, color.u32(), message);
+	ImGui::PopFont();
+}
+void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned int flags, const char* message, ...) {
+
+	char output[1024] = {};
+	va_list args;
+	va_start(args, message);
+	vsprintf_s(output, message, args);
+	va_end(args);
+
+
+	DrawList->PushTextureID(font->ContainerAtlas->TexID);
+	ImGui::PushFont(font);
+
+	auto size = ImGui::CalcTextSize(output);
+
+
+
+
+
+	if (!(flags & Render::centered_x))
+		size.x = 0;
+	if (!(flags & Render::centered_y))
+		size.y = 0;
+
+	ImVec2 pos = ImVec2(x - (size.x * .5), y - (size.y * .5));
+
+	if (flags & Render::outline)
+	{
+		Col outline_clr = Col(0, 0, 0, color[3]);
+		pos.y++;
+		DrawList->AddText(pos, outline_clr.u32(), output);
+		pos.x++;
+		DrawList->AddText(pos, outline_clr.u32(), output);
+		pos.y--;
+		DrawList->AddText(pos, outline_clr.u32(), output);
+		pos.x--;
+		DrawList->AddText(pos, outline_clr.u32(), output);
+	}
+
+	DrawList->AddText(pos, color.u32(), output);
+	ImGui::PopFont();
+}
+void Render::FilledRoundedRect(float x, float y, float l, float w, Col color, float rounding) {
+	DrawList->AddRectFilled(ImVec2(x, y), ImVec2(x + l, y + w), color.u32(), rounding, ImDrawFlags_RoundCornersAll);
+}
+void Render::FilledRect(float x, float y, float l, float w, Col color) {
+	DrawList->AddRectFilled(ImVec2(x, y), ImVec2(x + l, y + w), color.u32());
+	//ImGui::GetBackgroundDrawList()->PushTextureID(Fonts::MenuMain->ContainerAtlas->TexID);
+//	ImGui::PushFont(Fonts::MenuMain);
+
+
+	//ImGui::GetBackgroundDrawList()->AddText(ImVec2(500,500), Col, "test text rend");
+	//ImGui::PopFont();
+	//THIS IS ONLY TESTING RENDERING IGNORE THIS HORRENDOUS CODE
+}
 void Render::GradientCircle(float x, float y, float radius, Col inner, Col outer, bool antialiased) {
 	Vertex vert[SinCosPoints + 2] = {};
 	ImU32 out = outer.u32();
@@ -103,25 +193,17 @@ void Render::GradientCircle(float x, float y, float radius, Col inner, Col outer
 	DrawVertexes(vert, SinCosPoints + 2, antialiased);
 }
 
+
 void Render::DoRender(ID3D11Device* Device, ID3D11DeviceContext* Context, HWND Window, ID3D11RenderTargetView* RenderView) {
 
 	DrawList = ImGui::GetBackgroundDrawList();
 
 	Client->UpdateKeyStates();
 
-	if (Client->KeyToggled(VK_INSERT)) {
-		Config->MenuOpen = !Config->MenuOpen;
-	}
-	if (Config->MenuOpen) {
-		GradientCircle(500, 500, 40, Col(255, 0, 0, 255), Col(0, 255, 0, 0));
-		//ImGui::GetBackgroundDrawList()->PushTextureID(Fonts::MenuMain->ContainerAtlas->TexID);
-	//	ImGui::PushFont(Fonts::MenuMain);
 	
-	
-		//ImGui::GetBackgroundDrawList()->AddText(ImVec2(500,500), Col, "test text rend");
-		//ImGui::PopFont();
-		//THIS IS ONLY TESTING RENDERING IGNORE THIS HORRENDOUS CODE
-	}
+	Menu->OnRender();
+
+
 }
 
 void Render::Initialize() {

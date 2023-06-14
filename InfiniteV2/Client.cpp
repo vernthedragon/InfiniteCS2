@@ -126,6 +126,8 @@ void CClient::Initialize() {
 
 	Config->ResetValues();
 	Config->MenuOpen = true;
+
+
 }
 void CClient::Close() {
 #ifdef CONSOLELOG 
