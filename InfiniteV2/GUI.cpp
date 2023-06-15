@@ -13,7 +13,7 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 
 
 	Render::PushClipRect(x,y, Size.x, Size.y, true);
-	//all clip rect crashes
+	
 	
 	MenuElement* Overlay = nullptr;
 	float OverlayContextStartY = 0.f;
@@ -57,9 +57,10 @@ float Switch::GetOffset() {
 	return OffsetAnimation * Menu->Scale * 28.f;
 }
 bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
+	float OriginalMaxAlpha = MaxAlpha;
 	MaxAlpha *= OffsetAnimation;
 	float W = 120 + 135 * Slide; //slight optimization for more memory usage lol
-	bool Hovered = Menu->InRegion(x + Size.x - 76.f * Menu->Scale, y - 6.f * Menu->Scale, 37.f * Menu->Scale, 30.f * Menu->Scale) && !disable;
+	bool Hovered = Menu->InRegion(x + Size.x - 76.f * Menu->Scale, y - 6.f * Menu->Scale, 47.f * Menu->Scale, 30.f * Menu->Scale) && !disable;
 
 
 	HoverAnimation = Math::Clamp(HoverAnimation + ((Hovered ? 1.f : -1.f) * 0.005921568f * Menu->AnimationModifier), 0.f, 1.f);
@@ -76,9 +77,9 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	Col Background(0, 3, 6, MaxAlpha * 0.78f);	
 	Render::FilledRoundedRect(x + Size.x - 69.f * Menu->Scale, y, 39.f * Menu->Scale, 16.f * Menu->Scale, Background, 20.f);
 	if (HoverAnimation > 0) {
-		Render::GradientCircle(x + Size.x - (62.5f - 25.f * Slide * (MaxAlpha * 0.00390625f)) * Menu->Scale, y + 8.5f * Menu->Scale, 17.f * Menu->Scale, Col(11 + 132 * Slide * 0.43f, 12 + 138 * Slide * 0.43f, 18 + 237 * Slide * 0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * Slide * 0.43f, 12 + 138 * Slide * 0.43f, 18 + 237 * Slide * 0.43f, 0), true);
+		Render::GradientCircle(x + Size.x - (62.5f - 25.f * Slide * (OriginalMaxAlpha * 0.00390625f)) * Menu->Scale, y + 8.5f * Menu->Scale, 17.f * Menu->Scale, Col(11 + 132 * Slide * 0.43f, 12 + 138 * Slide * 0.43f, 18 + 237 * Slide * 0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * Slide * 0.43f, 12 + 138 * Slide * 0.43f, 18 + 237 * Slide * 0.43f, 0), true);
 	}
-	Render::FilledCircle(x + Size.x - (62.5f - 25.f * Slide * (MaxAlpha * 0.00390625f)) * Menu->Scale, y + 8.5f * Menu->Scale, 10.f * Menu->Scale, Main, 17);
+	Render::FilledCircle(x + Size.x - (62.5f - 25.f * Slide * (OriginalMaxAlpha * 0.00390625f)) * Menu->Scale, y + 8.5f * Menu->Scale, 10.f * Menu->Scale, Main, 17);
 
 	
 
