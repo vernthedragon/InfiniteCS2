@@ -53,6 +53,8 @@ static const char* SubtabText[] = {
 bool Test = false;
 bool Test2 = false;
 bool Test3 = true;
+bool Test4 = false;
+bool Test5 = false;
 void CMenu::SetupUser() {
 
 	for (int i = 0; i < MAXSUBTABS; i++) {
@@ -65,10 +67,10 @@ void CMenu::SetupUser() {
 
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Misc.Movement.Bunnyhop));
 	Childs[MOVEMENT][LEFT].New(new Switch("Test", &Test));
-	Childs[MOVEMENT][LEFT].New(new Switch("Test2", &Test2, []() {return Test; }));
-	Childs[MOVEMENT][LEFT].New(new Switch("Test3", &Test3));
-
-
+	Childs[MOVEMENT][LEFT].New(new Switch("Another Switch", &Test2, []() {return Test; }));
+	Childs[MOVEMENT][LEFT].New(new Switch("Hello", &Test3));
+	Childs[MOVEMENT][LEFT].New(new Switch("Font Testing", &Test4));
+	Childs[MOVEMENT][LEFT].New(new Switch("Test AntiAlias", &Test5, []() {return Test4; }));
 
 
 	SetuppedUser = true;

@@ -17,10 +17,10 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 	
 	MenuElement* Overlay = nullptr;
 	float OverlayContextStartY = 0.f;
-	float StartY = y + 15.f * Menu->Scale;
+	float StartY = y - 13.f * Menu->Scale;// + 15.f * Menu->Scale;
 
 	for (auto& Element : this->Elements) {
-	
+		
 		if (Element->ShouldOverlay()) {
 			Overlay = Element;
 			OverlayContextStartY = StartY;
@@ -29,11 +29,16 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 
 		
 
-		StartY += Element->GetOffset();
+
 	}
-	StartY = y + 15.f * Menu->Scale;
+
 	bool Disable = false;
+
 	for (auto& Element : this->Elements) {
+
+	
+		StartY += Element->GetOffset();
+
 		if (Element->ShouldRender())
 		{
 			if (Element == Overlay) { 
@@ -42,7 +47,7 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 			Element->Draw(x + 15.f * Menu->Scale, StartY, Size, MaxAlpha, Menu->MouseClick, Menu->MousePress, Disable);
 		}
 		
-		StartY += Element->GetOffset();
+		//StartY += Element->GetOffset();
 	}
 
 	Render::PopClipRect();
