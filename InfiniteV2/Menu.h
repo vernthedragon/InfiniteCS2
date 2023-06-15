@@ -78,7 +78,7 @@ public:
 	float TabAnimations[6];
 	float SubtabAnimations[8];
 	int MenuState;
-	float MenuStateButtonAnimations[2]
+	float MenuStateButtonAnimations[2];
 };
 
 extern CMenu* Menu;
