@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <string>
 #include <map>
+#include <fstream>
 
 enum ConfigType : signed char {
 	VartypeBool = 0,
@@ -18,6 +19,7 @@ struct ConfigVariable {
 struct UserConfigData {
 	std::string LastModified;
 	std::string Author;
+	std::time_t UNIXStamp;
 	//add the creator ID + user ID (required for cloud later)
 };
 class BaseConfig {
@@ -40,10 +42,11 @@ public:
 class CConfigSystem {
 public:
 	bool Reload();
-
+	bool RemoveConfig(const std::string& Bind);
 	bool SaveToConfig(const std::string& Bind);
 	bool LoadToConfig(const std::string& Bind);
-	bool PreLoadConfig(const std::string& Bind, UserConfigData& DataOut);
+	bool PreLoadConfigFile(std::ifstream& stream, UserConfigData& DataOut);
+	bool CreateConfig(const std::string& Name);
 	void AddVar(const std::string& Bind, bool* Var) {
 		ConfigVariable* variable = new ConfigVariable{};
 		variable->Var = reinterpret_cast<void*>(Var);

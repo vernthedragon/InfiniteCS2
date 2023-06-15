@@ -71,6 +71,17 @@ void CMenu::SetupUser() {
 	LastTab = AIMBOT;
 	SearchAnimation = 0.f;
 	SettingAnimation = 0.f;
+
+
+
+
+
+	if (!ConfigSystem->Reload())
+		Client->Log("Failed to Reload Configs\n");
+
+	if (ConfigSystem->Configs.empty()) {
+		ConfigSystem->CreateConfig("Default");
+	}
 }
 
 

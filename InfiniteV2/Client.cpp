@@ -147,7 +147,7 @@ void CClient::Initialize() {
 		Log("Successfully Setup all CS Hooks\n");
 	}
 	else
-		Log("Failed to  Setup all CS Hooks\n");
+		Log("Failed to Setup all CS Hooks\n");
 	
 
 	Config->ResetValues();

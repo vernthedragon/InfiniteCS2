@@ -32,6 +32,9 @@
 #include <thread>
 #include <chrono>
 #include "Config.h"
+struct InfUserData {
+	std::string Username;
+};
 class CClient {
 public:
 	void Initialize();
@@ -46,6 +49,7 @@ public:
 	std::uint8_t* ResolveRIP(std::uint8_t* address, std::uint32_t rva_offset, std::uint32_t rip_offset);
 	void UpdateLocal();
 	std::string InfFolder;
+	InfUserData UserData;
 	class UserCmd* cmd;
 	class IPlayer* local;
 	class IController* controller;
