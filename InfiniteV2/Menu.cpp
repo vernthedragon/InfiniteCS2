@@ -104,12 +104,15 @@ void CMenu::Draw() {
 		if (FindInRegion && MouseClick) {
 			if (!InSearch) {
 				LastTab = CurrentTab;
-				SubtabChangeAnimation = 0.f;
+			
+				CurrentSubtab = SEARCHMAIN;
 			}
+			else
+				CurrentSubtab = LastSubtabs[LastTab];
 
 			MouseClick = false;
 			CurrentTab = InSearch ? LastTab : SEARCH;
-			CurrentSubtab = SEARCHMAIN;
+			SubtabChangeAnimation = 0.f;
 		}
 
 		if ((FindInRegion && MenuStateButtonAnimations[1] < 1.f) || (!FindInRegion && MenuStateButtonAnimations[1] > 0.f))
@@ -149,7 +152,7 @@ void CMenu::Draw() {
 
 
 
-		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 88.f * Scale, Col(145, 145, 255, Alpha), Fonts::MenuMain, Render::centered_xy, TabText[CurrentTab]);
+		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 88.f * Scale, Col(145, 145, 255, Alpha * SubtabChangeAnimation), Fonts::MenuMain, Render::centered_xy, TabText[CurrentTab]);
 		Vec2 SubtabStart = Vec2(Pos.x + 62.5f * Scale, Pos.y + 88.f * Scale + 65.f * Scale);
 		switch (CurrentTab) {
 		case AIMBOT:
@@ -213,7 +216,7 @@ void CMenu::Draw() {
 		
 		if (SearchAnimation > 0.f) {
 		
-			Render::FilledRect(Pos.x + (900.f - SearchAnimation * 775.f) * Scale, Pos.y, SearchAnimation * 775.f * Scale, 60.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation * 0.98f));
+			Render::FilledRect(Pos.x + (125.f) * Scale, Pos.y, 775.f * Scale, 60.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation * 0.98f));
 			Render::Rect(Pos.x + 160.f * Scale, Pos.y + 48.f * Scale, 640.f * Scale, 1.f, Col(100, 100, 100, Alpha * SearchAnimation), 1.f * Scale);
 
 			Render::DrawString(Pos.x + (870.f) * Scale, Pos.y + (24.f + SearchAnimation * 6.f) * Scale, Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha * SearchAnimation), Fonts::MenuIcons, Render::centered_xy, "M");
@@ -329,7 +332,7 @@ void CMenu::OnRender() {
 void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 
 
-	Render::DrawString(x - ((1.f - SubtabChangeAnimation) * 15.f), y, CurrentSubtab == _this ? Col(170, 170, 255, Alpha * SubtabChangeAnimation)
+	Render::DrawString(x - ((1.f - SubtabChangeAnimation) * 18.f * Scale), y, CurrentSubtab == _this ? Col(170, 170, 255, Alpha * SubtabChangeAnimation)
 		: Col(130 + 125 * animation, 130 + 125 * animation, 130 + 125 * animation, Alpha * SubtabChangeAnimation), Fonts::MenuThin, Render::centered_xy, SubtabText[_this]);
 
 	float Offset = Render::TextSize(Fonts::MenuThin, SubtabText[_this]).x * 0.5f;
