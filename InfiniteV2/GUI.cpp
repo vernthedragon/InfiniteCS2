@@ -12,7 +12,7 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 		Render::RoundedRect(x, y, Size.x, Size.y, Col(2, 3, 5, MaxAlpha), 2.f * Menu->Scale, 4.5f * Menu->Scale);
 
 
-	//Render::PushClipRect(x,y, Size.x, Size.y, true);
+	Render::PushClipRect(x,y, Size.x, Size.y, true);
 	//all clip rect crashes
 	
 	MenuElement* Overlay = nullptr;
@@ -44,7 +44,7 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 		StartY += Element->GetOffset();
 	}
 
-	//Render::DrawList->PopClipRect();
+	Render::PopClipRect();
 }
 
 inline bool Child::InRegion(float x, float y, float w, float h) {
