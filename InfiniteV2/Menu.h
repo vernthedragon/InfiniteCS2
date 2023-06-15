@@ -39,6 +39,12 @@ enum CSubTab : unsigned int {
 
 };
 
+enum MenuStates {
+	MENU = 0,
+	SETTINGS = 1,
+	SEARCH = 2
+};
+
 class CMenu {
 public:
 	void Draw();
@@ -48,6 +54,7 @@ public:
 	void AdjustDPI();
 	void RenderTab(float x, float y, CTabs _this, float& animation);
 	void RenderSubtab(float x, float y, CSubTab _this, float& animation);
+	inline bool InRegion(float x, float y, float w, float h);
 	bool MousePress = false;
 	bool MouseClick = false;
 	float Alpha = 0.f;
@@ -70,6 +77,8 @@ public:
 	Child CurrentRight;
 	float TabAnimations[6];
 	float SubtabAnimations[8];
+	int MenuState;
+	float MenuStateButtonAnimations[2]
 };
 
 extern CMenu* Menu;

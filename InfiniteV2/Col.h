@@ -35,7 +35,41 @@ public:
 		return Color[index];
 	}
 
+	const Col& LinearBlend(const Col& other) 
+	{
+		this->operator+=(other);
+		Color[0] = (Color[0] * 0.5);
+		Color[1] = (Color[1] * 0.5);
+		Color[2] = (Color[2] * 0.5);
+		Color[3] = (Color[3] * 0.5);
+		return *this;
+	}
 
+	const Col& LinearBlend(const int& r, const int& g, const int& b)
+	{
+		Color[0] += r;
+		Color[1] += g;
+		Color[2] += b;
+
+		Color[0] = (Color[0] * 0.5);
+		Color[1] = (Color[1] * 0.5);
+		Color[2] = (Color[2] * 0.5);
+		return *this;
+	}
+
+	const Col& LinearBlendConditional(const int& r, const int& g, const int& b, const bool& ShouldBlend)
+	{
+		if (!ShouldBlend)
+			return *this;
+		Color[0] += r;
+		Color[1] += g;
+		Color[2] += b;
+
+		Color[0] = (Color[0] * 0.5);
+		Color[1] = (Color[1] * 0.5);
+		Color[2] = (Color[2] * 0.5);
+		return *this;
+	}
 
 	inline Col operator+(const Col& rhs) const
 	{
