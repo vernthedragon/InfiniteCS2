@@ -32,6 +32,7 @@
 #include <thread>
 #include <chrono>
 #include "Config.h"
+#include "Exception.h"
 struct InfUserData {
 	std::string Username;
 };

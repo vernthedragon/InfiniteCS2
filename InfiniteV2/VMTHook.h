@@ -96,9 +96,7 @@ public:
 		this->len = len;
 
 		if (!VirtualProtect(base, len, protect, (PDWORD)&old_protect))
-		{
-			Client->Log("Failed to Virtual Protect");
-		}
+			throw IException("Failed to Virtual Protect memory Region", 0);
 	}
 
 	~ProtectGuard()
@@ -162,9 +160,7 @@ public:
 	{
 
 		if (index > method_count)
-		{
-			Client->Log("Index > MethodCount");
-		}
+			throw IException("Failed to Hook Virtual Function, Index is larger than Table Count", 0);
 
 		shadow_vtable[index + 1] = reinterpret_cast<uintptr_t>(method);
 		hooked = true;
@@ -173,9 +169,7 @@ public:
 	inline void Unhook(uint32_t index)
 	{
 		if (index > method_count)
-		{
-			Client->Log("Index > MethodCount");
-		}
+			throw IException("Failed to Hook Virtual Function, Index is larger than Table Count", 0);
 		shadow_vtable[index + 1] = original_vtable[index];
 		hooked = false;
 	}

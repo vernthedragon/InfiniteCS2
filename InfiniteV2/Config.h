@@ -79,10 +79,13 @@ public:
 	}
 	bool RemoveVar(const std::string& Bind) {
 		if (auto Var = Variables.find(Bind); Var != Variables.end()) {
-			Variables.erase(Bind);
+			Variables.erase(Var);
 			return true;
 		}
 		return false;
+	}
+	bool VarExists(const std::string& Bind) {
+		return Variables.find(Bind) != Variables.end();
 	}
 	std::map< std::string, BaseConfig > Configs;
 	std::map< std::string, ConfigVariable* > Variables;

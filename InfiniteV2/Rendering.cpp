@@ -53,6 +53,12 @@ bool Render::LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView*
 
 	return true;
 }
+void Render::PushClipRect(float x, float y, float w, float h, bool IntersectWithCurrentClipRect) {
+	DrawList->PushClipRect(ImVec2(x, y), ImVec2(x + w, y + h), IntersectWithCurrentClipRect);
+}
+void Render::PopClipRect() {
+	DrawList->PopClipRect();
+}
 void Render::DrawVertexes(Vertex* Vertices, int Count, bool antialiased ) {
 	if (Count < 3)
 		return;

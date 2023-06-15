@@ -47,8 +47,8 @@ static const char* SubtabText[] = {
 	"Results"
 };
 void CMenu::SetupUser() {
-	CurrentLeft.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
-	CurrentRight.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
+	CurrentLeft.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+	CurrentRight.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
 	SetuppedUser = true;
 	SubtabChangeAnimation = 1.f;
 
@@ -334,12 +334,15 @@ void CMenu::OnRender() {
 	if (!SetuppedUser)
 		SetupUser();
 
-	Alpha = Math::Clamp(Alpha + ((Config->MenuOpen ? 1 : -1) * 1.3f * AnimationModifier), 0.f, 255.f);
+	Alpha = Math::Clamp(Alpha + ((Config->MenuOpen ? 1 : -1) * 1.6f * AnimationModifier), 0.f, 255.f);
 
 	if (Alpha > 0.f)
 		this->Draw();
-	else
+	else {
 		ImGui::GetIO().MouseDrawCursor = false;
+		CurrentLeft.OpenAnimation = 0.f;
+		CurrentRight.OpenAnimation = 0.f;
+	}
 }
 void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 

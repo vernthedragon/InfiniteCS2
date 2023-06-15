@@ -32,6 +32,8 @@ namespace Render {
 	void DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned int flags, const char* message, ...);
 	void DrawString(float x, float y, Col color, ImFont* font, unsigned int flags, const char* message);
 	void DrawVertexes(Vertex* Vertices, int Count, bool antialiased = false);
+	void PushClipRect(float x, float y, float w, float h, bool IntersectWithCurrentClipRect);
+	void PopClipRect();
 	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv);
 	Vec2 TextSizeFmt(ImFont* font, const char* message, ...);
 	Vec2 TextSize(ImFont* font, const char* message);

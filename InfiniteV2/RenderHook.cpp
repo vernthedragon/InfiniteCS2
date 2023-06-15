@@ -59,6 +59,7 @@ HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint3
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+//	Render::DrawList->PushClipRectFullScreen(); //all clip rect crashes
 	Render::DoRender(Hooks::Device, Hooks::Context, Hooks::Window, Hooks::RenderView);
 
 	ImGui::Render();

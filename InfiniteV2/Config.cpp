@@ -108,7 +108,7 @@ bool BaseConfig::Save() {
 }
 bool CConfigSystem::RemoveConfig(const std::string& Bind) {
 	if (auto Cfg = Configs.find(Bind); Cfg != Configs.end()) {
-		Configs.erase(Bind);
+		Configs.erase(Cfg);
 		return true;
 	}
 	return false;

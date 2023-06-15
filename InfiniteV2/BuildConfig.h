@@ -4,6 +4,7 @@
 // _CRT_SECURE_NO_WARNINGS IS ENABLED (DEPRECATED FUNCTION WILL NOT CAUSE ERRORS)
 // 
 //GENERAL
+#define INFINITE_SHOW_ERRORS //we show exceptions and errors
 #define INFINITE_SHOW_CONSOLE //shows console debugging
 
 //RENDERING

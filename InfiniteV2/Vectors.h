@@ -15,6 +15,11 @@ public:
 	Vec2();
 	Vec2(float x, float y);
 	~Vec2();
+	inline Vec2& operator=(const Vec2& e) {
+		
+		x = e.x; y = e.y;
+		return *this;
+	}
 	inline void Zero();
 	inline ImVec2 ToImVec();
 };

@@ -149,6 +149,9 @@
     <ClCompile Include="Json\jsoncpp.cpp">
       <Filter>Client\Config\Json</Filter>
     </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">
@@ -318,6 +321,9 @@
     </ClInclude>
     <ClInclude Include="Json\json-forwards.h">
       <Filter>Client\Config\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
