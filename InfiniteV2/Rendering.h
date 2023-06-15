@@ -25,6 +25,7 @@ namespace Render {
 	void DrawRoundedTexture(float x, float y, float l, float w, void* text, float rounding, Col color = Col(255, 255, 255, 255));
 	void FilledRect(float x, float y, float l, float w, Col color);
 	void FilledRoundedRect(float x, float y, float l, float w, Col color, float rounding);
+	void GradientFilledRect(float x, float y, float l, float w, Col left, Col right, Col bl, Col br);
 	void Rect(float x, float y, float l, float w, Col color, float thickness);
 	void RoundedRect(float x, float y, float l, float w, Col color, float thickness, float rounding);
 	void DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned int flags, const char* message, ...);
@@ -33,6 +34,7 @@ namespace Render {
 	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv);
 	Vec2 TextSizeFmt(ImFont* font, const char* message, ...);
 	Vec2 TextSize(ImFont* font, const char* message);
+	void DrawFullscreenBlur();
 	void Initialize();
 	static bool Initialized = false;
 	static constexpr auto SinCosPoints = 64;

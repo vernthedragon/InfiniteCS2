@@ -188,6 +188,9 @@ Vec2 Render::TextSize(ImFont* font, const char* message) {
 	ImGui::PopFont();
 	return Vec2(size.x, size.y);
 }
+void Render::DrawFullscreenBlur() {
+
+}
 void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned int flags, const char* message, ...) {
 
 	char output[1024] = {};
@@ -254,6 +257,24 @@ void Render::FilledRect(float x, float y, float l, float w, Col color) {
 	//ImGui::GetBackgroundDrawList()->AddText(ImVec2(500,500), Col, "test text rend");
 	//ImGui::PopFont();
 	//THIS IS ONLY TESTING RENDERING IGNORE THIS HORRENDOUS CODE
+}
+void AddRectMultiColor(const ImVec2& p_min, const ImVec2& p_max, ImU32 col_upr_left, ImU32 col_upr_right, ImU32 col_bot_right, ImU32 col_bot_left)
+{
+	if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & IM_COL32_A_MASK) == 0)
+		return;
+
+	const ImVec2 uv = Render::DrawList->_Data->TexUvWhitePixel;
+	Render::DrawList->PrimReserve(6, 4);
+	Render::DrawList->PrimWriteIdx((ImDrawIdx)(Render::DrawList->_VtxCurrentIdx)); Render::DrawList->PrimWriteIdx((ImDrawIdx)(Render::DrawList->_VtxCurrentIdx + 1)); Render::DrawList->PrimWriteIdx((ImDrawIdx)(Render::DrawList->_VtxCurrentIdx + 2));
+	Render::DrawList->PrimWriteIdx((ImDrawIdx)(Render::DrawList->_VtxCurrentIdx)); Render::DrawList->PrimWriteIdx((ImDrawIdx)(Render::DrawList->_VtxCurrentIdx + 2)); Render::DrawList->PrimWriteIdx((ImDrawIdx)(Render::DrawList->_VtxCurrentIdx + 3));
+	Render::DrawList->PrimWriteVtx(p_min, uv, col_upr_left);
+	Render::DrawList->PrimWriteVtx(ImVec2(p_max.x, p_min.y), uv, col_upr_right);
+	Render::DrawList->PrimWriteVtx(p_max, uv, col_bot_right);
+	Render::DrawList->PrimWriteVtx(ImVec2(p_min.x, p_max.y), uv, col_bot_left);
+}
+void Render::GradientFilledRect(float x, float y, float l, float w, Col left, Col right, Col bl, Col br) {
+	AddRectMultiColor(ImVec2(x, y), ImVec2(x + l, y + w),
+		left.u32(),right.u32(),br.u32(),bl.u32());
 }
 void Render::GradientCircle(float x, float y, float radius, Col inner, Col outer, bool antialiased) {
 	Vertex vert[SinCosPoints + 2] = {};

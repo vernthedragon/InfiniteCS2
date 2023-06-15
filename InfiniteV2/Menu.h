@@ -7,7 +7,9 @@ enum CTabs : unsigned int {
 	PLAYERS = 2,
 	WORLD = 3,
 	MISC = 4,
-	CONFIG = 5
+	CONFIG = 5,
+	SETTINGS = 6,
+	SEARCH = 7
 };
 
 
@@ -34,16 +36,15 @@ enum CSubTab : unsigned int {
 	INVENTORY = 15,
 	//CONFIG
 	CONFIGS = 13,
-	SCRIPTS = 14
+	SCRIPTS = 14,
+	MENUMAIN = 16,
+	USERMAIN = 17,
+	SEARCHMAIN = 18
 
 
 };
 
-enum MenuStates {
-	MENU = 0,
-	SETTINGS = 1,
-	SEARCH = 2
-};
+
 
 class CMenu {
 public:
@@ -68,7 +69,8 @@ public:
 	float RenderInterval = 0.f;
 	float SubtabChangeAnimation = 0.f;
 	CTabs CurrentTab = AIMBOT;
-	CSubTab LastSubtabs[6];
+	CTabs LastTab = AIMBOT;
+	CSubTab LastSubtabs[7];
 	CSubTab CurrentSubtab = RAGE;
 	ID3D11ShaderResourceView* ProfilePic;
 	bool SetuppedUser = false;
@@ -77,8 +79,9 @@ public:
 	Child CurrentRight;
 	float TabAnimations[6];
 	float SubtabAnimations[8];
-	int MenuState;
 	float MenuStateButtonAnimations[2];
+	float SettingAnimation;
+	float SearchAnimation;
 };
 
 extern CMenu* Menu;

@@ -14,7 +14,9 @@ static const char* TabText[] = {
 	"Players",
 	"World",
 	"Misc",
-	"Config"
+	"Config",
+	"Settings",
+	"Search"
 };
 
 static const char* SubtabText[] = {
@@ -39,7 +41,10 @@ static const char* SubtabText[] = {
 	//CONFIG
 	"Config",
 	"Scripts",
-	"Inventory"
+	"Inventory",
+	"Menu",
+	"User",
+	"Results"
 };
 void CMenu::SetupUser() {
 	CurrentLeft.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), true);
@@ -61,6 +66,11 @@ void CMenu::SetupUser() {
 	LastSubtabs[WORLD] = MAINWORLD;
 	LastSubtabs[MISC] = MAINMISC;
 	LastSubtabs[CONFIG] = CONFIGS;
+	LastSubtabs[6] = MENUMAIN;
+	CurrentTab = AIMBOT;
+	LastTab = AIMBOT;
+	SearchAnimation = 0.f;
+	SettingAnimation = 0.f;
 }
 
 
@@ -86,24 +96,42 @@ void CMenu::Draw() {
 		Render::FilledRect(Pos.x, Pos.y + 60.f * Scale, 125.f * Scale, 500.f * Scale, Col(0, 1, 2, Alpha));
 		Render::FilledRect(Pos.x + 21.5f * Scale, Pos.y + 60.f * Scale, 82.f * Scale, 2.f * Scale, Col(5, 6, 8, Alpha));
 
-		bool InSearch = MenuState == SEARCH;
-		bool InSettings = MenuState == SETTINGS;
-		Render::DrawString(Pos.x + (870.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(170,170,255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
-		bool FindInRegion = InRegion(Pos.x + 845.f * Scale, Pos.y + 5.f * Scale, 35.f * Scale, 35.f * Scale);
+		bool InSearch = CurrentTab == SEARCH;
+		bool InSettings = CurrentTab == SETTINGS;
+		
+		bool FindInRegion = InRegion(Pos.x + 850.f * Scale, Pos.y + 5.f * Scale, 45.f * Scale, 45.f * Scale);
 
-		if(FindInRegion && MouseClick)
-			MenuState = InSearch ? MENU : SEARCH;
+		if (FindInRegion && MouseClick) {
+			if (!InSearch) {
+				LastTab = CurrentTab;
+				SubtabChangeAnimation = 0.f;
+			}
+
+			MouseClick = false;
+			CurrentTab = InSearch ? LastTab : SEARCH;
+		}
 
 		if ((FindInRegion && MenuStateButtonAnimations[1] < 1.f) || (!FindInRegion && MenuStateButtonAnimations[1] > 0.f))
-			MenuStateButtonAnimations[1] = Math::Clamp(MenuStateButtonAnimations[1] + ((FindInRegion ? 1 : -1) * 0.003421568f * AnimationModifier), 0.f, 1.f);
+			MenuStateButtonAnimations[1] = Math::Clamp(MenuStateButtonAnimations[1] + ((FindInRegion ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
 
 		Render::DrawString(Pos.x + (828.f) * Scale, Pos.y + 30.f * Scale, InSettings ? Col(170, 170, 255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[0], 130 + 125 * MenuStateButtonAnimations[0], 130 + 125 * MenuStateButtonAnimations[0], Alpha), Fonts::MenuIcons, Render::centered_xy, "I");
-		bool SettingsInRegion = InRegion(Pos.x + 803.f * Scale, Pos.y + 5.f * Scale, 35.f * Scale, 35.f * Scale);
+		bool SettingsInRegion = InRegion(Pos.x + 803.f * Scale, Pos.y + 5.f * Scale, 40.f * Scale, 40.f * Scale);	
 		if ((SettingsInRegion && MenuStateButtonAnimations[0] < 1.f) || (!SettingsInRegion && MenuStateButtonAnimations[0] > 0.f))
-			MenuStateButtonAnimations[0] = Math::Clamp(MenuStateButtonAnimations[0] + ((SettingsInRegion ? 1 : -1) * 0.003421568f * AnimationModifier), 0.f, 1.f);
+			MenuStateButtonAnimations[0] = Math::Clamp(MenuStateButtonAnimations[0] + ((SettingsInRegion ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
 
-		if (SettingsInRegion && MouseClick)
-			MenuState = InSettings ? MENU : SETTINGS;
+		if (SettingsInRegion && MouseClick && !InSearch) {
+			if (!InSettings) {
+				LastTab = CurrentTab;
+				SubtabChangeAnimation = 0.f;
+			}
+
+			MouseClick = false;
+			CurrentTab = InSettings ? LastTab : SETTINGS;
+			CurrentSubtab = LastSubtabs[6];
+		}
+
+		SettingAnimation = Math::Clamp(SettingAnimation + ((InSettings ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
+		SearchAnimation = Math::Clamp(SearchAnimation + ((InSearch ? 1 : -1) * 0.004821568f * AnimationModifier), 0.f, 1.f);
 
 		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 30.f * Scale, Col(170, 170, 255, Alpha), Fonts::MenuMain, Render::centered_xy, "INFINITE");
 
@@ -117,6 +145,8 @@ void CMenu::Draw() {
 
 		if (SubtabChangeAnimation < 1.f)
 			SubtabChangeAnimation = Math::Clamp(SubtabChangeAnimation + 0.006421568f * AnimationModifier, 0.f, 1.f);
+
+
 
 		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 88.f * Scale, Col(145, 145, 255, Alpha), Fonts::MenuMain, Render::centered_xy, TabText[CurrentTab]);
 		Vec2 SubtabStart = Vec2(Pos.x + 62.5f * Scale, Pos.y + 88.f * Scale + 65.f * Scale);
@@ -164,10 +194,32 @@ void CMenu::Draw() {
 			RenderSubtab(SubtabStart.x, SubtabStart.y, SCRIPTS, SubtabAnimations[1]);
 			SubtabStart.y += 45.f * Scale;
 			break;
+		case SETTINGS:
+			RenderSubtab(SubtabStart.x, SubtabStart.y, MENUMAIN, SubtabAnimations[0]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, USERMAIN, SubtabAnimations[1]);
+			SubtabStart.y += 45.f * Scale;
+			break;
+		case SEARCH:
+			RenderSubtab(SubtabStart.x, SubtabStart.y, SEARCHMAIN, SubtabAnimations[0]);
+			break;
 		}
 		
 		CurrentLeft.Draw(Pos.x + 160 * Scale, Pos.y + 90 * Scale, Alpha, MouseClick, MousePress);
 		CurrentRight.Draw(Pos.x + 160 * Scale + (CurrentLeft.Size.x + 33 * Scale), Pos.y + 90 * Scale, Alpha, MouseClick, MousePress);
+
+
+		
+		if (SearchAnimation > 0.f) {
+		
+			Render::FilledRect(Pos.x + (900.f - SearchAnimation * 775.f) * Scale, Pos.y, SearchAnimation * 775.f * Scale, 60.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation * 0.98f));
+			Render::Rect(Pos.x + 160.f * Scale, Pos.y + 48.f * Scale, 640.f * Scale, 1.f, Col(100, 100, 100, Alpha * SearchAnimation), 1.f * Scale);
+
+			Render::DrawString(Pos.x + (870.f) * Scale, Pos.y + (24.f + SearchAnimation * 6.f) * Scale, Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha * SearchAnimation), Fonts::MenuIcons, Render::centered_xy, "M");
+			//Render::FilledRoundedRect(Pos.x + 430.f * Scale, Pos.y + (3.5f + 15.f * SearchAnimation) * Scale, 400.f * Scale, 35.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation), 30.f);
+			//Render::RoundedRect(Pos.x + 430.f * Scale, Pos.y + (3.5f + 15.f * SearchAnimation) * Scale, 400.f * Scale, 35.f * Scale, Col(5, 6, 8, Alpha * SearchAnimation), 1.3f * Scale, 30.f);
+		}
+		Render::DrawString(Pos.x + (870.f - SearchAnimation * 42.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(255,255,255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
 		
 }
 
@@ -214,6 +266,8 @@ void CMenu::AdjustDPI() {
 }
 void CMenu::OnRender() {
 	
+	Render::DrawFullscreenBlur();
+
 	CurrentClock = (float)(clock() * (float)0.001f);
 
 	if (LastAnimationTime == -1.f)
@@ -281,12 +335,13 @@ void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 
 	bool Hovered = MousePos.x > x - Offset - 33.f * Scale && MousePos.x < x + Offset + 33.f * Scale && MousePos.y > y - 20.f * Scale && MousePos.y < y + 20.f * Scale;
 	if (Hovered && MouseClick) {
+		MouseClick = false;
 		CurrentSubtab = _this;
 		LastSubtabs[CurrentTab] = CurrentSubtab;
 	}
 
 	if ((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
-		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.003421568f * AnimationModifier), 0.f, 1.f);
+		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
 }
 void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 	bool ThisSelected = CurrentTab == _this;
@@ -297,15 +352,17 @@ void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 	float Offset = Render::TextSize(Fonts::MenuIcons, TabIcons[_this]).x + 4 * Scale;
 	Render::DrawString(x + Offset, y + 2.f * Scale, ThisSelected ? Col(255, 255, 255, Alpha) : RenderColor, Fonts::MenuThin, Render::centered_y, TabText[_this]);
 	Offset += Render::TextSize(Fonts::MenuThin, TabText[_this]).x;
-	bool Hovered = MousePos.x > x - 10.f && MousePos.x < x + Offset + 10.f * Scale && MousePos.y > y - 30.f * Scale && MousePos.y < y + 30.f * Scale;
+	bool Hovered = MousePos.x > x - 10.f && MousePos.x < x + Offset + 10.f * Scale && MousePos.y > y - 30.f * Scale && MousePos.y < y + 30.f * Scale && CurrentTab != 7;
 	if (Hovered && MouseClick && CurrentTab != _this) {
+		LastTab = CurrentTab;
+		MouseClick = false;
 		CurrentTab = _this;
 		SubtabChangeAnimation = 0.f;
 		CurrentSubtab = LastSubtabs[_this];
 	}
 
 	if((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
-		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.003421568f * AnimationModifier), 0.f, 1.f);
+		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
 }
 
 inline bool CMenu::InRegion(float x, float y, float w, float h) {

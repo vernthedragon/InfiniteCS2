@@ -15,7 +15,7 @@ namespace Hooks {
 	static ID3D11DeviceContext* Context = nullptr;
 	static HWND Window = nullptr;
 	static ID3D11RenderTargetView* RenderView = nullptr;
-
+	static IDXGISwapChain* SwapChain = nullptr;
 	extern std::unique_ptr< VMTHook > SwapChainVMTHook;
 	extern std::unique_ptr< VMTHook > InputVMTHook;
 

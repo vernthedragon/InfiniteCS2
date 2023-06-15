@@ -49,6 +49,7 @@ HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint3
 		
 	//we update screen size here
 	}
+	Hooks::SwapChain = SwapChain;
 	Render::Initialize();
 
 	if (Menu->ShouldAdjustDPI)
