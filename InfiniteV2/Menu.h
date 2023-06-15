@@ -10,28 +10,31 @@ enum CTabs : unsigned int {
 	CONFIG = 5
 };
 
+
+
 enum CSubTab : unsigned int {
 	//AIMBOT
 	RAGE = 0,
 	LEGIT = 1,
 	EXPLOIT = 2,
 	//ANTIAIM
-	MAINAA = 4,
+	MAINAA = 3,
 	//PLAYERS
-	ESP = 5,
-	CHAMS = 6,
-	TRACERS = 7,
+	ESP = 4,
+	CHAMS = 5,
+	TRACERS = 6,
 	//WORLD
-	MAINWORLD = 8,
-	BOMB = 9,
-	THROWABLES = 10,
-	VIEW = 11,
+	MAINWORLD = 7,
+	BOMB = 8,
+	THROWABLES = 9,
+	VIEW = 10,
 	//MISC
-	MAINMISC = 12,
-	MOVEMENT = 13,
+	MAINMISC = 11,
+	MOVEMENT = 12,
+	INVENTORY = 15,
 	//CONFIG
-	CONFIGS = 14,
-	SCRIPTS = 15
+	CONFIGS = 13,
+	SCRIPTS = 14
 
 
 };
@@ -43,6 +46,8 @@ public:
 	bool IsHovered();
 	void SetupUser();
 	void AdjustDPI();
+	void RenderTab(float x, float y, CTabs _this, float& animation);
+	void RenderSubtab(float x, float y, CSubTab _this, float& animation);
 	bool MousePress = false;
 	bool MouseClick = false;
 	float Alpha = 0.f;
@@ -54,11 +59,17 @@ public:
 	Vec2 MenuMoveCache;
 	float CurrentClock = 0.f;
 	float RenderInterval = 0.f;
+	float SubtabChangeAnimation = 0.f;
 	CTabs CurrentTab = AIMBOT;
+	CSubTab LastSubtabs[6];
 	CSubTab CurrentSubtab = RAGE;
 	ID3D11ShaderResourceView* ProfilePic;
 	bool SetuppedUser = false;
 	bool ShouldAdjustDPI = false;
+	Child CurrentLeft;
+	Child CurrentRight;
+	float TabAnimations[6];
+	float SubtabAnimations[8];
 };
 
 extern CMenu* Menu;

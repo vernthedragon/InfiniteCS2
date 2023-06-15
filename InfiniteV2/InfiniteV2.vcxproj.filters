@@ -140,6 +140,9 @@
     <ClCompile Include="Movement.cpp">
       <Filter>Client\Features</Filter>
     </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>Client\Menu\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">

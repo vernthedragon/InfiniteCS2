@@ -17,4 +17,5 @@
 namespace Math {
 	float InvSqrt(float number);
 	float Clamp(float a, float min, float max);
+	void ClampPtr(float& a, float min, float max);
 };

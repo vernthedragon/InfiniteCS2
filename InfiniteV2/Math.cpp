@@ -26,3 +26,11 @@ float Math::Clamp(float a, float min, float max) {
 
 	return a;
 }
+
+void Math::ClampPtr(float& a, float min, float max) {
+	if (a < min)
+		a = min;
+
+	if (a > max)
+		a = max;
+}

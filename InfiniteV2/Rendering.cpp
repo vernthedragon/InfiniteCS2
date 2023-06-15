@@ -170,6 +170,24 @@ void Render::DrawString(float x, float y, Col color, ImFont* font, unsigned int 
 	DrawList->AddText(pos, color.u32(), message);
 	ImGui::PopFont();
 }
+Vec2 Render::TextSizeFmt(ImFont* font, const char* message, ...) {
+	char output[1024] = {};
+	va_list args;
+	va_start(args, message);
+	vsprintf_s(output, message, args);
+	va_end(args);
+	ImGui::PushFont(font);
+	auto size = ImGui::CalcTextSize(output);
+	ImGui::PopFont();
+	return Vec2(size.x, size.y);
+}
+Vec2 Render::TextSize(ImFont* font, const char* message) {
+	
+	ImGui::PushFont(font);
+	auto size = ImGui::CalcTextSize(message);
+	ImGui::PopFont();
+	return Vec2(size.x, size.y);
+}
 void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned int flags, const char* message, ...) {
 
 	char output[1024] = {};
@@ -213,6 +231,12 @@ void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned i
 }
 void Render::FilledRoundedRect(float x, float y, float l, float w, Col color, float rounding) {
 	DrawList->AddRectFilled(ImVec2(x, y), ImVec2(x + l, y + w), color.u32(), rounding, ImDrawFlags_RoundCornersAll);
+}
+void Render::Rect(float x, float y, float l, float w, Col color, float thickness) {
+	DrawList->AddRect(ImVec2(x, y), ImVec2(x + l, y + w), color.u32(), 0.f,0,thickness);
+}
+void Render::RoundedRect(float x, float y, float l, float w, Col color, float thickness, float rounding) {
+	DrawList->AddRect(ImVec2(x, y), ImVec2(x + l, y + w), color.u32(), rounding, ImDrawFlags_RoundCornersAll, thickness);
 }
 void  Render::DrawTexture(float x, float y, float l, float w, void* text, Col color) {
 	DrawList->AddImage(text, ImVec2(x, y), ImVec2(x + l, y + w), ImVec2(0, 0), ImVec2(1, 1), color.u32());
@@ -277,22 +301,33 @@ void Render::Initialize() {
 	builder.BuildRanges(&ranges);
 
 	ImFontConfig cfg{};
-	//cfg.SizePixels = 13.f;
+	cfg.OversampleH = 2.f;
+	
 
 	io.Fonts->Clear();
-	Fonts::MenuMain50 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuMain50 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 28.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 	Fonts::MenuIcons50 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
-	Fonts::MenuMain80 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f * 0.8f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuThin50 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/corbel.ttf", 18.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+
+	Fonts::MenuMain80 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 28.f * 0.8f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 	Fonts::MenuIcons80 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 0.8f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
-	Fonts::MenuMain100 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuThin80 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/corbel.ttf", 18.f * 0.8f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+
+	Fonts::MenuMain100 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 28.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 	Fonts::MenuIcons100 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f, &cfg, io.Fonts->GetGlyphRangesCyrillic()); //20 = 100%
-	Fonts::MenuMain140 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f * 1.4f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuThin100 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/corbel.ttf", 18.f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+
+	Fonts::MenuMain140 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 28.f * 1.4f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 	Fonts::MenuIcons140 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 1.4f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
-	Fonts::MenuMain170 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 29.f * 1.7f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuThin140 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/corbel.ttf", 18.f * 1.4f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+
+	Fonts::MenuMain170 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 28.f * 1.7f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 	Fonts::MenuIcons170 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 1.7f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+	Fonts::MenuThin170 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/corbel.ttf", 18.f * 1.7f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 	//HERE WE SET THE DEFAULTS ALL TO 1
 	Fonts::MenuMain = Fonts::MenuMain100;
 	Fonts::MenuIcons = Fonts::MenuIcons100;
+	Fonts::MenuThin = Fonts::MenuThin100;
 	io.Fonts->Build();
 
 	//build table used for shapes with a curve
@@ -321,4 +356,11 @@ namespace Fonts {
 	ImFont* MenuIcons140 = nullptr;
 	ImFont* MenuMain170 = nullptr;
 	ImFont* MenuIcons170 = nullptr;
+
+	ImFont* MenuThin = nullptr;
+	ImFont* MenuThin50 = nullptr;
+	ImFont* MenuThin80 = nullptr;
+	ImFont* MenuThin100 = nullptr;
+	ImFont* MenuThin140 = nullptr;
+	ImFont* MenuThin170 = nullptr;
 };

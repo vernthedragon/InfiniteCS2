@@ -173,6 +173,7 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Entities.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_draw.cpp" />
     <ClCompile Include="Imgui\imgui_impl_dx11.cpp" />

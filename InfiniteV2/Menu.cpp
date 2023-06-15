@@ -1,9 +1,67 @@
 #include "Menu.h"
+static const char* TabIcons[] = {
+	"F",
+	"C",
+	"L",
+	"J",
+	"B",
+	"H",
+};
 
+static const char* TabText[] = {
+	"Aimbot",
+	"AntiAim",
+	"Players",
+	"World",
+	"Misc",
+	"Config"
+};
+
+static const char* SubtabText[] = {
+	
+	"Rage",
+	"Legit",
+	"Exploit",
+	//ANTIAIM
+	"Main",
+	//PLAYERS
+	"ESP",
+	"Models",
+	"Tracers",
+	//WORLD
+	"Main",
+	"Bomb",
+	"Throwables",
+	"View",
+	//MISC
+	"Main",
+	"Movement",
+	//CONFIG
+	"Config",
+	"Scripts",
+	"Inventory"
+};
 void CMenu::SetupUser() {
-
+	CurrentLeft.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), true);
+	CurrentRight.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), true);
 	SetuppedUser = true;
+	SubtabChangeAnimation = 1.f;
+
+	for (int i = 0; i < 6; i++) {
+		TabAnimations[i] = 0.f;
+	}
+	for (int i = 0; i < 8; i++) {
+		SubtabAnimations[i] = 0.f;
+	}
+	LastSubtabs[AIMBOT] = RAGE;
+	LastSubtabs[ANTIAIM] = MAINAA;
+	LastSubtabs[PLAYERS] = ESP;
+	LastSubtabs[WORLD] = MAINWORLD;
+	LastSubtabs[MISC] = MAINMISC;
+	LastSubtabs[CONFIG] = CONFIGS;
 }
+
+
 
 void CMenu::Draw() {
 	//ImGui::GetIO().MouseDrawCursor = true;
@@ -24,9 +82,72 @@ void CMenu::Draw() {
 		Render::FilledRect(Pos.x, Pos.y, 900 * Scale, 560 * Scale, Col(1,2,4, Alpha));
 		Render::FilledRect(Pos.x, Pos.y, 900 * Scale, 60 * Scale, Col(0, 1, 2, Alpha));
 		Render::FilledRect(Pos.x, Pos.y + 60 * Scale, 125 * Scale, 500 * Scale, Col(0, 1, 2, Alpha));
+		Render::FilledRect(Pos.x + 21.5f * Scale, Pos.y + 60.f * Scale, 82.f * Scale, 2.f * Scale, Col(5, 6, 8, Alpha));
 		Render::DrawString(Pos.x + (900 - 30) * Scale, Pos.y + 30 * Scale, Col(255, 255, 255, Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
 		Render::DrawString(Pos.x + (900 - 72) * Scale, Pos.y + 30 * Scale, Col(255, 255, 255, Alpha), Fonts::MenuIcons, Render::centered_xy, "I");
 		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 30.f * Scale, Col(170, 170, 255, Alpha), Fonts::MenuMain, Render::centered_xy, "INFINITE");
+
+
+		RenderTab(Pos.x + 150.f * Scale, Pos.y + 30.f * Scale, AIMBOT, TabAnimations[AIMBOT]);
+		RenderTab(Pos.x + 262.f * Scale, Pos.y + 30.f * Scale, ANTIAIM, TabAnimations[ANTIAIM]);
+		RenderTab(Pos.x + 381.f * Scale, Pos.y + 30.f * Scale, PLAYERS, TabAnimations[PLAYERS]);
+		RenderTab(Pos.x + 492.f * Scale, Pos.y + 30.f * Scale, WORLD, TabAnimations[WORLD]);
+		RenderTab(Pos.x + 603.f * Scale, Pos.y + 30.f * Scale, MISC, TabAnimations[MISC]);
+		RenderTab(Pos.x + 700.f * Scale, Pos.y + 30.f * Scale, CONFIG, TabAnimations[CONFIG]);
+
+		if (SubtabChangeAnimation < 1.f)
+			SubtabChangeAnimation = Math::Clamp(SubtabChangeAnimation + 0.006421568f * AnimationModifier, 0.f, 1.f);
+
+		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 88.f * Scale, Col(145, 145, 255, Alpha), Fonts::MenuMain, Render::centered_xy, TabText[CurrentTab]);
+		Vec2 SubtabStart = Vec2(Pos.x + 62.5f * Scale, Pos.y + 88.f * Scale + 65.f * Scale);
+		switch (CurrentTab) {
+		case AIMBOT:
+			RenderSubtab(SubtabStart.x, SubtabStart.y, RAGE, SubtabAnimations[0]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, LEGIT, SubtabAnimations[1]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, EXPLOIT, SubtabAnimations[2]);
+			SubtabStart.y += 45.f * Scale;
+			break;
+		case ANTIAIM:
+			RenderSubtab(SubtabStart.x, SubtabStart.y, MAINAA, SubtabAnimations[0]);
+			break;
+		case PLAYERS:
+			RenderSubtab(SubtabStart.x, SubtabStart.y, ESP, SubtabAnimations[0]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, CHAMS, SubtabAnimations[1]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, TRACERS, SubtabAnimations[2]);
+			SubtabStart.y += 45.f * Scale;
+			break;
+		case WORLD:
+			RenderSubtab(SubtabStart.x, SubtabStart.y, MAINWORLD, SubtabAnimations[0]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, BOMB, SubtabAnimations[1]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, THROWABLES, SubtabAnimations[2]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, VIEW, SubtabAnimations[3]);
+			SubtabStart.y += 45.f * Scale;
+			break;
+		case MISC:
+			RenderSubtab(SubtabStart.x, SubtabStart.y, MAINMISC, SubtabAnimations[0]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, MOVEMENT, SubtabAnimations[1]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, INVENTORY, SubtabAnimations[2]);
+			SubtabStart.y += 45.f * Scale;
+			break;
+		case CONFIG:
+			RenderSubtab(SubtabStart.x, SubtabStart.y, CONFIGS, SubtabAnimations[0]);
+			SubtabStart.y += 45.f * Scale;
+			RenderSubtab(SubtabStart.x, SubtabStart.y, SCRIPTS, SubtabAnimations[1]);
+			SubtabStart.y += 45.f * Scale;
+			break;
+		}
+		
+		CurrentLeft.Draw(Pos.x + 160 * Scale, Pos.y + 90 * Scale, Alpha, MouseClick, MousePress);
+		CurrentRight.Draw(Pos.x + 160 * Scale + (CurrentLeft.Size.x + 33 * Scale), Pos.y + 90 * Scale, Alpha, MouseClick, MousePress);
 		
 }
 
@@ -40,29 +161,35 @@ void CMenu::AdjustDPI() {
 		Scale = 0.5f;
 		Fonts::MenuMain = Fonts::MenuMain50;
 		Fonts::MenuIcons = Fonts::MenuIcons50;
+		Fonts::MenuThin = Fonts::MenuThin50;
 		break;
 	case 1:
 		Scale = 0.80f;
 		Fonts::MenuMain = Fonts::MenuMain80;
 		Fonts::MenuIcons = Fonts::MenuIcons80;
+		Fonts::MenuThin = Fonts::MenuThin80;
 		break;
 	case 2:
 		Scale = 1.f;
 		Fonts::MenuMain = Fonts::MenuMain100;
 		Fonts::MenuIcons = Fonts::MenuIcons100;
+		Fonts::MenuThin = Fonts::MenuThin100;
 		break;
 	case 3:
 		Scale = 1.40f;
 		Fonts::MenuMain = Fonts::MenuMain140;
 		Fonts::MenuIcons = Fonts::MenuIcons140;
+		Fonts::MenuThin = Fonts::MenuThin140;
 		break;
 	case 4:
 		Scale = 1.7f;
 		Fonts::MenuMain = Fonts::MenuMain170;
 		Fonts::MenuIcons = Fonts::MenuIcons170;
+		Fonts::MenuThin = Fonts::MenuThin170;
 		break;
 	}
-
+	CurrentLeft.Size = Vec2(335 * Scale, 440 * Scale);
+	CurrentRight.Size = Vec2(335 * Scale, 440 * Scale);
 	ShouldAdjustDPI = false;
 }
 void CMenu::OnRender() {
@@ -123,6 +250,42 @@ void CMenu::OnRender() {
 		this->Draw();
 	else
 		ImGui::GetIO().MouseDrawCursor = false;
+}
+void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
+
+
+	Render::DrawString(x - ((1.f - SubtabChangeAnimation) * 15.f), y, CurrentSubtab == _this ? Col(170, 170, 255, Alpha * SubtabChangeAnimation)
+		: Col(130 + 125 * animation, 130 + 125 * animation, 130 + 125 * animation, Alpha * SubtabChangeAnimation), Fonts::MenuThin, Render::centered_xy, SubtabText[_this]);
+
+	float Offset = Render::TextSize(Fonts::MenuThin, SubtabText[_this]).x * 0.5f;
+
+	bool Hovered = MousePos.x > x - Offset - 33.f * Scale && MousePos.x < x + Offset + 33.f * Scale && MousePos.y > y - 20.f * Scale && MousePos.y < y + 20.f * Scale;
+	if (Hovered && MouseClick) {
+		CurrentSubtab = _this;
+		LastSubtabs[CurrentTab] = CurrentSubtab;
+	}
+
+	if ((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
+		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.003421568f * AnimationModifier), 0.f, 1.f);
+}
+void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
+	bool ThisSelected = CurrentTab == _this;
+	Col RenderColor = ThisSelected ? Col(170, 170, 255, Alpha) 
+		: Col(130 + 125 * animation, 130 + 125 * animation, 130 + 125 * animation, Alpha);
+
+	Render::DrawString(x, y, RenderColor, Fonts::MenuIcons, Render::centered_y, TabIcons[_this]);
+	float Offset = Render::TextSize(Fonts::MenuIcons, TabIcons[_this]).x + 4 * Scale;
+	Render::DrawString(x + Offset, y + 2.f * Scale, ThisSelected ? Col(255, 255, 255, Alpha) : RenderColor, Fonts::MenuThin, Render::centered_y, TabText[_this]);
+	Offset += Render::TextSize(Fonts::MenuThin, TabText[_this]).x;
+	bool Hovered = MousePos.x > x - 10.f && MousePos.x < x + Offset + 10.f * Scale && MousePos.y > y - 30.f * Scale && MousePos.y < y + 30.f * Scale;
+	if (Hovered && MouseClick && CurrentTab != _this) {
+		CurrentTab = _this;
+		SubtabChangeAnimation = 0.f;
+		CurrentSubtab = LastSubtabs[_this];
+	}
+
+	if((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
+		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.003421568f * AnimationModifier), 0.f, 1.f);
 }
 
 CMenu* Menu = new CMenu();
