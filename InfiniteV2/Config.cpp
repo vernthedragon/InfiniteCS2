@@ -276,4 +276,5 @@ bool CConfigSystem::PreLoadConfigFile(std::ifstream& stream, UserConfigData& Dat
 void CConfig::ResetValues() {
 	this->MenuOpen = true;
 	this->MenuScale = 2;
+	this->Misc.Movement.Bunnyhop = false;
 }

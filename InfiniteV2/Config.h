@@ -34,6 +34,17 @@ public:
 class CConfig {
 public:
 	void ResetValues();
+	struct Misc_t {
+		struct Main_t {
+
+		};
+		Main_t Main;
+		struct Movement_t {
+			bool Bunnyhop;
+		};
+		Movement_t Movement;
+	};
+	Misc_t Misc;
 	bool MenuOpen = false;
 	int MenuScale = 2;
 	BaseConfig Base;

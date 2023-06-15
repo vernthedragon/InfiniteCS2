@@ -4,7 +4,7 @@
 void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 
 
-	OpenAnimation = Math::Clamp(OpenAnimation + ((Open ? 1.f : -1.f) * 0.006421568f * Menu->AnimationModifier), 0.f, 1.f);
+	OpenAnimation = Math::Clamp(OpenAnimation + ((Open ? 1.f : -1.f) * 0.005621568f * Menu->AnimationModifier), 0.f, 1.f);
 	Background[3] = MaxAlpha * OpenAnimation;
 	//NOTE THIS->SIZE IS SCALED IN MENU.CPP
 	Render::FilledRoundedRect(x, y, Size.x, Size.y, Background, 4.5f * Menu->Scale);
@@ -58,7 +58,10 @@ float Switch::GetOffset() {
 bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
 	float W = 120 + 135 * Slide; //slight optimization for more memory usage lol
 	Render::DrawString(x, y, Col(W, W, W, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
-
+	Col Main(21 + 122 * Slide, 22 + 128 * Slide, 48 + 207 * Slide, MaxAlpha);
+	Col Background(4, 5, 18, MaxAlpha);
+	Render::FilledRoundedRect(x + Size.x - 50.f * Menu->Scale, y + 13.f * Menu->Scale, 47.f * Menu->Scale, 18.f * Menu->Scale, Background, 20.f);
+	//Render::FilledRoundedRect(x + Size.x - 95.f * Menu->Scale, y + 13.f * Menu->Scale, 57.f * Menu->Scale, 30.f * Menu->Scale, Background, 20.f);
 	return false;
 }
 bool Switch::ShouldRender() {
@@ -67,9 +70,10 @@ bool Switch::ShouldRender() {
 bool Switch::ShouldOverlay() {
 	return false;
 }
+/*
 float& Switch::GetAnimation() {
 	return Slide;
-}
+}*/
 void Switch::OnFree() {
 	if (BindedVar == "") {
 		throw IException("Menu Element has no Binded ConfigVar! (Memory Range Corrupt)", 0);

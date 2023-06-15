@@ -19,6 +19,8 @@ static const char* TabText[] = {
 	"Search"
 };
 
+
+
 static const char* SubtabText[] = {
 	
 	"Rage",
@@ -46,9 +48,22 @@ static const char* SubtabText[] = {
 	"User",
 	"Results"
 };
+
+bool MovementSubtab() {
+	return Menu->CurrentSubtab == MOVEMENT;
+}
+
 void CMenu::SetupUser() {
 	CurrentLeft.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+
+	CurrentLeft.New(new Switch("Auto Bunnyhop", &Config->Misc.Movement.Bunnyhop, MovementSubtab));
+
 	CurrentRight.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+
+	CurrentLeft.OpenAnimation = 0.f;
+	CurrentRight.OpenAnimation = 0.f;
+
+
 	SetuppedUser = true;
 	SubtabChangeAnimation = 1.f;
 
@@ -221,8 +236,8 @@ void CMenu::Draw() {
 			break;
 		}
 		
-		CurrentLeft.Draw(Pos.x + 160 * Scale, Pos.y + 90 * Scale, Alpha, MouseClick, MousePress);
-		CurrentRight.Draw(Pos.x + 160 * Scale + (CurrentLeft.Size.x + 33 * Scale), Pos.y + 90 * Scale, Alpha, MouseClick, MousePress);
+		CurrentLeft.Draw(Pos.x + 160 * Scale, Pos.y + (107.f - 17.f * CurrentLeft.OpenAnimation ) * Scale, Alpha, MouseClick, MousePress);
+		CurrentRight.Draw(Pos.x + 160 * Scale + (CurrentLeft.Size.x + 33 * Scale), Pos.y + (107.f - 17.f * CurrentLeft.OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
 
 
 		
@@ -340,8 +355,6 @@ void CMenu::OnRender() {
 		this->Draw();
 	else {
 		ImGui::GetIO().MouseDrawCursor = false;
-		CurrentLeft.OpenAnimation = 0.f;
-		CurrentRight.OpenAnimation = 0.f;
 	}
 }
 void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
@@ -357,6 +370,8 @@ void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 		MouseClick = false;
 		CurrentSubtab = _this;
 		LastSubtabs[CurrentTab] = CurrentSubtab;
+		CurrentLeft.OpenAnimation = 0.f;
+		CurrentRight.OpenAnimation = 0.f;
 	}
 
 	if ((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
@@ -378,6 +393,8 @@ void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 		CurrentTab = _this;
 		SubtabChangeAnimation = 0.f;
 		CurrentSubtab = LastSubtabs[_this];
+		CurrentLeft.OpenAnimation = 0.f;
+		CurrentRight.OpenAnimation = 0.f;
 	}
 
 	if((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))

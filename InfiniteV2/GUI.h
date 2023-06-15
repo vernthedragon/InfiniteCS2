@@ -9,7 +9,7 @@ public:
 	virtual bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) = 0;
 	virtual bool ShouldRender() = 0; //should we render this element?
 	virtual bool ShouldOverlay() = 0; //should we overlay this element? (rendered last above all other)
-	virtual float& GetAnimation() = 0; //related to open animation
+//	virtual float& GetAnimation() = 0; //related to open animation
 	virtual void OnFree() = 0; //related to element config
 
 };
@@ -36,7 +36,7 @@ public:
 	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
 	bool ShouldRender();
 	bool ShouldOverlay();
-	float& GetAnimation();
+	//float& GetAnimation();
 	void OnFree();
 	float Slide;
 	float OffsetAnimation;
@@ -78,5 +78,15 @@ public:
 	float OpenAnimation;
 	void Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag);
 	std::string Title;
+	void New(MenuElement* Element) {
+		Elements.push_back(Element);
+	}
+	void EraseElements() {
+		for (auto& Element : Elements)
+			delete Element;
+
+
+		Elements.clear();
+	}
 	std::deque< MenuElement* > Elements;
 };
