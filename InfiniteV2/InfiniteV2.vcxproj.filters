@@ -54,6 +54,9 @@
     <Filter Include="Rendering\Image Processing">
       <UniqueIdentifier>{230559c7-9289-4ceb-9e88-0c20895d242f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Config\Json">
+      <UniqueIdentifier>{e6a20031-841f-4fad-91cc-f900bd33e40a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -142,6 +145,9 @@
     </ClCompile>
     <ClCompile Include="GUI.cpp">
       <Filter>Client\Menu\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Json\jsoncpp.cpp">
+      <Filter>Client\Config\Json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -306,6 +312,12 @@
     </ClInclude>
     <ClInclude Include="STB_Image.h">
       <Filter>Rendering\Image Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\json.h">
+      <Filter>Client\Config\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\json-forwards.h">
+      <Filter>Client\Config\Json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

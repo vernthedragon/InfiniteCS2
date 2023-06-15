@@ -47,8 +47,8 @@ static const char* SubtabText[] = {
 	"Results"
 };
 void CMenu::SetupUser() {
-	CurrentLeft.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), true);
-	CurrentRight.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), true);
+	CurrentLeft.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
+	CurrentRight.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
 	SetuppedUser = true;
 	SubtabChangeAnimation = 1.f;
 
@@ -91,9 +91,10 @@ void CMenu::Draw() {
 	}
 
 	
-		Render::FilledRect(Pos.x, Pos.y, 900.f * Scale, 560.f * Scale, Col(1,2,4, Alpha));
-		Render::FilledRect(Pos.x, Pos.y, 900.f * Scale, 60.f * Scale, Col(0, 1, 2, Alpha));
-		Render::FilledRect(Pos.x, Pos.y + 60.f * Scale, 125.f * Scale, 500.f * Scale, Col(0, 1, 2, Alpha));
+		Render::FilledRoundedRect(Pos.x, Pos.y, 900.f * Scale, 560.f * Scale, Col(1,2,4, Alpha), 4.f * Scale);
+		Render::FilledRoundedRectCustom(Pos.x, Pos.y, 900.f * Scale, 60.f * Scale, Col(0, 1, 2, Alpha), 4.f * Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
+		Render::FilledRoundedRectCustom(Pos.x, Pos.y + 60.f * Scale, 125.f * Scale, 500.f * Scale, Col(0, 1, 2, Alpha), 4.f * Scale, ImDrawFlags_::ImDrawFlags_RoundCornersBottom);
+
 		Render::FilledRect(Pos.x + 21.5f * Scale, Pos.y + 60.f * Scale, 82.f * Scale, 2.f * Scale, Col(5, 6, 8, Alpha));
 
 		bool InSearch = CurrentTab == SEARCH;

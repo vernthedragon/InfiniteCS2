@@ -92,14 +92,14 @@
     <OutDir>$(SolutionDir)\Output\$(Configuration)\</OutDir>
     <TargetName>Infinite</TargetName>
     <LibraryPath>$(SolutionDir)InfiniteV2\freetype\objs;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)InfiniteV2\Imgui;$(SolutionDir)InfiniteV2\freetype\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)InfiniteV2\Imgui;$(SolutionDir)InfiniteV2\freetype\include;$(SolutionDir)InfiniteV2\Json;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(SolutionDir)\Output\$(Configuration)\Temp\</IntDir>
     <OutDir>$(SolutionDir)\Output\$(Configuration)\</OutDir>
     <TargetName>Infinite</TargetName>
-    <IncludePath>$(SolutionDir)InfiniteV2\Imgui;$(SolutionDir)InfiniteV2\freetype\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)InfiniteV2\Imgui;$(SolutionDir)InfiniteV2\freetype\include;$(SolutionDir)InfiniteV2\Json;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)InfiniteV2\freetype\objs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Developer (Debug)|Win32'">
@@ -183,6 +183,7 @@
     <ClCompile Include="InitializeThread.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Interfaces.cpp" />
+    <ClCompile Include="Json\jsoncpp.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="minhook\buffer.c" />
@@ -227,6 +228,8 @@
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="ISchemaSystem.h" />
     <ClInclude Include="ITrace.h" />
+    <ClInclude Include="Json\json-forwards.h" />
+    <ClInclude Include="Json\json.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="minhook\buffer.h" />
