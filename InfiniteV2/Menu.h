@@ -13,6 +13,11 @@ enum CTabs : unsigned int {
 };
 
 
+enum CChildLocation : unsigned int {
+	LEFT = 0,
+	RIGHT = 1,
+	MAXCHILDLOCATION = 2
+};
 
 enum CSubTab : unsigned int {
 	//AIMBOT
@@ -39,7 +44,8 @@ enum CSubTab : unsigned int {
 	SCRIPTS = 14,
 	MENUMAIN = 16,
 	USERMAIN = 17,
-	SEARCHMAIN = 18
+	SEARCHMAIN = 18,
+	MAXSUBTABS
 
 
 };
@@ -75,8 +81,7 @@ public:
 	ID3D11ShaderResourceView* ProfilePic;
 	bool SetuppedUser = false;
 	bool ShouldAdjustDPI = false;
-	Child CurrentLeft;
-	Child CurrentRight;
+	Child Childs[MAXSUBTABS][MAXCHILDLOCATION];
 	float TabAnimations[6];
 	float SubtabAnimations[8];
 	float MenuStateButtonAnimations[2];

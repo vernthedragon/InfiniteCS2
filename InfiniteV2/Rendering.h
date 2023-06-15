@@ -25,6 +25,7 @@ namespace Render {
 	void DrawRoundedTexture(float x, float y, float l, float w, void* text, float rounding, Col color = Col(255, 255, 255, 255));
 	void FilledRect(float x, float y, float l, float w, Col color);
 	void FilledRoundedRect(float x, float y, float l, float w, Col color, float rounding);
+	void FilledCircle(float x, float y, float r, Col color, int count);
 	void FilledRoundedRectCustom(float x, float y, float l, float w, Col color, float rounding,  int flags);
 	void GradientFilledRect(float x, float y, float l, float w, Col left, Col right, Col bl, Col br);
 	void Rect(float x, float y, float l, float w, Col color, float thickness);

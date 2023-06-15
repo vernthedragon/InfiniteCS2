@@ -49,19 +49,25 @@ static const char* SubtabText[] = {
 	"Results"
 };
 
-bool MovementSubtab() {
-	return Menu->CurrentSubtab == MOVEMENT;
-}
 
+bool Test = false;
+bool Test2 = true;
 void CMenu::SetupUser() {
-	CurrentLeft.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
 
-	CurrentLeft.New(new Switch("Auto Bunnyhop", &Config->Misc.Movement.Bunnyhop, MovementSubtab));
+	for (int i = 0; i < MAXSUBTABS; i++) {
+		Childs[i][LEFT].Update("", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+		Childs[i][RIGHT].Update("", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+		Childs[i][LEFT].OpenAnimation = 0.f;
+		Childs[i][RIGHT].OpenAnimation = 0.f;
+	}
 
-	CurrentRight.Update("Main", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
 
-	CurrentLeft.OpenAnimation = 0.f;
-	CurrentRight.OpenAnimation = 0.f;
+	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Misc.Movement.Bunnyhop));
+	Childs[MOVEMENT][LEFT].New(new Switch("Test", &Test));
+	Childs[MOVEMENT][LEFT].New(new Switch("Test2", &Test2, []() {return Test; }));
+
+
+
 
 
 	SetuppedUser = true;
@@ -236,8 +242,8 @@ void CMenu::Draw() {
 			break;
 		}
 		
-		CurrentLeft.Draw(Pos.x + 160 * Scale, Pos.y + (107.f - 17.f * CurrentLeft.OpenAnimation ) * Scale, Alpha, MouseClick, MousePress);
-		CurrentRight.Draw(Pos.x + 160 * Scale + (CurrentLeft.Size.x + 33 * Scale), Pos.y + (107.f - 17.f * CurrentLeft.OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
+		Childs[CurrentSubtab][LEFT].Draw(Pos.x + 160 * Scale, Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation ) * Scale, Alpha, MouseClick, MousePress);
+		Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
 
 
 		
@@ -291,8 +297,11 @@ void CMenu::AdjustDPI() {
 		Fonts::MenuThin = Fonts::MenuThin170;
 		break;
 	}
-	CurrentLeft.Size = Vec2(335 * Scale, 440 * Scale);
-	CurrentRight.Size = Vec2(335 * Scale, 440 * Scale);
+	for (int i = 0; i < MAXSUBTABS; i++) {
+		Childs[i][LEFT].Size = Vec2(335 * Scale, 440 * Scale);
+		Childs[i][RIGHT].Size = Vec2(335 * Scale, 440 * Scale);
+	}
+
 	ShouldAdjustDPI = false;
 }
 void CMenu::OnRender() {
@@ -370,8 +379,8 @@ void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 		MouseClick = false;
 		CurrentSubtab = _this;
 		LastSubtabs[CurrentTab] = CurrentSubtab;
-		CurrentLeft.OpenAnimation = 0.f;
-		CurrentRight.OpenAnimation = 0.f;
+		Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
+		Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
 	}
 
 	if ((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
@@ -393,8 +402,8 @@ void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 		CurrentTab = _this;
 		SubtabChangeAnimation = 0.f;
 		CurrentSubtab = LastSubtabs[_this];
-		CurrentLeft.OpenAnimation = 0.f;
-		CurrentRight.OpenAnimation = 0.f;
+		Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
+		Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
 	}
 
 	if((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))

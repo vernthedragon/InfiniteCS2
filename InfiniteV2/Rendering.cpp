@@ -241,6 +241,9 @@ void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned i
 void Render::FilledRoundedRect(float x, float y, float l, float w, Col color, float rounding) {
 	DrawList->AddRectFilled(ImVec2(x, y), ImVec2(x + l, y + w), color.u32(), rounding, ImDrawFlags_RoundCornersAll);
 }
+void Render::FilledCircle(float x, float y, float r, Col color, int count){
+	DrawList->AddCircleFilled(ImVec2(x, y), r, color.u32(), count);
+}
 void Render::FilledRoundedRectCustom(float x, float y, float l, float w, Col color, float rounding,  int flags) {
 	DrawList->AddRectFilled(ImVec2(x, y), ImVec2(x + l, y + w), color.u32(), rounding, flags);
 }

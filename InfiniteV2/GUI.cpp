@@ -31,6 +31,7 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 
 		StartY += Element->GetOffset();
 	}
+	StartY = y + 15.f * Menu->Scale;
 	bool Disable = false;
 	for (auto& Element : this->Elements) {
 		if (Element->ShouldRender())
@@ -53,19 +54,47 @@ inline bool Child::InRegion(float x, float y, float w, float h) {
 #pragma endregion 
 
 float Switch::GetOffset() {
-	return OffsetAnimation * Menu->Scale * 30.f;
+	return OffsetAnimation * Menu->Scale * 28.f;
 }
 bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
+	MaxAlpha *= OffsetAnimation;
 	float W = 120 + 135 * Slide; //slight optimization for more memory usage lol
+	bool Hovered = Menu->InRegion(x + Size.x - 76.f * Menu->Scale, y - 6.f * Menu->Scale, 37.f * Menu->Scale, 30.f * Menu->Scale) && !disable;
+
+
+	HoverAnimation = Math::Clamp(HoverAnimation + ((Hovered ? 1.f : -1.f) * 0.005921568f * Menu->AnimationModifier), 0.f, 1.f);
+	Slide = Math::Clamp(Slide + ((*Pointer ? 1.f : -1.f) * 0.006621568f * Menu->AnimationModifier), 0.f, 1.f);
+
+	if (Hovered && LeftClick) {
+		LeftClick = false;
+		disable = true;
+		*Pointer = !(*Pointer);
+	}
+
 	Render::DrawString(x, y, Col(W, W, W, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
-	Col Main(21 + 122 * Slide, 22 + 128 * Slide, 48 + 207 * Slide, MaxAlpha);
-	Col Background(4, 5, 18, MaxAlpha);
-	Render::FilledRoundedRect(x + Size.x - 50.f * Menu->Scale, y + 13.f * Menu->Scale, 47.f * Menu->Scale, 18.f * Menu->Scale, Background, 20.f);
-	//Render::FilledRoundedRect(x + Size.x - 95.f * Menu->Scale, y + 13.f * Menu->Scale, 57.f * Menu->Scale, 30.f * Menu->Scale, Background, 20.f);
+	Col Main(11 + 132 * Slide, 12 + 138 * Slide, 18 + 237 * Slide, MaxAlpha);
+	Col Background(0, 3, 6, MaxAlpha * 0.78f);	
+	Render::FilledRoundedRect(x + Size.x - 69.f * Menu->Scale, y, 39.f * Menu->Scale, 16.f * Menu->Scale, Background, 20.f);
+	if (HoverAnimation > 0) {
+		Render::GradientCircle(x + Size.x - (62.5f - 25.f * Slide * (MaxAlpha * 0.00390625f)) * Menu->Scale, y + 8.5f * Menu->Scale, 17.f * Menu->Scale, Col(11 + 132 * Slide * 0.43f, 12 + 138 * Slide * 0.43f, 18 + 237 * Slide * 0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * Slide * 0.43f, 12 + 138 * Slide * 0.43f, 18 + 237 * Slide * 0.43f, 0), true);
+	}
+	Render::FilledCircle(x + Size.x - (62.5f - 25.f * Slide * (MaxAlpha * 0.00390625f)) * Menu->Scale, y + 8.5f * Menu->Scale, 10.f * Menu->Scale, Main, 17);
+
+	
+
+
 	return false;
 }
 bool Switch::ShouldRender() {
-	return ShouldRenderFn();
+
+	if (ShouldRenderFn == nullptr)
+		return true;
+
+	bool ret = ShouldRenderFn();
+
+	OffsetAnimation = Math::Clamp(OffsetAnimation + ((ret ? 1.f : -1.f) * 0.006421568f * Menu->AnimationModifier), 0.f, 1.f);
+
+	return ret || OffsetAnimation > 0.f;
 }
 bool Switch::ShouldOverlay() {
 	return false;

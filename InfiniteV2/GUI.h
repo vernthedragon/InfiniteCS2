@@ -20,17 +20,24 @@ public:
 		Slide = 0.f;
 		Pointer = nullptr;
 		BindedVar = ""; //no bind which is an issue
+		HoverAnimation = 0.f;
+		OffsetAnimation = 1.f;
 	}
 	Switch(std::string label, bool* val, bool(*shouldrender)() = nullptr) {
 		Pointer = val;
 		Label = label;
 		Slide = 0.f;
 		BindedVar = label;
+		HoverAnimation = 0.f;
 		ShouldRenderFn = shouldrender;
 		while (ConfigSystem->VarExists(BindedVar)) {
 			BindedVar += "_";
 		}
 		ConfigSystem->AddVar(BindedVar, val);
+		OffsetAnimation = 1.f;
+
+		if (shouldrender != nullptr)
+			OffsetAnimation = shouldrender() ? 1.f : 0.f;
 	}
 	float GetOffset();
 	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
@@ -39,6 +46,7 @@ public:
 	//float& GetAnimation();
 	void OnFree();
 	float Slide;
+	float HoverAnimation;
 	float OffsetAnimation;
 	bool(*ShouldRenderFn)();
 	std::string Label;

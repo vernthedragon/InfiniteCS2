@@ -2,6 +2,9 @@
 
 void Movement::DoBunnyhop() {
 
+	if (!Config->Misc.Movement.Bunnyhop)
+		return;
+
 	static bool bLastJumped = false;
 	static bool bShouldFake = false;
 	bool OnGround = Client->local->m_fFlags() & FL_ONGROUND;
