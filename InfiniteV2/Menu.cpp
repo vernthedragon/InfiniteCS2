@@ -109,6 +109,7 @@ void CMenu::Draw() {
 
 			MouseClick = false;
 			CurrentTab = InSearch ? LastTab : SEARCH;
+			CurrentSubtab = SEARCHMAIN;
 		}
 
 		if ((FindInRegion && MenuStateButtonAnimations[1] < 1.f) || (!FindInRegion && MenuStateButtonAnimations[1] > 0.f))
