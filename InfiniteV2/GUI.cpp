@@ -8,8 +8,7 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 	Background[3] = MaxAlpha * OpenAnimation;
 	//NOTE THIS->SIZE IS SCALED IN MENU.CPP
 	Render::FilledRoundedRect(x, y, Size.x, Size.y, Background, 4.5f * Menu->Scale);
-	if (Outline)
-		Render::RoundedRect(x, y, Size.x, Size.y, Col(2, 3, 5, MaxAlpha), 2.f * Menu->Scale, 4.5f * Menu->Scale);
+	MaxAlpha *= OpenAnimation;
 
 
 	Render::PushClipRect(x,y, Size.x, Size.y, true);
