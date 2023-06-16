@@ -303,7 +303,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 
 	if (NewConfig && LeftClick) {
 		LeftClick = false;
-		Reload();
+
 		int It = 2;
 		std::string NewConfigName = "New Config";
 		while (ConfigSystem->Configs.find(NewConfigName) != ConfigSystem->Configs.end()) {
@@ -312,9 +312,9 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 		}
 		ConfigSystem->CreateConfig(NewConfigName);
 		//create config
-		while (ConfigSystem->Configs.find(NewConfigName) == ConfigSystem->Configs.end()) {
+
 			Reload();
-		}
+		
 	}
 
 	Col Full = Col(0, 1, 2, MaxAlpha);
@@ -454,6 +454,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 	for (auto& Erasable : ToErase) {
 		ConfigViews.erase(Erasable);
 	}
+	ToErase.clear();
 
 	return false;
 }
