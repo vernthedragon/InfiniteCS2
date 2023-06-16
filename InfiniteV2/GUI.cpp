@@ -198,6 +198,7 @@ void ConfigView::DrawConfig(float x, float y, float MaxAlpha, std::string label,
 
 	if (LeftClick && DeleteHovered) {
 		Context.ToBeDeleted = true;
+		LeftClick = false;
 	}
 
 	if (LeftClick && MenuHovered && !DeleteHovered) {
@@ -217,6 +218,7 @@ void ConfigView::DrawConfig(float x, float y, float MaxAlpha, std::string label,
 			SelectionAuthorInfoAnimation = 0.f;
 			SelectionInRename = false;
 		}
+		LeftClick = false;
 	}
 
 
@@ -235,6 +237,10 @@ void ConfigView::DrawConfig(float x, float y, float MaxAlpha, std::string label,
 }
 
 bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
+
+	if (MaxAlpha != 255.f && (int(Menu->CurrentClock * 0.08f) % 2) == 0)
+		Reload();
+
 	Vec2 OrP	(x, y);
 	Render::PushClipRect(x, y, Size.x - 40.f * Menu->Scale, Size.y, true);
 	x += 17.f * Menu->Scale;
@@ -274,7 +280,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 			
 		}
 		
-		DrawConfig(x + AddX, y, MaxAlpha, Context.first, Context.second, LeftClick, SelectionOpenAnimation == 0.f);
+		DrawConfig(x + AddX, y, MaxAlpha * (1.f - SelectionOpenAnimation), Context.first, Context.second, LeftClick, SelectionOpenAnimation == 0.f);
 
 		AddX += 223.f * Menu->Scale;
 
@@ -383,7 +389,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 
 		//SelectionLoadAnimation -> HOVER
 		Vec2 TextSize1 = Render::TextSize(Fonts::MenuMain, LastSelectedConfig == ConfigSystem->Loaded ? "Save" : "Load");
-		bool HoveringSave = !SelectionInRename && Menu->InRegion(x + 530.f * Menu->Scale - TextSize1.x * 0.5f, y + 368.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 19.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale);
+		bool HoveringSave = !SelectionInRename && Menu->InRegion(x + 530.f * Menu->Scale - TextSize1.x * 0.5f, y + 367.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 19.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale);
 		
 		if (HoveringSave && LeftClick) {
 			if (LastSelectedConfig == ConfigSystem->Loaded) {
@@ -397,8 +403,14 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 		
 		GUIAnimations::Animate(SelectionLoadAnimation, HoveringSave);
 		GUIAnimations::Animate(SelectionSaveAnimation, LastSelectedConfig != ConfigSystem->Loaded);
-	    Render::FilledRoundedRect(x + 529.f * Menu->Scale - TextSize1.x * 0.5f, y + 366.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col((138 + SelectionLoadAnimation * 30) * SelectionSaveAnimation,(138 + SelectionLoadAnimation * 30) * SelectionSaveAnimation, (242 + SelectionLoadAnimation * 13) * SelectionSaveAnimation, MaxAlpha * (SelectionSaveAnimation * 4.7619047619) * (0.21f + SelectionLoadAnimation * 0.14f) ), 6.f * Menu->Scale);
-		Render::RoundedRect (x + 529.f * Menu->Scale - TextSize1.x * 0.5f, y + 366.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col(100,104,110, MaxAlpha), 1.f * Menu->Scale, 6.f * Menu->Scale);
+		if (ConfigSystem->Loaded != LastSelectedConfig) {
+			Render::FilledRoundedRect(x + 529.f * Menu->Scale - TextSize1.x * 0.5f, y + 367.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col((138 + SelectionLoadAnimation * 30) * SelectionSaveAnimation, (138 + SelectionLoadAnimation * 30) * SelectionSaveAnimation, (242 + SelectionLoadAnimation * 13) * SelectionSaveAnimation, MaxAlpha), 6.f * Menu->Scale);
+		}
+		else {
+			Render::FilledRoundedRect(x + 529.f * Menu->Scale - TextSize1.x * 0.5f, y + 367.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col(80, 90, 170, MaxAlpha * (0.01f + SelectionLoadAnimation * 0.24f)), 6.f * Menu->Scale);
+		}
+		
+		Render::RoundedRect (x + 529.f * Menu->Scale - TextSize1.x * 0.5f, y + 367.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col(100,104,110, MaxAlpha), 1.f * Menu->Scale, 6.f * Menu->Scale);
 		Render::DrawString(x + 540.f * Menu->Scale, y + 370.f * Menu->Scale, Col(255, 255, 255, MaxAlpha), Fonts::MenuMain, Render::centered_xy, LastSelectedConfig == ConfigSystem->Loaded ?  "Save" : "Load");
 		if (SelectedConfig != "") {
 			if (HoveringBack && LeftClick) {
