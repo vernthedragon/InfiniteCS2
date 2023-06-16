@@ -252,7 +252,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 
 
 
-	if (ConfigViews.size() > 6) {
+	if (ConfigViews.size() >= 6) {
 		while (Client->ScrollAmmount > 0) {
 			Scroll -= 15.f;
 			Client->ScrollAmmount--;
