@@ -1,5 +1,10 @@
 #pragma once
 
+//NOTES
+// COMMENT UNSAFE -> function / section could possible crash
+// COMMENT WARNING -> function / section possibly can cause issues
+// COMMENT BROKEN -> function / section not working as intended
+
 //WARNING!
 // _CRT_SECURE_NO_WARNINGS IS ENABLED (DEPRECATED FUNCTION WILL NOT CAUSE ERRORS)
 // 

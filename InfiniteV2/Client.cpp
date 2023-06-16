@@ -56,6 +56,20 @@ void CClient::UpdateLocal() {
 	}
 	local = g_EntList->GetLocalPlayer();
 	controller = g_EntList->GetLocalController();
+
+
+	if (!local || !controller) {
+		cache.Alive = false;
+		return;
+	}
+	cache.Alive = local->IsAlive();
+
+	if (cache.Alive) {
+		cache.Velocity = local->m_vecVelocity();
+		cache.VelocityLength = cache.Velocity.Length();
+		cache.VelocityLength2D = cache.Velocity.Length2D();
+	}
+
 }
 bool CClient::SetupHooks() {
 

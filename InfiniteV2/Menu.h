@@ -74,6 +74,7 @@ public:
 	float CurrentClock = 0.f;
 	float RenderInterval = 0.f;
 	float SubtabChangeAnimation = 0.f;
+	float RawSubtabChangeAnimation = 0.f;
 	CTabs CurrentTab = AIMBOT;
 	CTabs LastTab = AIMBOT;
 	CSubTab LastSubtabs[7];

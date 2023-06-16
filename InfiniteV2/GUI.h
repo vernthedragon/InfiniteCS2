@@ -3,6 +3,11 @@
 #include "Config.h"
 
 
+namespace GUIAnimations {
+	float Ease(const float& a);
+	float DelayEase(const float& a, const float& Delay);
+};
+
 class MenuElement {
 public:
 	virtual float GetOffset() = 0; //next element offset

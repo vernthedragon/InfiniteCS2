@@ -205,6 +205,8 @@ public:
     SCHEMA("C_BaseEntity", "m_lifeState", m_lifeState, uint8_t);
     SCHEMA("C_BaseEntity", "m_MoveType", m_MoveType, uint8_t);
     SCHEMA("C_BaseEntity", "m_fFlags", m_fFlags, unsigned int);
+    //m_vecVelocity
+    SCHEMA("C_BaseEntity", "m_vecVelocity[0]", m_vecVelocity, Vec3);
 };
 
 class IPlayer : public IEntity

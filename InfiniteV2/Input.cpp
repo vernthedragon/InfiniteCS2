@@ -18,6 +18,9 @@ bool __fastcall Hooks::CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint
     if (!cmd || !Client->local)
         return ret;
 
+    if (!Client->cache.Alive)
+        return ret;
+
     Movement::DoBunnyhop();
 
     return ret;

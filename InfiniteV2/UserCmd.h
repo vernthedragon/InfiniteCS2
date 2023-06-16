@@ -50,7 +50,7 @@ public:
     int commandnumber; // 0x48
     int tickcount; // 0x4C
     float forwardmove; // 0x50
-    float leftmove; // 0x54
+    float sidemove; // 0x54
     float upmove; // 0x58
 };
 

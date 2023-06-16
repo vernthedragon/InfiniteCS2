@@ -38,6 +38,123 @@ Vec2::Vec2(Vec4& vector) {
 
 
 
+inline bool Vec3::operator==(const Vec3& src) const {
+	return (src.x == x) && (src.y == y) && (src.z == z);
+}
+
+inline bool Vec3::operator!=(const Vec3& src) const {
+	return (src.x != x) || (src.y != y) || (src.z != z);
+}
+
+__forceinline  Vec3& Vec3::operator+=(const Vec3& v) {
+	x += v.x; y += v.y; z += v.z;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator-=(const Vec3& v) {
+	x -= v.x; y -= v.y; z -= v.z;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator*=(float fl) {
+	x *= fl;
+	y *= fl;
+	z *= fl;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator*=(const Vec3& v) {
+	x *= v.x;
+	y *= v.y;
+	z *= v.z;
+	return *this;
+}
+
+__forceinline Vec3& Vec3::operator+=(float fl) {
+	x += fl;
+	y += fl;
+	z += fl;
+	return *this;
+}
+
+__forceinline Vec3& Vec3::operator-=(float fl) {
+	x -= fl;
+	y -= fl;
+	z -= fl;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator/=(float fl) {
+	float oofl = 1.0f / fl;
+	x *= oofl;
+	y *= oofl;
+	z *= oofl;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator/=(const Vec3& v) {
+	x /= v.x;
+	y /= v.y;
+	z /= v.z;
+	return *this;
+}
+
+inline Vec3 Vec3::operator+(const Vec3& v) const {
+	Vec3 res;
+	res.x = x + v.x;
+	res.y = y + v.y;
+	res.z = z + v.z;
+	return res;
+}
+
+
+inline Vec3 Vec3::operator-(const Vec3& v) const {
+	Vec3 res;
+	res.x = x - v.x;
+	res.y = y - v.y;
+	res.z = z - v.z;
+	return res;
+}
+inline Vec3 Vec3::operator-(float fl) const
+{
+	return Vec3(x - fl, y - fl, z - fl);
+}
+inline Vec3 Vec3::operator+(float fl) const
+{
+	return Vec3(x + fl, y + fl, z + fl);
+}
+inline Vec3 Vec3::operator*(float fl) const {
+	Vec3 res;
+	res.x = x * fl;
+	res.y = y * fl;
+	res.z = z * fl;
+	return res;
+}
+
+inline Vec3 Vec3::operator*(const Vec3& v) const {
+	Vec3 res;
+	res.x = x * v.x;
+	res.y = y * v.y;
+	res.z = z * v.z;
+	return res;
+}
+
+inline Vec3 Vec3::operator/(float fl) const {
+	Vec3 res;
+	res.x = x / fl;
+	res.y = y / fl;
+	res.z = z / fl;
+	return res;
+}
+
+inline Vec3 Vec3::operator/(const Vec3& v) const {
+	Vec3 res;
+	res.x = x / v.x;
+	res.y = y / v.y;
+	res.z = z / v.z;
+	return res;
+}
+
 
 
 
@@ -49,7 +166,34 @@ Vec3::~Vec3() {
 
 }
 
+Vec3& Vec3::ToAngles() {
+	float tmp, yaw, pitch;
 
+	if (y == 0 && x == 0)
+	{
+		yaw = 0;
+		if (z > 0)
+			pitch = 270;
+		else
+			pitch = 90;
+	}
+	else
+	{
+		yaw = (atan2(y, x) * 180 / PI);
+		if (yaw < 0)
+			yaw += 360;
+
+		tmp = Math::Sqrt(x * x + y * y);
+		pitch = (atan2(-z, tmp) * 180 / PI);
+		if (pitch < 0)
+			pitch += 360;
+	}
+
+	x = pitch;
+	y = yaw;
+	z = 0;
+	return *this;
+}
 inline void Vec3::Zero() {
 	this->x = 0.f;
 	this->y = 0.f;

@@ -36,6 +36,12 @@
 struct InfUserData {
 	std::string Username;
 };
+struct CLocalPlayerCache {
+	Vec3 Velocity;
+	float VelocityLength;
+	float VelocityLength2D;
+	bool Alive;
+};
 class CClient {
 public:
 	void Initialize();
@@ -55,6 +61,7 @@ public:
 	class IPlayer* local;
 	class IController* controller;
 	class ConVar* cl_sidespeed;
+	CLocalPlayerCache cache;
 	int ScrollAmmount = 0;
 	bool KeysPressed[256];
 	bool KeyStates[256];

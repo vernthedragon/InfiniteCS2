@@ -41,6 +41,7 @@ public:
 		Main_t Main;
 		struct Movement_t {
 			bool Bunnyhop;
+			int BunnyhopStrafeType;
 		};
 		Movement_t Movement;
 	};

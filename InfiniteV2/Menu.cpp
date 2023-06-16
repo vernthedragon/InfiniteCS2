@@ -74,8 +74,8 @@ void CMenu::SetupUser() {
 
 
 	SetuppedUser = true;
-	SubtabChangeAnimation = 1.f;
-
+	SubtabChangeAnimation = 0.f;
+	RawSubtabChangeAnimation = 0.f;
 	for (int i = 0; i < 6; i++) {
 		TabAnimations[i] = 0.f;
 	}
@@ -148,30 +148,37 @@ void CMenu::Draw() {
 
 			MouseClick = false;
 			CurrentTab = InSearch ? LastTab : SEARCH;
-			SubtabChangeAnimation = 0.f;
+			RawSubtabChangeAnimation = 0.f;
+			Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
+			Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
 		}
 
 		if ((FindInRegion && MenuStateButtonAnimations[1] < 1.f) || (!FindInRegion && MenuStateButtonAnimations[1] > 0.f))
-			MenuStateButtonAnimations[1] = Math::Clamp(MenuStateButtonAnimations[1] + ((FindInRegion ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
+			MenuStateButtonAnimations[1] = Math::Clamp(MenuStateButtonAnimations[1] + ((FindInRegion ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
 
 		Render::DrawString(Pos.x + (828.f) * Scale, Pos.y + 30.f * Scale, InSettings ? Col(170, 170, 255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[0], 130 + 125 * MenuStateButtonAnimations[0], 130 + 125 * MenuStateButtonAnimations[0], Alpha), Fonts::MenuIcons, Render::centered_xy, "I");
 		bool SettingsInRegion = InRegion(Pos.x + 803.f * Scale, Pos.y + 5.f * Scale, 40.f * Scale, 40.f * Scale);	
 		if ((SettingsInRegion && MenuStateButtonAnimations[0] < 1.f) || (!SettingsInRegion && MenuStateButtonAnimations[0] > 0.f))
-			MenuStateButtonAnimations[0] = Math::Clamp(MenuStateButtonAnimations[0] + ((SettingsInRegion ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
+			MenuStateButtonAnimations[0] = Math::Clamp(MenuStateButtonAnimations[0] + ((SettingsInRegion ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
 
 		if (SettingsInRegion && MouseClick && !InSearch) {
 			if (!InSettings) {
 				LastTab = CurrentTab;
-				SubtabChangeAnimation = 0.f;
+				RawSubtabChangeAnimation = 0.f;
 			}
 
 			MouseClick = false;
 			CurrentTab = InSettings ? LastTab : SETTINGS;
 			CurrentSubtab = LastSubtabs[6];
+			Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
+			Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
 		}
 
-		SettingAnimation = Math::Clamp(SettingAnimation + ((InSettings ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
-		SearchAnimation = Math::Clamp(SearchAnimation + ((InSearch ? 1 : -1) * 0.004821568f * AnimationModifier), 0.f, 1.f);
+		if((!InSettings && SettingAnimation > 0.f) || (InSettings && SettingAnimation < 1.f))
+			SettingAnimation = Math::Clamp(SettingAnimation + ((InSettings ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
+
+		if ((!InSearch && SearchAnimation > 0.f) || (InSearch && SearchAnimation < 1.f))
+			SearchAnimation = Math::Clamp(SearchAnimation + ((InSearch ? 1 : -1) * 0.00742f * AnimationModifier), 0.f, 1.f);
 
 		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 30.f * Scale, Col(170, 170, 255, Alpha), Fonts::MenuMain, Render::centered_xy, "INFINITE");
 
@@ -183,8 +190,10 @@ void CMenu::Draw() {
 		RenderTab(Pos.x + 603.f * Scale, Pos.y + 30.f * Scale, MISC, TabAnimations[MISC]);
 		RenderTab(Pos.x + 700.f * Scale, Pos.y + 30.f * Scale, CONFIG, TabAnimations[CONFIG]);
 
-		if (SubtabChangeAnimation < 1.f)
-			SubtabChangeAnimation = Math::Clamp(SubtabChangeAnimation + 0.006421568f * AnimationModifier, 0.f, 1.f);
+		if (RawSubtabChangeAnimation < 1.f)
+			RawSubtabChangeAnimation = Math::Clamp(RawSubtabChangeAnimation + 0.007f * AnimationModifier, 0.f, 1.f);
+
+		SubtabChangeAnimation = GUIAnimations::Ease(RawSubtabChangeAnimation);
 
 
 
@@ -251,15 +260,19 @@ void CMenu::Draw() {
 
 		
 		if (SearchAnimation > 0.f) {
-		
+			float OldSearchAnimation = SearchAnimation;
+			SearchAnimation = GUIAnimations::Ease(SearchAnimation);
 			Render::FilledRect(Pos.x + (125.f) * Scale, Pos.y, 775.f * Scale, 60.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation * 0.98f));
 			Render::Rect(Pos.x + 160.f * Scale, Pos.y + 48.f * Scale, 640.f * Scale, 1.f, Col(100, 100, 100, Alpha * SearchAnimation), 1.f * Scale);
 
 			Render::DrawString(Pos.x + (870.f) * Scale, Pos.y + (24.f + SearchAnimation * 6.f) * Scale, Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha * SearchAnimation), Fonts::MenuIcons, Render::centered_xy, "M");
 			//Render::FilledRoundedRect(Pos.x + 430.f * Scale, Pos.y + (3.5f + 15.f * SearchAnimation) * Scale, 400.f * Scale, 35.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation), 30.f);
 			//Render::RoundedRect(Pos.x + 430.f * Scale, Pos.y + (3.5f + 15.f * SearchAnimation) * Scale, 400.f * Scale, 35.f * Scale, Col(5, 6, 8, Alpha * SearchAnimation), 1.3f * Scale, 30.f);
+			Render::DrawString(Pos.x + (870.f - SearchAnimation * 42.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(255, 255, 255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
+			SearchAnimation = OldSearchAnimation;
 		}
-		Render::DrawString(Pos.x + (870.f - SearchAnimation * 42.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(255,255,255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
+		else
+			Render::DrawString(Pos.x + (870.f - SearchAnimation * 42.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(255,255,255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
 		
 }
 
@@ -361,6 +374,7 @@ void CMenu::OnRender() {
 	if (!SetuppedUser)
 		SetupUser();
 
+
 	Alpha = Math::Clamp(Alpha + ((Config->MenuOpen ? 1 : -1) * 1.6f * AnimationModifier), 0.f, 255.f);
 
 	if (Alpha > 0.f)
@@ -387,7 +401,7 @@ void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 	}
 
 	if ((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
-		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
+		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
 }
 void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 	bool ThisSelected = CurrentTab == _this;
@@ -403,14 +417,14 @@ void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 		LastTab = CurrentTab;
 		MouseClick = false;
 		CurrentTab = _this;
-		SubtabChangeAnimation = 0.f;
+		RawSubtabChangeAnimation = 0.f;
 		CurrentSubtab = LastSubtabs[_this];
 		Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
 		Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
 	}
 
 	if((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
-		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.004421568f * AnimationModifier), 0.f, 1.f);
+		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
 }
 
 inline bool CMenu::InRegion(float x, float y, float w, float h) {

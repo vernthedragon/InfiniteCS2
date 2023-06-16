@@ -17,6 +17,10 @@ float Math::InvSqrt(float number)
 	return y;
 }
 
+ float Math::Sqrt( float N) {
+	return 1.f / InvSqrt(N);
+}
+
 float Math::Clamp(float a, float min, float max) {
 	if (a < min)
 		return min;
@@ -26,7 +30,22 @@ float Math::Clamp(float a, float min, float max) {
 
 	return a;
 }
+float Math::NormalizeYaw( float yaw)
+{
+	while (yaw < -180.f)
+		yaw += 360.f;
+	while (yaw > 180.f)
+		yaw -= 360.f;
+	return yaw;
+}
+void Math::NormalizeYawPtr(float& yaw)
+{
+	while (yaw < -180.f)
+		yaw += 360.f;
+	while (yaw > 180.f)
+		yaw -= 360.f;
 
+}
 void Math::ClampPtr(float& a, float min, float max) {
 	if (a < min)
 		a = min;

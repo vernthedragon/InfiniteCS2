@@ -13,9 +13,12 @@
 #define RAD2DEGF(x) ((float)(x) * (float)(180.0f / (float)(PI)))
 #define DEG2RAD(x) ((int)(x) * (int)((int)(PI) / 180.0f))
 #define RAD2DEG(x) ((int)(x) * (int)(180.0f / (int)(PI)))
-#define CheckIfNonValidNumber(x) (fpclassify(x) == FP_INFINITE || fpclassify(x) == FP_NAN || fpclassify(x) == FP_SUBNORMAL)
+#define CheckIfNonValidNumber(x) (std::fpclassify(x) == FP_INFINITE || std::fpclassify(x) == FP_NAN || std::fpclassify(x) == FP_SUBNORMAL)
 namespace Math {
 	float InvSqrt(float number);
+	 float Sqrt(float N);
 	float Clamp(float a, float min, float max);
 	void ClampPtr(float& a, float min, float max);
+	float NormalizeYaw(float yaw);
+	void NormalizeYawPtr(float& yaw);
 };

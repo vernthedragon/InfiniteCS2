@@ -6,4 +6,6 @@
 
 namespace Movement {
 	void DoBunnyhop();
+	void DoStrafe();
+	static int StrafeDirection;
 };
