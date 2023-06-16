@@ -63,14 +63,16 @@ void CMenu::SetupUser() {
 		Childs[i][LEFT].OpenAnimation = 0.f;
 		Childs[i][RIGHT].OpenAnimation = 0.f;
 	}
-
+	ConfigViewer = new ConfigView();
+	Childs[CONFIGS][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+	Childs[CONFIGS][LEFT].New(ConfigViewer);
 
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Misc.Movement.Bunnyhop));
 	Childs[MOVEMENT][LEFT].New(new Switch("Test", &Test));
 	Childs[MOVEMENT][LEFT].New(new Switch("Another Switch", &Test2, []() {return Test; }));
 	Childs[MOVEMENT][LEFT].New(new Switch("Hello", &Test3));
 	Childs[MOVEMENT][LEFT].New(new Switch("Font Testing", &Test4));
-	Childs[MOVEMENT][LEFT].New(new Switch("Test AntiAlias", &Test5, []() {return Test4; }));
+	Childs[MOVEMENT][LEFT].New(new Switch("Test AntiAliassdafsdfsafsdafsafsadfsadfsafdasdf", &Test5, []() {return Test4; }));
 
 
 	SetuppedUser = true;
@@ -106,6 +108,16 @@ void CMenu::SetupUser() {
 	if (ConfigSystem->Configs.empty()) {
 		ConfigSystem->CreateConfig("Default");
 	}
+	else if(ConfigSystem->Configs.find("Default") == ConfigSystem->Configs.end()) {
+		ConfigSystem->CreateConfig("Default");
+	}
+
+	while(ConfigSystem->Configs.find("Default") == ConfigSystem->Configs.end())
+		ConfigViewer->Reload();
+
+	ConfigSystem->LoadToConfig("Default");
+
+	ConfigSystem->Loaded = "Default";
 }
 
 
@@ -255,10 +267,11 @@ void CMenu::Draw() {
 		}
 		
 		Childs[CurrentSubtab][LEFT].Draw(Pos.x + 160 * Scale, Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation ) * Scale, Alpha, MouseClick, MousePress);
-		Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
-
-
 		
+		if(CurrentSubtab != CONFIGS)
+			Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
+
+
 		if (SearchAnimation > 0.f) {
 			float OldSearchAnimation = SearchAnimation;
 			SearchAnimation = GUIAnimations::Ease(SearchAnimation);
@@ -317,12 +330,13 @@ void CMenu::AdjustDPI() {
 		Childs[i][LEFT].Size = Vec2(335 * Scale, 440 * Scale);
 		Childs[i][RIGHT].Size = Vec2(335 * Scale, 440 * Scale);
 	}
+	Childs[CONFIGS][LEFT].Size = Vec2(703 * Scale, 440 * Scale);
 
 	ShouldAdjustDPI = false;
 }
 void CMenu::OnRender() {
 	
-	Render::DrawFullscreenBlur();
+	
 
 	CurrentClock = (float)(clock());
 
@@ -352,7 +366,9 @@ void CMenu::OnRender() {
 	}
 
 	//only for testing dpi
-
+	if (Client->KeyToggled(VK_F2)) {
+		ConfigViewer->Reload();
+	}
 	if (Client->KeyToggled(VK_F1)) {
 		Config->MenuScale++;
 

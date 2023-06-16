@@ -25,8 +25,6 @@ struct UserConfigData {
 class BaseConfig {
 public:
 	std::string Bind;
-	bool Delete();
-	bool Rename(const std::string& NewBindedName);
 	bool Load();
 	bool Save();
 	UserConfigData Data;
@@ -57,6 +55,7 @@ public:
 	bool RemoveConfig(const std::string& Bind);
 	bool SaveToConfig(const std::string& Bind);
 	bool LoadToConfig(const std::string& Bind);
+	void RebindConfig(const std::string& OldBind, const std::string& NewBind);
 	bool PreLoadConfigFile(std::ifstream& stream, UserConfigData& DataOut);
 	bool CreateConfig(const std::string& Name);
 	void AddVar(const std::string& Bind, bool* Var) {
@@ -99,6 +98,7 @@ public:
 	bool VarExists(const std::string& Bind) {
 		return Variables.find(Bind) != Variables.end();
 	}
+	std::string Loaded;
 	std::map< std::string, BaseConfig > Configs;
 	std::map< std::string, ConfigVariable* > Variables;
 };

@@ -64,10 +64,17 @@ BOOL SearchFiles(LPCTSTR lpszFileName, LPSEARCHFUNC lpSearchFunc, BOOL bInnerFol
 }
 void ReadConfigs(LPCTSTR lpszFileName)
 {
+	std::string FileName = lpszFileName;
+	FileName = FileName.substr(0, FileName.length() - std::string(CONFIGFILETYPE).length());
 
-	std::string File = Client->InfFolder + "\\" + lpszFileName + CONFIGFILETYPE;
+	if (FileName == "") //ignore nameless configs
+		return;
 
+	std::string File = Client->InfFolder + "\\" + FileName + CONFIGFILETYPE;
 
+	Client->Log("Reading File: ");
+	Client->Log(File.c_str());
+	Client->Log("\n");
 
 	std::ifstream FileReader(File);
 
@@ -77,7 +84,7 @@ void ReadConfigs(LPCTSTR lpszFileName)
 	}
 
 	BaseConfig Cfg;
-	Cfg.Bind = lpszFileName;
+	Cfg.Bind = FileName;
 	
 
 	if (!ConfigSystem->PreLoadConfigFile(FileReader, Cfg.Data))
@@ -85,21 +92,14 @@ void ReadConfigs(LPCTSTR lpszFileName)
 
 	ConfigSystem->Configs[Cfg.Bind] = Cfg;
 }
+/*
 bool BaseConfig::Delete() {
-	std::string File = Client->InfFolder + "\\" + this->Bind + CONFIGFILETYPE;
-	bool res = std::remove(File.c_str());
-
-	if (!ConfigSystem->RemoveConfig(this->Bind))
-		return false;
-
-	return res;
+	//broken
+	return false;
 }
 bool BaseConfig::Rename(const std::string& NewBindedName) {
-	std::string OldFile = Client->InfFolder + "\\" + this->Bind + CONFIGFILETYPE;
-	std::string NewFile = Client->InfFolder + "\\" + NewBindedName + CONFIGFILETYPE;
-	this->Bind = NewBindedName;
-	return std::rename(OldFile.c_str(), NewFile.c_str()) > 0;
-}
+	return false; //broken
+}*/
 bool BaseConfig::Load() {
 	return ConfigSystem->LoadToConfig(this->Bind);
 }
@@ -107,6 +107,8 @@ bool BaseConfig::Save() {
 	return ConfigSystem->SaveToConfig(this->Bind);
 }
 bool CConfigSystem::RemoveConfig(const std::string& Bind) {
+	std::string File = Client->InfFolder + "\\" + Bind + CONFIGFILETYPE;
+	std::remove(File.c_str());
 	if (auto Cfg = Configs.find(Bind); Cfg != Configs.end()) {
 		Configs.erase(Cfg);
 		return true;
@@ -172,6 +174,20 @@ bool CConfigSystem::CreateConfig(const std::string& Name) {
 
 	return Success;
 }
+void CConfigSystem::RebindConfig(const std::string& OldBind, const std::string& NewBind) {
+
+	std::string OldFile = Client->InfFolder + "\\" + OldBind + CONFIGFILETYPE;
+	std::string NewFile = Client->InfFolder + "\\" + NewBind + CONFIGFILETYPE;
+
+	if (!(std::rename(OldFile.c_str(), NewFile.c_str()) > 0))
+		return;
+
+	BaseConfig Back = Configs[OldBind];
+	Back.Bind = NewBind;
+	Configs[NewBind] = Back;
+	Configs.erase(OldBind);
+	
+}
 bool CConfigSystem::LoadToConfig(const std::string& Bind) {
 	std::string File = Client->InfFolder + "\\" + Bind + CONFIGFILETYPE;
 
@@ -188,8 +204,11 @@ bool CConfigSystem::LoadToConfig(const std::string& Bind) {
 	Json::Value Root;
 	FileReader >> Root;
 
-	if (!ConfigSystem->PreLoadConfigFile(FileReader, Config->Base.Data))
-		return false;
+	auto& UserConfigData = Root["UserConfigData"];
+
+	Config->Base.Data.Author = UserConfigData["Author"].asString();
+	Config->Base.Data.LastModified = UserConfigData["LastModified"].asString();
+	Config->Base.Data.UNIXStamp = UserConfigData["UNIXStamp"].asLargestUInt();
 
 
 	Config->Base.Bind = Bind;
