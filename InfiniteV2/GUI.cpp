@@ -87,10 +87,10 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	float OriginalMaxAlpha = MaxAlpha;
 	MaxAlpha *= GUIAnimations::Ease(OffsetAnimation);
 
-	bool Hovered = Menu->InRegion(x + Size.x - 76.f * Menu->Scale, y - 6.f * Menu->Scale, 47.f * Menu->Scale, 30.f * Menu->Scale) && !disable;
+	bool Hovered = Menu->InRegion(x + Size.x - 76.f * Menu->Scale, y - 6.f * Menu->Scale, 47.f * Menu->Scale, 30.f * Menu->Scale) && !disable && OffsetAnimation == 1.f;
 
 	if ((Hovered && HoverAnimation < 1.f) || (!Hovered && HoverAnimation > 0.f))
-		HoverAnimation = Math::Clamp(HoverAnimation + ((Hovered ? 1.f : -1.f) * 0.0054f * Menu->AnimationModifier), 0.f, 1.f);
+		HoverAnimation = Math::Clamp(HoverAnimation + ((Hovered ? 1.f : -1.f) * 0.006f * Menu->AnimationModifier), 0.f, 1.f);
 
 	if ((*Pointer && Slide < 1.f) || (!*Pointer && Slide > 0.f))
 		Slide = Math::Clamp(Slide + ((*Pointer ? 1.f : -1.f) * 0.0061f * Menu->AnimationModifier), 0.f, 1.f);
@@ -108,9 +108,9 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	Col Background(0, 3, 6, MaxAlpha * 0.78f);	
 	Render::FilledRoundedRect(x + Size.x - 69.f * Menu->Scale, y, 39.f * Menu->Scale, 16.f * Menu->Scale, Background, 20.f);
 	if (HoverAnimation > 0) {
-		Render::GradientCircle(x + Size.x - (62.5f - 25.f * EasedSlide * (OriginalMaxAlpha * 0.00390f)) * Menu->Scale, y + 8.5f * Menu->Scale, 17.f * Menu->Scale, Col(11 + 132 * EasedSlide * 0.43f, 12 + 138 * EasedSlide * 0.43f, 18 + 237 * EasedSlide * 0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * EasedSlide * 0.43f, 12 + 138 * EasedSlide * 0.43f, 18 + 237 * EasedSlide * 0.43f, 0), false);
+		Render::GradientCircle(x + Size.x - (62.5f - 25.f * EasedSlide * (OriginalMaxAlpha * 0.0039f)) * Menu->Scale, y + 8.5f * Menu->Scale, 17.f * Menu->Scale, Col(11 + 132 * EasedSlide * 0.43f, 12 + 138 * EasedSlide * 0.43f, 18 + 237 * EasedSlide * 0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * EasedSlide * 0.43f, 12 + 138 * EasedSlide * 0.43f, 18 + 237 * EasedSlide * 0.43f, 0), false);
 	}
-	Render::FilledCircle(x + Size.x - (62.5f - 25.f * EasedSlide * (OriginalMaxAlpha * 0.00390f)) * Menu->Scale, y + 8.5f * Menu->Scale, 10.f * Menu->Scale, Main, 17);
+	Render::FilledCircle(x + Size.x - (62.5f - 25.f * EasedSlide * (OriginalMaxAlpha * 0.0039f)) * Menu->Scale, y + 8.5f * Menu->Scale, 10.f * Menu->Scale, Main, 17);
 
 	
 
@@ -125,7 +125,7 @@ bool Switch::ShouldRender() {
 	bool ret = ShouldRenderFn();
 
 	if ((ret && OffsetAnimation < 1.f) || (!ret && OffsetAnimation > 0.f))
-		OffsetAnimation = Math::Clamp(OffsetAnimation + ((ret ? 1.f : -1.f) * 0.0068f * Menu->AnimationModifier), 0.f, 1.f);
+		OffsetAnimation = Math::Clamp(OffsetAnimation + ((ret ? 1.f : -1.f) * 0.008f * Menu->AnimationModifier), 0.f, 1.f);
 
 	return ret || OffsetAnimation > 0.f;
 }

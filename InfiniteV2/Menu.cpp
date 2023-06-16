@@ -333,7 +333,7 @@ void CMenu::OnRender() {
 	RenderInterval = CurrentClock - LastAnimationTime;
 
 
-	AnimationModifier = 1.f * RenderInterval;
+	AnimationModifier = RenderInterval;
 
 
 	LastAnimationTime = CurrentClock;
@@ -375,7 +375,7 @@ void CMenu::OnRender() {
 		SetupUser();
 
 
-	Alpha = Math::Clamp(Alpha + ((Config->MenuOpen ? 1 : -1) * 1.6f * AnimationModifier), 0.f, 255.f);
+	Alpha = Math::Clamp(Alpha + ((Config->MenuOpen ? 1 : -1) * 2.5f * AnimationModifier), 0.f, 255.f);
 
 	if (Alpha > 0.f)
 		this->Draw();
