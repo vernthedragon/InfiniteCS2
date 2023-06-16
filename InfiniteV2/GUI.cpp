@@ -288,6 +288,35 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 		Count++;
 	
 	}
+	if (Count == 3) {
+		Count = 0;
+
+		y += 180.f * Menu->Scale;
+
+		AddX = 0.f;
+
+	}
+	bool NewConfig = Menu->InRegion(x + AddX, y, 193.f * Menu->Scale, 150.f * Menu->Scale) && SelectionOpenAnimation == 0.f;
+	GUIAnimations::Animate(SelectionCopyAnimation, NewConfig);
+	Render::FilledRoundedRect(x + AddX, y, 193.f * Menu->Scale, 150.f * Menu->Scale, Col(0, 3, 6, (MaxAlpha * (1.f - SelectionOpenAnimation)) * (0.55f + SelectionCopyAnimation * 0.45f)), 5.f * Menu->Scale);
+	Render::DrawString(x + 96.5f * Menu->Scale + AddX, y + 75.f * Menu->Scale, Col(255, 255, 255, (MaxAlpha * (1.f - SelectionOpenAnimation)) * 0.4f), Fonts::MenuIcons, Render::centered_xy, "P");
+
+	if (NewConfig && LeftClick) {
+		LeftClick = false;
+		Reload();
+		int It = 2;
+		std::string NewConfigName = "New Config";
+		while (ConfigSystem->Configs.find(NewConfigName) != ConfigSystem->Configs.end()) {
+			NewConfigName = "New Config" + std::to_string(It);
+			It++;
+		}
+		ConfigSystem->CreateConfig(NewConfigName);
+		//create config
+		while (ConfigSystem->Configs.find(NewConfigName) == ConfigSystem->Configs.end()) {
+			Reload();
+		}
+	}
+
 	Col Full = Col(0, 1, 2, MaxAlpha);
 	Col Low = Col(0, 1, 2, 0);
 	x = OrP.x;
