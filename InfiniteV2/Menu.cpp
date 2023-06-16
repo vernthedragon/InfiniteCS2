@@ -324,7 +324,7 @@ void CMenu::OnRender() {
 	
 	Render::DrawFullscreenBlur();
 
-	CurrentClock = (float)(clock() * (float)0.001f);
+	CurrentClock = (float)(clock());
 
 	if (LastAnimationTime == -1.f)
 		LastAnimationTime = CurrentClock;
@@ -332,10 +332,10 @@ void CMenu::OnRender() {
 
 	RenderInterval = CurrentClock - LastAnimationTime;
 
-	if(RenderInterval != 0.f)
-		AnimationModifier = 1.f / RenderInterval;
 
-	AnimationModifier *= 0.1f;
+	AnimationModifier = 1.f * RenderInterval;
+
+
 	LastAnimationTime = CurrentClock;
 	
 	POINT mp;
