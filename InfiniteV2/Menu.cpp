@@ -376,7 +376,7 @@ void CMenu::OnRender() {
 
 
 	AnimationModifier = RenderInterval;
-
+	AnimationModifier *= (float)(Config->Menu.AnimationSpeed * 0.01f);
 
 	LastAnimationTime = CurrentClock;
 	
