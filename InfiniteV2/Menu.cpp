@@ -275,10 +275,10 @@ void CMenu::Draw() {
 			break;
 		}
 		
-		Childs[CurrentSubtab][LEFT].Draw(Pos.x + 160 * Scale, Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation ) * Scale, Alpha, MouseClick, MousePress);
+		Childs[CurrentSubtab][LEFT].Draw(Pos.x + 160 * Scale, Pos.y + (107.f - 25.f * Childs[CurrentSubtab][LEFT].OpenAnimation ) * Scale, Alpha, MouseClick, MousePress);
 		
 		if(CurrentSubtab != CONFIGS && CurrentTab != SETTINGS && CurrentSubtab != SEARCHMAIN)
-			Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
+			Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 25.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
 
 	
 	
@@ -439,10 +439,12 @@ void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 	bool Hovered = MousePos.x > x - Offset - 33.f * Scale && MousePos.x < x + Offset + 33.f * Scale && MousePos.y > y - 20.f * Scale && MousePos.y < y + 20.f * Scale;
 	if (Hovered && MouseClick) {
 		MouseClick = false;
-		CurrentSubtab = _this;
-		LastSubtabs[CurrentTab] = CurrentSubtab;
-		Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
-		Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
+		if (CurrentSubtab != _this) {
+			CurrentSubtab = _this;
+			LastSubtabs[CurrentTab] = CurrentSubtab;
+			Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
+			Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
+		}
 	}
 
 	if ((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))

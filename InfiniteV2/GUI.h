@@ -7,6 +7,7 @@ namespace GUIAnimations {
 	float Ease(const float& a);
 	float DelayEase(const float& a, const float& Delay);
 	inline void Animate(float& f, bool Enable);
+	inline void EaseAnimate(float& f, bool Enable, float speed);
 };
 
 class MenuElement {
@@ -34,6 +35,7 @@ public:
 		 SelectionCopyAnimation = 0.f;
 		 SelectionRenameAnimation = 0.f;
 		 SelectionAuthorInfoAnimation = 0.f;
+		 AnimatedScroll = 0.f;
 		 SelectionInRename = false;
 	}
 	struct ConfigAnimation {
@@ -52,6 +54,7 @@ public:
 	bool ShouldOverlay();
 	void OnFree();
 	float Scroll;
+	float AnimatedScroll;
 	std::string SelectedConfig;
 	std::string LastSelectedConfig;
 	std::string EditableText;
@@ -160,6 +163,7 @@ public:
 		MinValue = minvalue;
 		MaxValue = maxvalue;
 		MinMaxDivisor = 1.f / ((float)(abs(MaxValue - MinValue)));
+		ModifierX = 0.f;
 		int It = 2;
 		std::string BindVar = BindedVar;
 
@@ -185,6 +189,7 @@ public:
 	float HoverTextAnimation;
 	float MinMaxDivisor;
 	float OldPointer;
+	float ModifierX;
 	bool TextOpen;
 	std::string EditableText;
 	bool(*ShouldRenderFn)();

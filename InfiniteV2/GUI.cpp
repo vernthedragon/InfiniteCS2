@@ -28,14 +28,28 @@ inline void GUIAnimations::Animate(float& f, bool Enable) {
 	if ((Enable && f < 1.f) || (!Enable && f > 0.f))
 		f = Math::Clamp(f + ((Enable ? 1.f : -1.f) * 0.007f * Menu->AnimationModifier), 0.f, 1.f);
 }
+inline void GUIAnimations::EaseAnimate(float& f, bool Enable, float speed) {
+
+	if (Config->DisableComplexAnimations) {
+		Animate(f, Enable);
+	}
+
+	f = (f + ((Enable ? 1.f : 0.f) - f) * speed * Menu->AnimationModifier);
+	if (f > 0.993f)
+		f = 1.f;
+
+	if (f < 0.013f)
+		f = 0.f;
+}
+
 
 #pragma region GUIClass
 void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 
-	if ((Open && OpenAnimation < 1.f) || (!Open && OpenAnimation > 0.f))
-		OpenAnimation = Math::Clamp(OpenAnimation + ((Open ? 1.f : -1.f) * 0.0053f * Menu->AnimationModifier), 0.f, 1.f);
-
-	MaxAlpha *= GUIAnimations::Ease(OpenAnimation);
+	//if ((Open && OpenAnimation < 1.f) || (!Open && OpenAnimation > 0.f))
+	//	OpenAnimation = Math::Clamp(OpenAnimation + ((Open ? 1.f : -1.f) * 0.0053f * Menu->AnimationModifier), 0.f, 1.f);
+	GUIAnimations::EaseAnimate(OpenAnimation, true, 0.01686f);
+	MaxAlpha *= OpenAnimation;
 	Background[3] = MaxAlpha;
 		//NOTE THIS->SIZE IS SCALED IN MENU.CPP
 	Render::FilledRoundedRect(x, y, Size.x, Size.y, Background, 4.5f * Menu->Scale);
@@ -89,7 +103,7 @@ inline bool Child::InRegion(float x, float y, float w, float h) {
 #pragma endregion 
 
 float Switch::GetOffset() {
-	return GUIAnimations::Ease(OffsetAnimation) * Menu->Scale * 28.f;
+	return OffsetAnimation * Menu->Scale * 28.f;
 }
 bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
 	float OriginalMaxAlpha = MaxAlpha;
@@ -100,10 +114,10 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	if ((Hovered && HoverAnimation < 1.f) || (!Hovered && HoverAnimation > 0.f))
 		HoverAnimation = Math::Clamp(HoverAnimation + ((Hovered ? 1.f : -1.f) * 0.006f * Menu->AnimationModifier), 0.f, 1.f);
 
-	if ((*Pointer && Slide < 1.f) || (!*Pointer && Slide > 0.f))
-		Slide = Math::Clamp(Slide + ((*Pointer ? 1.f : -1.f) * 0.0061f * Menu->AnimationModifier), 0.f, 1.f);
 
-	float EasedSlide = GUIAnimations::Ease(Slide);
+	//Slide = (Slide + ((*Pointer ? 1.f : 0.f) - Slide) * 0.003f * Menu->AnimationModifier);
+	GUIAnimations::EaseAnimate(Slide, *Pointer, 0.0178f);
+	float EasedSlide = Slide;
 	float W = 120 + 135 * EasedSlide; //slight optimization for more memory usage lol
 	if (Hovered && LeftClick) {
 		LeftClick = false;
@@ -150,8 +164,8 @@ bool Switch::ShouldRender() {
 
 	bool ret = ShouldRenderFn();
 
-	if ((ret && OffsetAnimation < 1.f) || (!ret && OffsetAnimation > 0.f))
-		OffsetAnimation = Math::Clamp(OffsetAnimation + ((ret ? 1.f : -1.f) * 0.008f * Menu->AnimationModifier), 0.f, 1.f);
+	GUIAnimations::EaseAnimate(OffsetAnimation, ret, 0.0183f);
+
 
 	return ret || OffsetAnimation > 0.f;
 }
@@ -171,11 +185,11 @@ void Switch::OnFree() {
 }
 
 float Slider::GetOffset() {
-	return GUIAnimations::Ease(OffsetAnimation) * Menu->Scale * 28.f;
+	return OffsetAnimation * Menu->Scale * 28.f;
 }
 bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
 	float OriginalMaxAlpha = MaxAlpha;
-	MaxAlpha *= GUIAnimations::Ease(OffsetAnimation);
+	MaxAlpha *= GUIAnimations::Ease( OffsetAnimation );
 
 	if (MaxAlpha != 255.f)
 		TextOpen = false;
@@ -191,7 +205,7 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 			ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 		}
 	}
-
+	//tofix
 	if (Render::TextSize(Fonts::MenuThin, Label.c_str()).x > Size.x - 103.f * Menu->Scale) {
 		Render::PushClipRect(x, y - 4.f * Menu->Scale, Size.x - 103.f * Menu->Scale, 23.f * Menu->Scale, true);
 		Render::DrawString(x, y, Col(255,255,255, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
@@ -214,7 +228,10 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 
 
 	//ok time for annoying shit the math of the circle thing
-	float ModifierX = Size.x * 0.35f * (abs((*Pointer) - MinValue) * MinMaxDivisor) * MaxAlpha * 0.003922f;
+	float ToModifierX =  (abs((*Pointer) - MinValue) * MinMaxDivisor) * MaxAlpha * 0.003922f;
+	ModifierX = (ModifierX + (ToModifierX - ModifierX) * 0.02f * Menu->AnimationModifier);
+	Math::ClampPtr(ModifierX, 0.f, 1.f);
+	float ModifierX2 = Size.x * 0.35f * ModifierX;
 	bool bHovered = Menu->InRegion(x + Size.x - 83.f * Menu->Scale - Size.x * 0.35f, y - 10.f * Menu->Scale, Size.x * 0.35f + 32.f * Menu->Scale, 23.f * Menu->Scale);
 	if (Drag && bHovered) {
 		float newpos = Menu->MousePos.x - (x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f);
@@ -233,9 +250,9 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 
 	Render::FilledRoundedRect(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f, y + 4.f * Menu->Scale, Size.x * 0.35f, 8.f * Menu->Scale, Background, 30.f * Menu->Scale);
 	if (HoverAnimation > 0) {
-		Render::GradientCircle(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f + ModifierX, y + 8.5f * Menu->Scale, 15.f * Menu->Scale, Col(11 + 132 *0.43f, 12 + 138 *0.43f, 18 + 237 *0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * 0.43f, 12 + 138 * 0.43f, 18 + 237 * 0.43f, 0), false);
+		Render::GradientCircle(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f + ModifierX2, y + 8.5f * Menu->Scale, 15.f * Menu->Scale, Col(11 + 132 *0.43f, 12 + 138 *0.43f, 18 + 237 *0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * 0.43f, 12 + 138 * 0.43f, 18 + 237 * 0.43f, 0), false);
 	}
-	Render::FilledCircle(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f + ModifierX, y + 8.f * Menu->Scale, 7.f * Menu->Scale, Main, 17);
+	Render::FilledCircle(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f + ModifierX2, y + 8.f * Menu->Scale, 7.f * Menu->Scale, Main, 17);
 
 
 	bool HoveredOverText = Menu->InRegion(x + Size.x - 56.f * Menu->Scale, y - 2.f * Menu->Scale, 38.f * Menu->Scale, 24.f * Menu->Scale);
@@ -324,8 +341,8 @@ bool Slider::ShouldRender() {
 
 	bool ret = ShouldRenderFn();
 
-	if ((ret && OffsetAnimation < 1.f) || (!ret && OffsetAnimation > 0.f))
-		OffsetAnimation = Math::Clamp(OffsetAnimation + ((ret ? 1.f : -1.f) * 0.008f * Menu->AnimationModifier), 0.f, 1.f);
+	GUIAnimations::EaseAnimate(OffsetAnimation, ret, 0.0183f);
+
 
 	return ret || OffsetAnimation > 0.f;
 }
@@ -478,19 +495,42 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 
 
 	if (ConfigViews.size() >= 6) {
+		bool Scrolled = false;
 		while (Client->ScrollAmmount > 0) {
-			Scroll -= 15.f;
+			Scroll -= 30.f * Menu->Scale;
 			Client->ScrollAmmount--;
+			Scrolled = true;
 		}
 		while (Client->ScrollAmmount < 0) {
-			Scroll += 15.f;
+			Scroll += 30.f * Menu->Scale;
 			Client->ScrollAmmount++;
+			Scrolled = true;
 		}
-		Math::ClampPtr(Scroll, 0.f, 180.f * ConfigViews.size() * 0.33333333f);
+		Math::ClampPtr(Scroll, Scrolled ? -100.f * Menu->Scale : 0.f, Scrolled ? (180.f * Menu->Scale * (ConfigViews.size() - 3) * 0.33333333f + 100.f * Menu->Scale) : (180.f * Menu->Scale * (ConfigViews.size() - 3) * 0.33333333f));
 	}
-	else
-		Scroll = 0;
-	y -= Scroll;
+	else {
+		bool Scrolled = false;
+
+		while (Client->ScrollAmmount > 0) {
+			Scroll -= 30.f * Menu->Scale;
+			Client->ScrollAmmount--;
+			Scrolled = true;
+		}
+		while (Client->ScrollAmmount < 0) {
+			Scroll += 30.f * Menu->Scale ;
+			Client->ScrollAmmount++;
+			Scrolled = true;
+		}
+		Math::ClampPtr(Scroll,-100.f, 100.f);
+
+		if (!Scrolled)
+			Scroll = 0.f;
+	}
+
+
+	AnimatedScroll = (AnimatedScroll + (Scroll - AnimatedScroll) * 0.02f * Menu->AnimationModifier);
+
+	y -= AnimatedScroll;
 	int Count = 0;
 	float AddX = 0.f;
 
@@ -589,6 +629,11 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 
 	if (SelectedConfig != "" || SelectionOpenAnimation > 0.f) {
 		MaxAlpha *= SelectionOpenAnimation;
+		if (MaxAlpha != 255.f)
+		{
+			SelectionInRename = false;
+			EditableText = LastSelectedConfig;
+		}
 		Render::FilledRoundedRect(x - 15.f * Menu->Scale, y + 13.f * Menu->Scale, Size.x, Size.y, Col(0, 1, 2, MaxAlpha), 4.5f * Menu->Scale);
 		Render::DrawString(x + 25.f * Menu->Scale, y + 48.f * Menu->Scale, Col(130 + 125 * SelectionBackAnimation, 130 + 125 * SelectionBackAnimation, 130 + 125 * SelectionBackAnimation, MaxAlpha), Fonts::MenuIcons, Render::centered_xy, "M");
 
