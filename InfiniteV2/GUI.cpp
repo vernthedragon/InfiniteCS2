@@ -544,7 +544,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 		FileReader >> Root;
 	
 		int It = 2;
-		std::string NewConfigName = "New Config ";
+		std::string NewConfigName = "New Config";
 		while (ConfigSystem->Configs.find(NewConfigName) != ConfigSystem->Configs.end()) {
 			NewConfigName = "New Config " + std::to_string(It);
 			It++;
@@ -613,11 +613,14 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 			}
 			else {
 				ConfigSystem->RebindConfig(LastSelectedConfig, EditableText);
+				std::string OldSelected = LastSelectedConfig;
 				LastSelectedConfig = EditableText;
 				SelectedConfig = EditableText;
 				Reload();
-				ConfigSystem->Loaded = SelectedConfig;
-				ConfigSystem->LoadToConfig(ConfigSystem->Loaded);
+				if (ConfigSystem->Loaded == OldSelected) {
+					ConfigSystem->Loaded = SelectedConfig;
+					ConfigSystem->LoadToConfig(ConfigSystem->Loaded);
+				}
 			}
 			
 		}
@@ -637,11 +640,14 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 						}
 						else {
 							ConfigSystem->RebindConfig(LastSelectedConfig, EditableText);
+							std::string OldSelected = LastSelectedConfig;
 							LastSelectedConfig = EditableText;
 							SelectedConfig = EditableText;
 							Reload();
-							ConfigSystem->Loaded = SelectedConfig;
-							ConfigSystem->LoadToConfig(ConfigSystem->Loaded);
+							if (ConfigSystem->Loaded == OldSelected) {
+								ConfigSystem->Loaded = SelectedConfig;
+								ConfigSystem->LoadToConfig(ConfigSystem->Loaded);
+							}
 						}
 
 						if (LeftClick)
