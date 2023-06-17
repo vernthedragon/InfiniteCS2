@@ -67,7 +67,7 @@ void CMenu::SetupUser() {
 	Childs[CONFIGS][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
 	Childs[MENUMAIN][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
 	Childs[USERMAIN][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
-
+	Childs[SEARCHMAIN][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
 
 
 	Childs[MENUMAIN][LEFT].New(new Switch("Auto-Save Current Configuration", &Config->AutoSave));
@@ -277,7 +277,7 @@ void CMenu::Draw() {
 		
 		Childs[CurrentSubtab][LEFT].Draw(Pos.x + 160 * Scale, Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation ) * Scale, Alpha, MouseClick, MousePress);
 		
-		if(CurrentSubtab != CONFIGS && CurrentTab != SETTINGS)
+		if(CurrentSubtab != CONFIGS && CurrentTab != SETTINGS && CurrentSubtab != SEARCHMAIN)
 			Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
 
 	
@@ -360,6 +360,7 @@ void CMenu::AdjustDPI() {
 	Childs[CONFIGS][LEFT].Size = Vec2(703 * Scale, 440 * Scale);
 	Childs[MENUMAIN][LEFT].Size = Vec2(703 * Scale, 440 * Scale);
 	Childs[USERMAIN][LEFT].Size = Vec2(703 * Scale, 440 * Scale);
+	Childs[SEARCHMAIN][LEFT].Size = Vec2(703 * Scale, 440 * Scale);
 	ShouldAdjustDPI = false;
 }
 void CMenu::OnRender() {
