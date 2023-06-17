@@ -2,7 +2,10 @@
 #include "Menu.h"
 
 float GUIAnimations::Ease(const float& a) {
-	if (a == 0.f || a == 1.f || Config->DisableComplexAnimations) //avoid wasting resources
+	if (Config->DisableComplexAnimations) {
+		return a * a * a;
+	}
+	if (a == 0.f || a == 1.f) //avoid wasting resources
 		return a;
 
 	float sqt = a * a;
