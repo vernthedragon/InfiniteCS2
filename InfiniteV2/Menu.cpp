@@ -198,8 +198,9 @@ void CMenu::Draw() {
 		if((!InSettings && SettingAnimation > 0.f) || (InSettings && SettingAnimation < 1.f))
 			SettingAnimation = Math::Clamp(SettingAnimation + ((InSettings ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
 
-		if ((!InSearch && SearchAnimation > 0.f) || (InSearch && SearchAnimation < 1.f))
-			SearchAnimation = Math::Clamp(SearchAnimation + ((InSearch ? 1 : -1) * 0.00742f * AnimationModifier), 0.f, 1.f);
+	//	if ((!InSearch && SearchAnimation > 0.f) || (InSearch && SearchAnimation < 1.f))
+	//		SearchAnimation = Math::Clamp(SearchAnimation + ((InSearch ? 1 : -1) * 0.00742f * AnimationModifier), 0.f, 1.f);
+		GUIAnimations::EaseAnimate(SearchAnimation, InSearch, 0.02f);
 
 		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 30.f * Scale, Col(170, 170, 255, Alpha), Fonts::MenuMain, Render::centered_xy, "INFINITE");
 
@@ -300,16 +301,16 @@ void CMenu::Draw() {
 			Render::DrawString(x + 11.f * Menu->Scale, y + 3.f * Menu->Scale, Col(255, 255, 255, Alpha), Fonts::MenuMain, Render::centered_xy, "Save");
 		}
 		if (SearchAnimation > 0.f) {
-			float OldSearchAnimation = SearchAnimation;
-			SearchAnimation = GUIAnimations::Ease(SearchAnimation);
+			
+		
 			Render::FilledRect(Pos.x + (125.f) * Scale, Pos.y, 775.f * Scale, 60.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation * 0.98f));
 			Render::Rect(Pos.x + 160.f * Scale, Pos.y + 48.f * Scale, 640.f * Scale, 1.f, Col(100, 100, 100, Alpha * SearchAnimation), 1.f * Scale);
 
-			Render::DrawString(Pos.x + (870.f) * Scale, Pos.y + (24.f + SearchAnimation * 6.f) * Scale, Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha * SearchAnimation), Fonts::MenuIcons, Render::centered_xy, "M");
+			Render::DrawString(Pos.x + (870.f) * Scale, Pos.y + (24.f + SearchAnimation * 6.f) * Scale, Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha * GUIAnimations::Ease(SearchAnimation)), Fonts::MenuIcons, Render::centered_xy, "M");
 			//Render::FilledRoundedRect(Pos.x + 430.f * Scale, Pos.y + (3.5f + 15.f * SearchAnimation) * Scale, 400.f * Scale, 35.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation), 30.f);
 			//Render::RoundedRect(Pos.x + 430.f * Scale, Pos.y + (3.5f + 15.f * SearchAnimation) * Scale, 400.f * Scale, 35.f * Scale, Col(5, 6, 8, Alpha * SearchAnimation), 1.3f * Scale, 30.f);
 			Render::DrawString(Pos.x + (870.f - SearchAnimation * 42.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(255, 255, 255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
-			SearchAnimation = OldSearchAnimation;
+
 		}
 		else
 			Render::DrawString(Pos.x + (870.f - SearchAnimation * 42.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(255,255,255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
