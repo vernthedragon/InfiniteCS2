@@ -41,7 +41,7 @@ public:
 		float Offset;
 		float Delete;
 		float Text;
-
+		float Copy;
 		BaseConfig* Config;
 		bool ToBeDeleted;
 	};
@@ -75,6 +75,7 @@ public:
 				Config.Offset = 0.f;
 				Config.Text = 0.f;
 				Config.ToBeDeleted = false;
+				Config.Copy = 0.f;
 				ConfigViews[Cfg.first] = Config;
 			}
 			else
@@ -107,9 +108,15 @@ public:
 		BindedVar = label;
 		HoverAnimation = 0.f;
 		ShouldRenderFn = shouldrender;
-		while (ConfigSystem->VarExists(BindedVar)) {
-			BindedVar += "_";
+
+		int It = 2;
+		std::string BindVar = BindedVar;
+
+		while (ConfigSystem->VarExists(BindVar)) {
+			BindVar = BindedVar + std::to_string(It);
+			It++;
 		}
+		BindedVar = BindVar;
 		ConfigSystem->AddVar(BindedVar, val);
 		OffsetAnimation = 1.f;
 
@@ -129,6 +136,63 @@ public:
 	std::string Label;
 	std::string BindedVar;
 	bool* Pointer;
+};
+
+class Slider : public MenuElement {
+public:
+	Slider() {
+		Pointer = nullptr;
+		BindedVar = ""; //no bind which is an issue
+		HoverAnimation = 0.f;
+		HoverTextAnimation = 0.f;
+		OffsetAnimation = 1.f;
+		MinMaxDivisor = 0.f;
+		OldPointer = 0.f;
+	}
+	Slider(std::string label, int minvalue, int maxvalue, int* val, bool(*shouldrender)() = nullptr) {
+		Pointer = val;
+		OldPointer = *val;
+		Label = label;
+		BindedVar = label;
+		HoverAnimation = 0.f;
+		ShouldRenderFn = shouldrender;
+		HoverTextAnimation = 0.f;
+		MinValue = minvalue;
+		MaxValue = maxvalue;
+		MinMaxDivisor = 1.f / ((float)(abs(MaxValue - MinValue)));
+		int It = 2;
+		std::string BindVar = BindedVar;
+
+		while (ConfigSystem->VarExists(BindVar)) {
+			BindVar = BindedVar + std::to_string(It);
+			It++;
+		}
+		BindedVar = BindVar;
+		ConfigSystem->AddVar(BindedVar, val);
+		OffsetAnimation = 1.f;
+
+		if (shouldrender != nullptr)
+			OffsetAnimation = shouldrender() ? 1.f : 0.f;
+	}
+	float GetOffset();
+	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
+	bool ShouldRender();
+	bool ShouldOverlay();
+	//float& GetAnimation();
+	void OnFree();
+	float HoverAnimation;
+	float OffsetAnimation;
+	float HoverTextAnimation;
+	float MinMaxDivisor;
+	float OldPointer;
+	bool TextOpen;
+	std::string EditableText;
+	bool(*ShouldRenderFn)();
+	std::string Label;
+	std::string BindedVar;
+	int* Pointer;
+	int MinValue;
+	int MaxValue;
 };
 
 class Child {

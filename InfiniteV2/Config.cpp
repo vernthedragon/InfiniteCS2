@@ -215,6 +215,12 @@ bool CConfigSystem::LoadToConfig(const std::string& Bind) {
 	Config->Base.Bind = Bind;
 
 	for (auto& Var : Variables) {
+		if (Root["Configuration"][Var.first].type() == Json::ValueType::nullValue) {
+			Client->Log("Failed to Load ConfigVar (not in config): ");
+			Client->Log(Var.first.c_str());
+			Client->Log("\n");
+			continue;
+		}
 		if (Var.second->Type == VartypeColor) {
 			if (Root["Configuration"][Var.first].type() != Json::ValueType::uintValue)
 			{
@@ -296,5 +302,9 @@ bool CConfigSystem::PreLoadConfigFile(std::ifstream& stream, UserConfigData& Dat
 void CConfig::ResetValues() {
 	this->MenuOpen = true;
 	this->MenuScale = 2;
-	this->Misc.Movement.Bunnyhop = false;
+	this->Movement.Bunnyhop = false;
+	this->Movement.BunnyhopStrafeType = 0;
+	this->DisableComplexAnimations = false;
+	this->Menu.AnimationSpeed = 100;
+	this->AutoSave = true;
 }

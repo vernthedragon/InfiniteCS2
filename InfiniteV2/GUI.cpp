@@ -2,7 +2,7 @@
 #include "Menu.h"
 
 float GUIAnimations::Ease(const float& a) {
-	if (a == 0.f || a == 1.f) //avoid wasting resources
+	if (a == 0.f || a == 1.f || Config->DisableComplexAnimations) //avoid wasting resources
 		return a;
 
 	float sqt = a * a;
@@ -106,6 +106,9 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		LeftClick = false;
 		disable = true;
 		*Pointer = !(*Pointer);
+
+		if(Config->AutoSave)
+			ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 	}
 
 	
@@ -113,7 +116,7 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	if (Render::TextSize(Fonts::MenuThin, Label.c_str()).x > Size.x - 103.f * Menu->Scale) {
 		Render::PushClipRect(x, y - 4.f * Menu->Scale, Size.x - 103.f * Menu->Scale, 23.f * Menu->Scale, true);
 		Render::DrawString(x, y, Col(W, W, W, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
-		Col Full = Col(0, 1, 2, MaxAlpha);
+		Col Full = Col(0, 1, 2, OriginalMaxAlpha);
 		Col Low = Col(0, 1, 2, 0);
 		//note: rendered twice for quadratic effect
 		Render::GradientFilledRect(x + Size.x - 133.f * Menu->Scale, y - 4.f * Menu->Scale, 33.f * Menu->Scale, 26.f * Menu->Scale, Low, Full, Low, Full);
@@ -128,9 +131,9 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	Col Background(0, 3, 6, MaxAlpha * 0.78f);	
 	Render::FilledRoundedRect(x + Size.x - 69.f * Menu->Scale, y, 39.f * Menu->Scale, 16.f * Menu->Scale, Background, 20.f * Menu->Scale);
 	if (HoverAnimation > 0) {
-		Render::GradientCircle(x + Size.x - (62.5f - 25.f * EasedSlide * (OriginalMaxAlpha * 0.0039f)) * Menu->Scale, y + 8.5f * Menu->Scale, 17.f * Menu->Scale, Col(11 + 132 * EasedSlide * 0.43f, 12 + 138 * EasedSlide * 0.43f, 18 + 237 * EasedSlide * 0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * EasedSlide * 0.43f, 12 + 138 * EasedSlide * 0.43f, 18 + 237 * EasedSlide * 0.43f, 0), false);
+		Render::GradientCircle(x + Size.x - (62.5f - 25.f * EasedSlide * (OriginalMaxAlpha * 0.003922f)) * Menu->Scale, y + 8.5f * Menu->Scale, 17.f * Menu->Scale, Col(11 + 132 * EasedSlide * 0.43f, 12 + 138 * EasedSlide * 0.43f, 18 + 237 * EasedSlide * 0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * EasedSlide * 0.43f, 12 + 138 * EasedSlide * 0.43f, 18 + 237 * EasedSlide * 0.43f, 0), false);
 	}
-	Render::FilledCircle(x + Size.x - (62.5f - 25.f * EasedSlide * (OriginalMaxAlpha * 0.0039f)) * Menu->Scale, y + 8.5f * Menu->Scale, 10.f * Menu->Scale, Main, 17);
+	Render::FilledCircle(x + Size.x - (62.5f - 25.f * EasedSlide * (OriginalMaxAlpha * 0.003922f)) * Menu->Scale, y + 8.5f * Menu->Scale, 10.f * Menu->Scale, Main, 17);
 
 	
 
@@ -164,16 +167,190 @@ void Switch::OnFree() {
 	ConfigSystem->RemoveVar(BindedVar);
 }
 
+float Slider::GetOffset() {
+	return GUIAnimations::Ease(OffsetAnimation) * Menu->Scale * 28.f;
+}
+bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
+	float OriginalMaxAlpha = MaxAlpha;
+	MaxAlpha *= GUIAnimations::Ease(OffsetAnimation);
+
+	if (MaxAlpha != 255.f)
+		TextOpen = false;
+//	bool Hovered = Menu->InRegion(x + Size.x - 76.f * Menu->Scale, y - 6.f * Menu->Scale, 47.f * Menu->Scale, 30.f * Menu->Scale) && !disable && OffsetAnimation == 1.f;
+
+//	if ((Hovered && HoverAnimation < 1.f) || (!Hovered && HoverAnimation > 0.f))
+//		HoverAnimation = Math::Clamp(HoverAnimation + ((Hovered ? 1.f : -1.f) * 0.006f * Menu->AnimationModifier), 0.f, 1.f);
+//
+	//bool HoveredOverText = Menu->InRegion()
+	if (Config->AutoSave) {
+		if (OldPointer != *Pointer) {
+			OldPointer = *Pointer;
+			ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
+		}
+	}
+
+	if (Render::TextSize(Fonts::MenuThin, Label.c_str()).x > Size.x - 103.f * Menu->Scale) {
+		Render::PushClipRect(x, y - 4.f * Menu->Scale, Size.x - 103.f * Menu->Scale, 23.f * Menu->Scale, true);
+		Render::DrawString(x, y, Col(255,255,255, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
+		Col Full = Col(0, 1, 2, MaxAlpha);
+		Col Low = Col(0, 1, 2, 0);
+		//note: rendered twice for quadratic effect
+		Render::GradientFilledRect(x + Size.x - 133.f * Menu->Scale, y - 4.f * Menu->Scale, 33.f * Menu->Scale, 26.f * Menu->Scale, Low, Full, Low, Full);
+		Render::GradientFilledRect(x + Size.x - 133.f * Menu->Scale, y - 4.f * Menu->Scale, 33.f * Menu->Scale, 26.f * Menu->Scale, Low, Full, Low, Full);
+		Render::GradientFilledRect(x + Size.x - 133.f * Menu->Scale, y - 4.f * Menu->Scale, 33.f * Menu->Scale, 26.f * Menu->Scale, Low, Full, Low, Full);
+		Render::PopClipRect();
+	}
+	else
+		Render::DrawString(x, y, Col(255, 255, 255, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
+
+	Col Main(11 + 132, 12 + 138 , 18 + 237, MaxAlpha);
+	Col Background(0, 3, 6, MaxAlpha * 0.78f);
+
+
+
+
+
+	//ok time for annoying shit the math of the circle thing
+	float ModifierX = Size.x * 0.35f * (abs((*Pointer) - MinValue) * MinMaxDivisor) * MaxAlpha * 0.003922f;
+	bool bHovered = Menu->InRegion(x + Size.x - 83.f * Menu->Scale - Size.x * 0.35f, y - 10.f * Menu->Scale, Size.x * 0.35f + 32.f * Menu->Scale, 23.f * Menu->Scale);
+	if (Drag && bHovered) {
+		float newpos = Menu->MousePos.x - (x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f);
+		if (newpos < 0)
+			newpos = 0;
+		if (newpos > Size.x * 0.35f)
+			newpos = Size.x * 0.35f;
+		float ratio = newpos / (Size.x * 0.35f);
+
+		*Pointer = (int)(MinValue + (MaxValue - MinValue) * ratio);
+
+		Drag = false;
+	}
+	GUIAnimations::Animate(HoverAnimation, bHovered);
+
+
+	Render::FilledRoundedRect(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f, y + 4.f * Menu->Scale, Size.x * 0.35f, 8.f * Menu->Scale, Background, 30.f * Menu->Scale);
+	if (HoverAnimation > 0) {
+		Render::GradientCircle(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f + ModifierX, y + 8.5f * Menu->Scale, 15.f * Menu->Scale, Col(11 + 132 *0.43f, 12 + 138 *0.43f, 18 + 237 *0.43f, MaxAlpha * HoverAnimation * 0.55f), Col(11 + 132 * 0.43f, 12 + 138 * 0.43f, 18 + 237 * 0.43f, 0), false);
+	}
+	Render::FilledCircle(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f + ModifierX, y + 8.f * Menu->Scale, 7.f * Menu->Scale, Main, 17);
+
+
+	bool HoveredOverText = Menu->InRegion(x + Size.x - 56.f * Menu->Scale, y - 2.f * Menu->Scale, 38.f * Menu->Scale, 24.f * Menu->Scale);
+	GUIAnimations::Animate(HoverTextAnimation, HoveredOverText || TextOpen);
+	if (HoveredOverText) {
+		if (LeftClick) {
+			LeftClick = false;
+			TextOpen = true;
+			Menu->EditTextAnimation = Menu->CurrentClock;
+		}
+		ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
+	}
+	else if (LeftClick && TextOpen) {
+		TextOpen = false;
+		if (EditableText != "") {
+
+			*Pointer = std::stoi(EditableText);
+			TextOpen = false;
+		}
+		else {
+			TextOpen = false;
+			EditableText = std::to_string(*Pointer);
+		}
+		if (LeftClick)
+			LeftClick = false;
+	}
+
+	std::string Written = EditableText;
+	if (TextOpen) {
+		if ((int((Menu->CurrentClock - Menu->EditTextAnimation) * 0.0019f) % 2) == 0)
+			Written += "|";
+		else
+			Written += " ";
+
+		ImGui::GetIO().WantTextInput = true;
+
+		if (ImGui::GetIO().InputQueueCharacters.Size > 0) {
+			for (auto c : ImGui::GetIO().InputQueueCharacters) {
+
+				if (c == VK_RETURN) {
+
+					if (EditableText != "") {
+
+						*Pointer = std::stoi(EditableText);
+						TextOpen = false;
+					}
+					else {
+						TextOpen = false;
+						EditableText = std::to_string(*Pointer);
+					}
+					if (LeftClick)
+						LeftClick = false;
+					continue;
+				}
+
+				if (c == VK_ESCAPE) {
+					TextOpen = false;
+					EditableText = std::to_string(*Pointer);
+					if (LeftClick)
+						LeftClick = false;
+					continue;
+				}
+				else if (c == VK_BACK)
+					EditableText = EditableText.substr(0, EditableText.size() - 1);
+				else if (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7' || c == '8' || c == '9') {
+					if (EditableText.size() < 40)
+						EditableText += (unsigned char)c;
+				}
+			}
+		}
+	}
+	else
+		EditableText = std::to_string(*Pointer);
+
+
+	Render::FilledRoundedRect(x + Size.x - 59.f * Menu->Scale, y - 3.f * Menu->Scale, 32.f * Menu->Scale, 22.f * Menu->Scale, Col(0, 0, 1, MaxAlpha * (0.36f + 0.5f * HoverTextAnimation)), 3.f * Menu->Scale);
+	Render::RoundedRect(x + Size.x - 59.f * Menu->Scale, y - 3.f * Menu->Scale, 32.f * Menu->Scale, 22.f * Menu->Scale, Col(100 + 155 * HoverTextAnimation, 104 + 151 * HoverTextAnimation, 110 + 145 * HoverTextAnimation, MaxAlpha * (0.36f + 0.5f * HoverTextAnimation)), 0.9f * Menu->Scale, 3.f * Menu->Scale);
+	Render::PushClipRect(x + Size.x - 59.f * Menu->Scale, y - 3.f * Menu->Scale, 32.f * Menu->Scale, 22.f * Menu->Scale, true);
+	Render::DrawString(x + Size.x - 42.5f * Menu->Scale, y - 1.5f * Menu->Scale, Col(255, 255, 255, MaxAlpha), Fonts::MenuThin, Render::centered_x, Written.c_str());
+	Render::PopClipRect();
+	return false;
+}
+bool Slider::ShouldRender() {
+	if (ShouldRenderFn == nullptr)
+		return true;
+
+	bool ret = ShouldRenderFn();
+
+	if ((ret && OffsetAnimation < 1.f) || (!ret && OffsetAnimation > 0.f))
+		OffsetAnimation = Math::Clamp(OffsetAnimation + ((ret ? 1.f : -1.f) * 0.008f * Menu->AnimationModifier), 0.f, 1.f);
+
+	return ret || OffsetAnimation > 0.f;
+}
+bool Slider::ShouldOverlay() {
+	return false;
+}
+
+void Slider::OnFree() {
+	if (BindedVar == "") {
+		throw IException("Menu Element has no Binded ConfigVar! (Memory Range Corrupt)", 0);
+	}
+
+	ConfigSystem->RemoveVar(BindedVar);
+}
+
 float ConfigView::GetOffset() {
 	return 0.f;
 }
-
+#include <json.h>
 void ConfigView::DrawConfig(float x, float y, float MaxAlpha, std::string label, ConfigView::ConfigAnimation& Context, bool& LeftClick, bool ShouldDoUpdate) {
 
 	MaxAlpha *= Context.Offset;
 
 	bool MenuHovered = Menu->InRegion(x, y, 193.f * Menu->Scale, 150.f * Menu->Scale) && !Context.ToBeDeleted && ShouldDoUpdate;
-	bool DeleteHovered = Menu->InRegion(x, y + 130.f * Menu->Scale, 40.f * Menu->Scale, 40.f * Menu->Scale) && !Context.ToBeDeleted && ShouldDoUpdate && label != "Default";
+	bool DeleteHovered = Menu->InRegion(x + 30.f * Menu->Scale, y + 125.f * Menu->Scale, 34.f * Menu->Scale, 44.f * Menu->Scale) && !Context.ToBeDeleted && ShouldDoUpdate && label != "Default";
+	bool CopyHovered = Menu->InRegion(x, y + 125.f * Menu->Scale, 30.f * Menu->Scale, 44.f * Menu->Scale) && !Context.ToBeDeleted && ShouldDoUpdate;
+
+	GUIAnimations::Animate(Context.Copy, CopyHovered);
 
 	if((MenuHovered && Context.Text < 1.f) || (!MenuHovered && Context.Text > 0.f))
 		Context.Text = Math::Clamp(Context.Text + ((MenuHovered ? 1.f : -1.f) * 0.007f * Menu->AnimationModifier), 0.f, 1.f);
@@ -199,6 +376,46 @@ void ConfigView::DrawConfig(float x, float y, float MaxAlpha, std::string label,
 	if (LeftClick && DeleteHovered) {
 		Context.ToBeDeleted = true;
 		LeftClick = false;
+	}
+
+	if (LeftClick && CopyHovered) {
+		LeftClick = false;
+		Reload();
+		
+		if (ConfigSystem->Configs.find(label) != ConfigSystem->Configs.end()) {
+
+			std::string File = Client->InfFolder + "\\" + label + ".infinite";
+
+
+
+			std::ifstream FileReader(File);
+
+			if (!FileReader.good()) {
+				FileReader.close();
+				return;
+			}
+
+
+			Json::Value Root;
+			FileReader >> Root;
+			const std::string Original = label;
+			std::string NewConfigName = Original + " Copy";
+			
+
+			std::string File2 = Client->InfFolder + "\\" + NewConfigName + ".infinite";
+			std::ofstream FileWriter(File2);
+
+			if (!FileWriter.good()) {
+				FileWriter.close();
+				return;
+			}
+
+			FileWriter << Root;
+			FileWriter.close();
+			Root.clear();
+
+			Reload();
+		}
 	}
 
 	if (LeftClick && MenuHovered && !DeleteHovered) {
@@ -232,8 +449,13 @@ void ConfigView::DrawConfig(float x, float y, float MaxAlpha, std::string label,
 	else
 		Render::DrawString(x + 96.5f * Menu->Scale, y + 75.f * Menu->Scale, Col(255,255,255, MaxAlpha), Fonts::MenuThin, Render::centered_xy, label.c_str());
 	
-	if(label != "Default")
-		Render::DrawString(x + 20.f * Menu->Scale, y + 130.f * Menu->Scale, Col(55 + Context.Delete * 200, 55 + Context.Delete * 200, 55 + Context.Delete * 200, MaxAlpha * (0.5f + 0.5f * Context.Delete)), Fonts::MenuIcons, Render::centered_xy, "T");
+	if (label != "Default") {
+		Render::DrawString(x + 50.f * Menu->Scale, y + 130.f * Menu->Scale, Col(55 + Context.Delete * 200, 55 + Context.Delete * 200, 55 + Context.Delete * 200, MaxAlpha * (0.5f + 0.5f * Context.Delete)), Fonts::MenuIcons, Render::centered_xy, "T");
+		Render::DrawString(x + 20.f * Menu->Scale, y + 130.f * Menu->Scale, Col(55 + Context.Copy * 200, 55 + Context.Copy * 200, 55 + Context.Copy * 200, MaxAlpha * (0.5f + 0.5f * Context.Copy)), Fonts::MenuIcons, Render::centered_xy, CopyHovered ? "B" : "A");
+
+	}
+	else
+		Render::DrawString(x + 20.f * Menu->Scale, y + 130.f * Menu->Scale, Col(55 + Context.Copy * 200, 55 + Context.Copy * 200, 55 + Context.Copy * 200, MaxAlpha * (0.5f + 0.5f * Context.Copy)), Fonts::MenuIcons, Render::centered_xy, CopyHovered ? "B" : "A");
 }
 
 bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
@@ -303,18 +525,54 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 
 	if (NewConfig && LeftClick) {
 		LeftClick = false;
+		std::string File = Client->InfFolder + "\\" + ConfigSystem->Loaded + ".infinite";
 
+
+
+		std::ifstream FileReader(File);
+
+		if (!FileReader.good()) {
+			FileReader.close();
+			return false;
+		}
+
+
+		Json::Value Root;
+		FileReader >> Root;
+	
 		int It = 2;
-		std::string NewConfigName = "New Config";
+		std::string NewConfigName = "New Config ";
 		while (ConfigSystem->Configs.find(NewConfigName) != ConfigSystem->Configs.end()) {
-			NewConfigName = "New Config" + std::to_string(It);
+			NewConfigName = "New Config " + std::to_string(It);
+			It++;
+		}
+
+
+		std::string File2 = Client->InfFolder + "\\" + NewConfigName + ".infinite";
+		std::ofstream FileWriter(File2);
+
+		if (!FileWriter.good()) {
+			FileWriter.close();
+			return false;
+		}
+
+		FileWriter << Root;
+		FileWriter.close();
+		Root.clear();
+
+		Reload();
+		/*
+		int It = 2;
+		std::string NewConfigName = "New Config ";
+		while (ConfigSystem->Configs.find(NewConfigName) != ConfigSystem->Configs.end()) {
+			NewConfigName = "New Config " + std::to_string(It);
 			It++;
 		}
 		ConfigSystem->CreateConfig(NewConfigName);
 		//create config
 
 			Reload();
-		
+		*/
 	}
 
 	Col Full = Col(0, 1, 2, MaxAlpha);
@@ -339,8 +597,10 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 		std::string WrittenCFG = EditableText;
 		if (HoveredOverCfg) {
 			ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
-			if (LeftClick)
+			if (LeftClick) {
 				SelectionInRename = true;
+				Menu->EditTextAnimation = Menu->CurrentClock;
+			}
 
 		}
 		else if (LeftClick && SelectionInRename) {
@@ -353,13 +613,15 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 				LastSelectedConfig = EditableText;
 				SelectedConfig = EditableText;
 				Reload();
+				ConfigSystem->Loaded = SelectedConfig;
+				ConfigSystem->LoadToConfig(ConfigSystem->Loaded);
 			}
 			
 		}
 
 		if (SelectionInRename) {
 			ImGui::GetIO().WantTextInput = true;
-			if ((int(Menu->CurrentClock * 0.0023f) % 2) == 0)
+			if ((int((Menu->CurrentClock - Menu->EditTextAnimation) * 0.0019f) % 2) == 0)
 				WrittenCFG += "|";
 
 			if (ImGui::GetIO().InputQueueCharacters.Size > 0) {
@@ -375,6 +637,8 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 							LastSelectedConfig = EditableText;
 							SelectedConfig = EditableText;
 							Reload();
+							ConfigSystem->Loaded = SelectedConfig;
+							ConfigSystem->LoadToConfig(ConfigSystem->Loaded);
 						}
 
 						if (LeftClick)
@@ -433,7 +697,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 		GUIAnimations::Animate(SelectionLoadAnimation, HoveringSave);
 		GUIAnimations::Animate(SelectionSaveAnimation, LastSelectedConfig != ConfigSystem->Loaded);
 		if (ConfigSystem->Loaded != LastSelectedConfig) {
-			Render::FilledRoundedRect(x + 529.f * Menu->Scale - TextSize1.x * 0.5f, y + 367.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col((138 + SelectionLoadAnimation * 30) * SelectionSaveAnimation, (138 + SelectionLoadAnimation * 30) * SelectionSaveAnimation, (242 + SelectionLoadAnimation * 13) * SelectionSaveAnimation, MaxAlpha), 6.f * Menu->Scale);
+			Render::FilledRoundedRect(x + 529.f * Menu->Scale - TextSize1.x * 0.5f, y + 367.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col((108 + SelectionLoadAnimation * 60) * SelectionSaveAnimation, (108 + SelectionLoadAnimation * 60) * SelectionSaveAnimation, (232 + SelectionLoadAnimation * 23) * SelectionSaveAnimation, MaxAlpha), 6.f * Menu->Scale);
 		}
 		else {
 			Render::FilledRoundedRect(x + 529.f * Menu->Scale - TextSize1.x * 0.5f, y + 367.f * Menu->Scale - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col(80, 90, 170, MaxAlpha * (0.01f + SelectionLoadAnimation * 0.24f)), 6.f * Menu->Scale);

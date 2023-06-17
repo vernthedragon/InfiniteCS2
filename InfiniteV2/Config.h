@@ -32,20 +32,21 @@ public:
 class CConfig {
 public:
 	void ResetValues();
-	struct Misc_t {
-		struct Main_t {
-
-		};
-		Main_t Main;
-		struct Movement_t {
-			bool Bunnyhop;
-			int BunnyhopStrafeType;
-		};
-		Movement_t Movement;
+	struct Movement_t {
+		bool Bunnyhop = false;
+		int BunnyhopStrafeType = 0;
 	};
-	Misc_t Misc;
+
+	Movement_t Movement;
+
+	struct MenuSettings_t {
+		int AnimationSpeed = 100.f;
+	};
+	MenuSettings_t Menu;
 	bool MenuOpen = false;
 	int MenuScale = 2;
+	bool AutoSave = false;
+	bool DisableComplexAnimations = false;
 	BaseConfig Base;
 };
 

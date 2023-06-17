@@ -56,7 +56,7 @@ void Movement::DoStrafe() {
 
 void Movement::DoBunnyhop() {
 
-	if (!Config->Misc.Movement.Bunnyhop)
+	if (!Config->Movement.Bunnyhop)
 		return;
 
 	static bool bLastJumped = false;

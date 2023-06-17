@@ -89,6 +89,8 @@ public:
 	float MenuStateButtonAnimations[2];
 	float SettingAnimation;
 	float SearchAnimation;
+	float SaveButton;
+	float EditTextAnimation;
 };
 
 extern CMenu* Menu;

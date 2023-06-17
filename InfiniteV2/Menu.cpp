@@ -65,12 +65,21 @@ void CMenu::SetupUser() {
 	}
 	ConfigViewer = new ConfigView();
 	Childs[CONFIGS][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+	Childs[MENUMAIN][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+	Childs[USERMAIN][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+
+
+
+	Childs[MENUMAIN][LEFT].New(new Switch("Auto-Save Current Configuration", &Config->AutoSave));
+	Childs[MENUMAIN][LEFT].New(new Switch("Disable Complex Animations", &Config->DisableComplexAnimations));
+	Childs[MENUMAIN][LEFT].New(new Slider("Animation Speed", 20, 220, &Config->Menu.AnimationSpeed));
 	Childs[CONFIGS][LEFT].New(ConfigViewer);
 
-	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Misc.Movement.Bunnyhop));
+	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
 	Childs[MOVEMENT][LEFT].New(new Switch("Test", &Test));
-	Childs[MOVEMENT][LEFT].New(new Switch("Another Switch", &Test2, []() {return Test; }));
+	Childs[MOVEMENT][LEFT].New(new Switch("Test", &Test2, []() {return Test; }));
 	Childs[MOVEMENT][LEFT].New(new Switch("Hello", &Test3));
+	Childs[MOVEMENT][LEFT].New(new Slider("Testing", 0, 100, &Config->Movement.BunnyhopStrafeType));
 	Childs[MOVEMENT][LEFT].New(new Switch("Font Testing", &Test4));
 	Childs[MOVEMENT][LEFT].New(new Switch("Test AntiAliassdafsdfsafsdafsafsadfsadfsafdasdf", &Test5, []() {return Test4; }));
 
@@ -268,10 +277,28 @@ void CMenu::Draw() {
 		
 		Childs[CurrentSubtab][LEFT].Draw(Pos.x + 160 * Scale, Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation ) * Scale, Alpha, MouseClick, MousePress);
 		
-		if(CurrentSubtab != CONFIGS)
+		if(CurrentSubtab != CONFIGS && CurrentTab != SETTINGS)
 			Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 17.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
 
+	
+	
+		{
+			float x = Pos.x + 52.f * Scale;
+			float y = Pos.y + 518.f * Scale ;
+			Vec2 TextSize1 = Render::TextSize(Fonts::MenuMain, "Save");
+			bool HoveringSave = InRegion(x - TextSize1.x * 0.5f - 9.f * Menu->Scale, y - TextSize1.y * 0.5f - 9.f * Menu->Scale, TextSize1.x + 36.f * Menu->Scale, TextSize1.y + 21.f * Menu->Scale);
 
+			if (HoveringSave && Menu->MouseClick) {
+				ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
+			}
+
+			GUIAnimations::Animate(SaveButton, HoveringSave);
+			Render::FilledRoundedRect(x - TextSize1.x * 0.5f, y - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col((108 + SaveButton * 60) , (108 + SaveButton * 60), (232 + SaveButton * 23) , Alpha), 6.f * Menu->Scale);
+
+
+			Render::RoundedRect(x - TextSize1.x * 0.5f, y - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col(100, 104, 110, Alpha), 1.f * Menu->Scale, 6.f * Menu->Scale);
+			Render::DrawString(x + 11.f * Menu->Scale, y + 3.f * Menu->Scale, Col(255, 255, 255, Alpha), Fonts::MenuMain, Render::centered_xy, "Save");
+		}
 		if (SearchAnimation > 0.f) {
 			float OldSearchAnimation = SearchAnimation;
 			SearchAnimation = GUIAnimations::Ease(SearchAnimation);
@@ -331,7 +358,8 @@ void CMenu::AdjustDPI() {
 		Childs[i][RIGHT].Size = Vec2(335 * Scale, 440 * Scale);
 	}
 	Childs[CONFIGS][LEFT].Size = Vec2(703 * Scale, 440 * Scale);
-
+	Childs[MENUMAIN][LEFT].Size = Vec2(703 * Scale, 440 * Scale);
+	Childs[USERMAIN][LEFT].Size = Vec2(703 * Scale, 440 * Scale);
 	ShouldAdjustDPI = false;
 }
 void CMenu::OnRender() {
