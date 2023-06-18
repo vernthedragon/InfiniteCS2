@@ -1,6 +1,13 @@
 #pragma once
 #include "Math.h"
 
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 
 class Col {
@@ -20,6 +27,9 @@ public:
 	{
 		return *((unsigned long*)Color);
 	}
+	unsigned int* Pointer() {
+		return (unsigned int*)Color;
+	}
 	inline void Setu32(unsigned long col) const
 	{
 		*((unsigned long*)Color) = col;
@@ -34,7 +44,90 @@ public:
 	{
 		return Color[index];
 	}
+	double Hue()
+	{
+		double r = Color[0] / 255.f;
+		double g = Color[1] / 255.f;
+		double b = Color[2] / 255.f;
 
+		double mx = max(r, max(g, b));
+		double mn = min(r, min(g, b));
+		if (mx == mn)
+			return 0.f;
+
+		double delta = mx - mn;
+
+		double hue = 0.f;
+		if (mx == r)
+			hue = (g - b) / delta;
+		else if (mx == g)
+			hue = 2.f + (b - r) / delta;
+		else
+			hue = 4.f + (r - g) / delta;
+
+		hue *= 60.f;
+		if (hue < 0.f)
+			hue += 360.f;
+
+		return hue / 360.f;
+	}
+
+	double Saturation()
+	{
+		double r = Color[0] / 255.f;
+		double g = Color[1] / 255.f;
+		double b = Color[2] / 255.f;
+
+		double mx = max(r, max(g, b));
+		double mn = min(r, min(g, b));
+
+		double delta = mx - mn;
+
+		if (mx == 0.f)
+			return delta;
+
+		return delta / mx;
+	}
+
+	double Brightness()
+	{
+		double r = Color[0] / 255.f;
+		double g = Color[1] / 255.f;
+		double b = Color[2] / 255.f;
+
+		return max(r, max(g, b));
+	}
+
+	static Col hsb(float hue, float saturation, float brightness)
+	{
+		auto clamp = [](float value, float min, float max) {
+			if (value > max) return max;
+			else if (value < min) return min;
+			return value;
+		};
+		hue = clamp(hue, 0.f, 1.f);
+		saturation = clamp(saturation, 0.f, 1.f);
+		brightness = clamp(brightness, 0.f, 1.f);
+
+		float h = (hue == 1.f) ? 0.f : (hue * 6.f);
+		float f = h - static_cast<int>(h);
+		float p = brightness * (1.f - saturation);
+		float q = brightness * (1.f - saturation * f);
+		float t = brightness * (1.f - (saturation * (1.f - f)));
+
+		if (h < 1.f)
+			return Col((int)(brightness * 255), (int)(t * 255), (int)(p * 255));
+		else if (h < 2.f)
+			return Col((int)(q * 255), (int)(brightness * 255), (int)(p * 255));
+		else if (h < 3.f)
+			return Col((int)(p * 255), (int)(brightness * 255), (int)(t * 255));
+		else if (h < 4)
+			return Col((int)(p * 255), (int)(q * 255), (int)(brightness * 255));
+		else if (h < 5)
+			return Col((int)(t * 255), (int)(p * 255), (int)(brightness * 255));
+		else
+			return Col((int)(brightness * 255), (int)(p * 255), (int)(q * 255));
+	}
 	const Col& LinearBlend(const Col& other) 
 	{
 		this->operator+=(other);

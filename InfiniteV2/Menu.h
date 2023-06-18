@@ -64,6 +64,7 @@ public:
 	inline bool InRegion(float x, float y, float w, float h);
 	bool MousePress = false;
 	bool MouseClick = false;
+	bool MouseRightClick = false;
 	float Alpha = 0.f;
 	float Scale = 0.f;
 	float AnimationModifier = 0.f;
@@ -92,6 +93,8 @@ public:
 	float SaveButton;
 	float EditTextAnimation;
 	int LastMenuScale;
+	Col LastCopiedColor;
+	std::deque<Settings*> SettingsWindows;
 };
 
 extern CMenu* Menu;

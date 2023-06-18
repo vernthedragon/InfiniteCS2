@@ -59,29 +59,36 @@ int Test6 = 45;
  int test = 0;
  int test3 = 0;
  unsigned int test2;
+ Col tescl(255,0,0,255);
 void CMenu::SetupUser() {
 	LastMenuScale = Config->MenuScale;
 	for (int i = 0; i < MAXSUBTABS; i++) {
-		Childs[i][LEFT].Update("", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
-		Childs[i][RIGHT].Update("", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+		Childs[i][LEFT].Update( Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
+		Childs[i][RIGHT].Update( Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
 		Childs[i][LEFT].OpenAnimation = 0.f;
 		Childs[i][RIGHT].OpenAnimation = 0.f;
 	}
 	ConfigViewer = new ConfigView();
-	Childs[CONFIGS][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
-	Childs[MENUMAIN][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
-	Childs[USERMAIN][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
-	Childs[SEARCHMAIN][LEFT].Update("", Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
+	Childs[CONFIGS][LEFT].Update( Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
+	Childs[MENUMAIN][LEFT].Update( Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
+	Childs[USERMAIN][LEFT].Update( Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
+	Childs[SEARCHMAIN][LEFT].Update( Vec2(703 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
 
 
 	Childs[MENUMAIN][LEFT].New(new Switch("Auto-Save Current Configuration", &Config->AutoSave));
 	Childs[MENUMAIN][LEFT].New(new Select("Menu Scale", { "50%", "80%", "100%", "140%", "170%" }, &Config->MenuScale));
 	Childs[MENUMAIN][LEFT].New(new Switch("Disable Complex Animations", &Config->DisableComplexAnimations));
 	Childs[MENUMAIN][LEFT].New(new Slider("Animation Speed", 40, 170, &Config->Menu.AnimationSpeed));
+	Childs[MENUMAIN][LEFT].New(new Text("Menu Colours"));
+	Childs[MENUMAIN][LEFT].New(new Settings(47.f, 400.f, 300.f, Childs[MENUMAIN][LEFT].GetLastAddedElement(), [](Child* menu) {
+		menu->New(new Text("Main Theme"));
+		menu->New(new ColorPicker("Main Theme", 65.f, &tescl, menu->GetLastAddedElement()));
+		}));
 	Childs[CONFIGS][LEFT].New(ConfigViewer);
 
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
 	Childs[MOVEMENT][LEFT].New(new Switch("Switch", &Test));
+	Childs[MOVEMENT][LEFT].New(new ColorPicker("testcolor", 110.f,&tescl, Childs[MOVEMENT][LEFT].GetLastAddedElement()));
 	Childs[MOVEMENT][LEFT].New(new Switch("Another Switch with Long Name", &Test2, []() {return Test; }));
 	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" }, &test));
 	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" , "nine" , "ten" }, &test3));
@@ -142,17 +149,7 @@ void CMenu::SetupUser() {
 void CMenu::Draw() {
 	//ImGui::GetIO().MouseDrawCursor = true;
 
-	if (IsHovered()) {
-		if (MouseClick) {
-			MenuMoveCache.x = MousePos.x - Pos.x;
-			MenuMoveCache.y = MousePos.y - Pos.y;
-		}
 
-		if (MousePress) {
-			Pos.x = MousePos.x - MenuMoveCache.x;
-			Pos.y = MousePos.y - MenuMoveCache.y;
-		}
-	}
 
 	
 		Render::FilledRoundedRect(Pos.x, Pos.y, 900.f * Scale, 560.f * Scale, Col(1,2,4, Alpha), 4.f * Scale);
@@ -289,8 +286,22 @@ void CMenu::Draw() {
 		if(CurrentSubtab != CONFIGS && CurrentTab != SETTINGS && CurrentSubtab != SEARCHMAIN)
 			Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 25.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
 
-	
-	
+		bool CanMoveMenu = true;
+		for (auto& Overlay : SettingsWindows) {
+			if (Overlay->SpecialDraw(Alpha, Menu->MouseClick, Menu->MousePress))
+				CanMoveMenu = false;
+		}
+		if (IsHovered() && CanMoveMenu) {
+			if (MouseClick) {
+				MenuMoveCache.x = MousePos.x - Pos.x;
+				MenuMoveCache.y = MousePos.y - Pos.y;
+			}
+
+			if (MousePress) {
+				Pos.x = MousePos.x - MenuMoveCache.x;
+				Pos.y = MousePos.y - MenuMoveCache.y;
+			}
+		}
 		{
 			float x = Pos.x + 52.f * Scale;
 			float y = Pos.y + 518.f * Scale ;
@@ -400,6 +411,7 @@ void CMenu::OnRender() {
 	MousePos.y = mp.y;
 
 	MouseClick = ImGui::GetIO().MouseDownDuration[0] == 0.f;
+	MouseRightClick = ImGui::GetIO().MouseDownDuration[1] == 0.f;
 	MousePress = ImGui::GetIO().MouseDownDuration[0] > 0.f;
 
 	if (Client->KeyToggled(VK_INSERT)) {

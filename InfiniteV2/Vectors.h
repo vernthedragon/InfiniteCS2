@@ -20,6 +20,22 @@ public:
 		x = e.x; y = e.y;
 		return *this;
 	}
+	inline Vec2 operator*(const float n) const { return Vec2(x * n, y * n); }
+	inline Vec2 operator+(const Vec2& v) const { return Vec2(x + v.x, y + v.y); }
+	inline Vec2 operator-(const Vec2& v) const { return Vec2(x - v.x, y - v.y); }
+	inline void operator+=(const Vec2& v)
+	{
+		x += v.x;
+		y += v.y;
+	}
+	inline void operator-=(const Vec2& v)
+	{
+		x -= v.x;
+		y -= v.y;
+	}
+
+	bool operator==(const Vec2& v) const { return (v.x == x && v.y == y); }
+	bool operator!=(const Vec2& v) const { return (v.x != x || v.y != y); }
 	inline void Zero();
 	inline ImVec2 ToImVec();
 };

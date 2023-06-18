@@ -58,10 +58,10 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 	
 	Render::PushClipRect(x,y, Size.x, Size.y, true);
 	
-	
+	y -= AnimatedScroll;
 	MenuElement* Overlay = nullptr;
 	float OverlayContextStartY = 0.f;
-	float StartY = y - 13.f * Menu->Scale;// + 15.f * Menu->Scale;
+	float StartY = 0.f;// + 15.f * Menu->Scale;
 
 	for (auto& Element : this->Elements) {
 		
@@ -94,11 +94,36 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 				OverlayContextStartY = StartY;
 				continue;
 			}
-			Element->Draw(x + 15.f * Menu->Scale, StartY, Size, MaxAlpha, Menu->MouseClick, Menu->MousePress, Disable);
+			Element->Draw(x + 15.f * Menu->Scale, y - 13.f * Menu->Scale + StartY, Size, MaxAlpha, Menu->MouseClick, Menu->MousePress, Disable);
 		}
 		
 		//StartY += Element->GetOffset();
 	}
+	y += AnimatedScroll;
+
+	bool ShouldScroll = StartY > Size.y - 13.f * Menu->Scale;
+	if (ShouldScroll) {
+		bool Scrolled = false;
+		while (Client->ScrollAmmount > 0) {
+			Scroll -= 19.f * Menu->Scale;
+			Client->ScrollAmmount--;
+			Scrolled = true;
+		}
+		while (Client->ScrollAmmount < 0) {
+			Scroll += 19.f * Menu->Scale;
+			Client->ScrollAmmount++;
+			Scrolled = true;
+		}
+		float Max = (StartY) - (15.f * Menu->Scale * 28.f) - Menu->Scale * 3.f;
+		Math::ClampPtr(Scroll, Scrolled ? -140.f * Menu->Scale : 0.f, Scrolled ? (Max + 140.f * Menu->Scale) : Max);
+		AnimatedScroll = (AnimatedScroll + (Scroll - AnimatedScroll) * 0.02f * Menu->AnimationModifier);
+
+		
+		float OffsetY = (AnimatedScroll / Max) * (Size.y - 40.f * Menu->Scale);
+		Render::FilledRoundedRectCustom(x + Size.x - 4.f * Menu->Scale, y + OffsetY, 4.f * Menu->Scale, 40.f * Menu->Scale, Col(0, 3, 6, MaxAlpha), 4.5f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
+		
+	}
+
 	Menu->MouseClick = OldMouseClick;
 	Menu->MousePress = OldMousePress;
 	Render::PopClipRect();
@@ -112,6 +137,284 @@ inline bool Child::InRegion(float x, float y, float w, float h) {
 	return Menu->MousePos.x > x && Menu->MousePos.y > y && Menu->MousePos.x < x + w && Menu->MousePos.y < y + h;
 }
 #pragma endregion 
+bool Settings::SpecialDraw(float MaxAlpha, bool& LeftClick, bool& Drag) {
+	if (OpenAnimation <= 0.f)
+		return true;
+
+	MaxAlpha *= GUIAnimations::Ease(OpenAnimation);
+	
+	Overlay->Size = OriginalSize;
+	Overlay->Size.x *= Menu->Scale;
+	Overlay->Size.y *= Menu->Scale;
+	Overlay->Draw(Start.x, Start.y + 36.f * (1.f - OpenAnimation), MaxAlpha, LeftClick, Drag);
+	return false;
+}
+Settings::Settings(float Offset, float sizex, float sizey, MenuElement* bind, bool(*shouldrender)() ) {
+
+	HoverAnimation = 0.f;
+
+	Before = bind;
+
+
+	Open = false;
+	OpenAnimation = 0.f;
+	HoverAnimation = 0.f;
+
+	offset = Offset;
+	OriginalSize = Vec2(sizex, sizey);
+	Overlay = new Child(Vec2(sizex, sizey), Col(0, 3, 6, 255), true);
+	Menu->SettingsWindows.push_back(this);
+}
+float Text::GetOffset() {
+	return OffsetAnimation * Menu->Scale * 28.f;
+}
+Settings::Settings(float Offset, float sizex, float sizey, MenuElement* bind, void(*Setup)(Child*), bool(*shouldrender)() ) {
+
+	HoverAnimation = 0.f;
+
+	Before = bind;
+
+
+	Open = false;
+	OpenAnimation = 0.f;
+	HoverAnimation = 0.f;
+
+	offset = Offset;
+	OriginalSize = Vec2(sizex, sizey);
+	Overlay = new Child(Vec2(sizex, sizey), Col(0, 3, 6, 255), true);
+	Setup(Overlay);
+	Menu->SettingsWindows.push_back(this);
+}
+bool Settings::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
+	float OriginalMaxAlpha = MaxAlpha;
+	MaxAlpha *= GUIAnimations::Ease(Before->GetAnimation());
+
+	bool ButtonHovered = Menu->InRegion(x + Size.x - (offset + 8.f) * Menu->Scale, y - 2.f * Menu->Scale, 30.f * Menu->Scale, 19.f * Menu->Scale) && !disable;
+	GUIAnimations::Animate(HoverAnimation, ButtonHovered || ShouldOverlay());
+
+	Render::DrawString(x + Size.x - offset * Menu->Scale, y + 9.f * Menu->Scale, Col(90 + HoverAnimation * 165, 90 + HoverAnimation * 165, 90 + HoverAnimation * 165, MaxAlpha * (0.8f + 0.2f * HoverAnimation)), Fonts::MenuIcons, Render::centered_y, "I");
+
+	if (MaxAlpha < 254.8f)
+		Open = false;
+
+	GUIAnimations::EaseAnimate(OpenAnimation, Open, 0.0178f);
+
+	if (ButtonHovered && LeftClick) {
+		Open = true;
+		Start = Menu->MousePos;
+	}
+	else if (Open && LeftClick) {
+		if (!Menu->InRegion(Start.x, Start.y, OriginalSize.x * Menu->Scale, OriginalSize.y * Menu->Scale))
+		{
+			Open = false;
+		}
+	}
+	return false;
+	
+}
+bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
+	float OriginalMaxAlpha = MaxAlpha;
+	MaxAlpha *= GUIAnimations::Ease(Before->GetAnimation());
+
+	bool ButtonHovered = Menu->InRegion(x + Size.x - (offset + 8.f) * Menu->Scale, y - 2.f * Menu->Scale, 30.f * Menu->Scale, 19.f * Menu->Scale) && !disable;
+	GUIAnimations::Animate(HoverAnimation, ButtonHovered || ShouldOverlay());
+	Col col = *Pointer;
+	Render::DrawString(x + Size.x - offset * Menu->Scale, y + 9.f * Menu->Scale, Col(col[0],col[1],col[2], MaxAlpha * (0.8f + 0.2f * HoverAnimation)), Fonts::MenuIcons, Render::centered_y, "U");
+	
+	if(MaxAlpha < 254.8f)
+		DialogueState = DialogueState_t::Closed;
+
+	if (ButtonHovered) {
+		if (LeftClick && CPDialogue.Open == 0.f) {
+			DialogueState = DialogueState_t::Color;
+			Menu->MouseRightClick = false;
+			LeftClick = false;
+		}
+		else if (Menu->MouseRightClick && Dialogue.Open == 0.f) {
+			Menu->MouseRightClick = false;
+			LeftClick = false;
+			DialogueState = DialogueState_t::CopyPaste;
+			Dialogue.hue = Pointer->Hue();
+			Dialogue.saturation = Pointer->Saturation();
+			Dialogue.brightness = Pointer->Brightness();
+			Dialogue.alpha = Pointer->operator[](3) / 255.f;
+		}
+	}
+	GUIAnimations::EaseAnimate(CPDialogue.Open, DialogueState == DialogueState_t::CopyPaste, 0.0178f);
+	GUIAnimations::EaseAnimate(Dialogue.Open, DialogueState == DialogueState_t::Color, 0.0178f);
+
+	if (CPDialogue.Open > 0.f) {
+		float Eased = GUIAnimations::Ease(CPDialogue.Open);
+
+		x = x + Size.x - (offset - 7.f) * Menu->Scale;
+		y = y + 25.f * Menu->Scale + (1.f - CPDialogue.Open) * 26.f * Menu->Scale;
+	
+		Render::FilledRoundedRect(x, y, 79.f * Menu->Scale, 43.f * Menu->Scale, Col(0, 3, 6, MaxAlpha * Eased), 4.f * Menu->Scale);
+		Render::DrawString(x + 24.f * Menu->Scale, y + 20.f * Menu->Scale, Col(55 + CPDialogue.Copy * 200, 55 + CPDialogue.Copy * 200, 55 + CPDialogue.Copy * 200, MaxAlpha * Eased * (0.8f + 0.2f * CPDialogue.Copy)), Fonts::MenuIcons, Render::centered_xy, "S");
+		bool CopyHovered = Menu->InRegion(x, y, 39.5f * Menu->Scale, 43.f * Menu->Scale);
+		bool PasteHovered = Menu->InRegion(x + 40.f * Menu->Scale, y, 39.f * Menu->Scale, 43.f * Menu->Scale);
+		Render::DrawString(x + 57.f * Menu->Scale, y + 20.f * Menu->Scale, Col(55 + CPDialogue.Paste * 200, 55 + CPDialogue.Paste * 200, 55 + CPDialogue.Paste * 200, MaxAlpha * Eased * (0.8f + 0.2f * CPDialogue.Paste)), Fonts::MenuIcons, Render::centered_xy, "Z");
+		GUIAnimations::Animate(CPDialogue.Paste, PasteHovered);
+		GUIAnimations::Animate(CPDialogue.Copy, CopyHovered);
+
+	
+
+		if (DialogueState == DialogueState_t::CopyPaste) {
+
+	
+			if (LeftClick ) {
+				DialogueState = DialogueState_t::Closed;
+				if (CopyHovered) 
+					Menu->LastCopiedColor = *Pointer;
+		
+				
+				if (PasteHovered) 
+					*Pointer = Menu->LastCopiedColor;
+				LeftClick = false;
+				
+			}
+			else if (Menu->MouseRightClick) {
+				DialogueState = DialogueState_t::Closed;
+				Menu->MouseRightClick = false;
+			}
+		}
+	}
+	if (Dialogue.Open > 0.f) {
+		float Eased = GUIAnimations::Ease(Dialogue.Open);
+		float ME = MaxAlpha * Eased;
+
+		x = x + Size.x - (offset + 170.f) * Menu->Scale;
+
+		y = y + 25.f * Menu->Scale + (1.f - Dialogue.Open) * 26.f * Menu->Scale;
+
+		bool Hovered = Menu->InRegion(x, y, 210.f * Menu->Scale, 210.f * Menu->Scale);
+
+		Render::FilledRoundedRect(x, y, 210.f * Menu->Scale, 210.f * Menu->Scale, Col(0, 3, 6, ME), 5.f * Menu->Scale);
+		Col picker = Col::hsb(Dialogue.hue, 1.f, 1.f);
+		picker[3] = ME;
+		Render::GradientFilledRect(x + 20.f * Menu->Scale, y + 20.f * Menu->Scale, 140.f * Menu->Scale, 140.f * Menu->Scale,
+			Col(255, 255, 255, ME), picker,
+			Col(255, 255, 255, ME), picker);
+
+		Render::GradientFilledRect(x + 20.f * Menu->Scale, y + 20.f * Menu->Scale, 140.f * Menu->Scale, 140.f * Menu->Scale,
+			Col(0, 0, 0, 0), Col(0, 0, 0, 0),
+			Col(0, 0, 0, ME), Col(0, 0, 0, ME));
+
+		bool HoveredPicker = Menu->InRegion(x + 20.f * Menu->Scale, y + 20.f * Menu->Scale, 140.f * Menu->Scale, 140.f * Menu->Scale);
+
+		Vec2 ToPicker(140.f * Dialogue.saturation * Menu->Scale, 140.f * (1.f - Dialogue.brightness) * Menu->Scale);
+		Dialogue.animatedpicker = (Dialogue.animatedpicker + (ToPicker - Dialogue.animatedpicker) * 0.02f * Menu->AnimationModifier);
+		Math::ClampPtr(Dialogue.animatedpicker.x, 0.f * Menu->Scale, (140.f-4.f) * Menu->Scale);
+		Math::ClampPtr(Dialogue.animatedpicker.y, 0.f * Menu->Scale, (140.f - 4.f) * Menu->Scale);
+
+		Render::FilledCircle(x + 22.f * Menu->Scale + Dialogue.animatedpicker.x, y + 22.f + Dialogue.animatedpicker.y, 4.f * Menu->Scale,
+			Col(143, 150, 255, ME), 24);
+		Render::FilledCircle(x + 22.f * Menu->Scale + Dialogue.animatedpicker.x, y + 22.f + Dialogue.animatedpicker.y, 3.f * Menu->Scale,
+			Col(255, 255, 255, ME), 24);
+
+		constexpr int iterations = 25;
+		Col last_color = Col(255, 0, 0, ME);
+		const auto& hue_size = Vec2(15.f * Menu->Scale, 140.f * Menu->Scale);
+		const auto& hue_pos = Vec2(x + 175.5f * Menu->Scale, y + 50 * Menu->Scale);
+		for (auto i = 0; i < iterations; i++) {
+			Col current_color = Col::hsb((float)i / iterations, 1.f, 1.f);
+			current_color[3] = last_color[3];
+			Render::GradientFilledRect(
+				hue_pos.x, hue_pos.y + i * hue_size.y / iterations,
+				hue_size.x, hue_size.y / iterations,
+				last_color, last_color,
+				current_color, current_color
+			);
+
+			last_color = current_color;
+		}
+		Dialogue.animatedhue = (Dialogue.animatedhue + (Dialogue.hue - Dialogue.animatedhue) * 0.02f * Menu->AnimationModifier);
+		Math::ClampPtr(Dialogue.animatedhue, 0.f, 1.f);
+		bool HoveredHue = Menu->InRegion(x + 175.f * Menu->Scale, y + 20 * Menu->Scale, 15.f * Menu->Scale, 140.f * Menu->Scale);
+		Render::FilledRect(hue_pos.x - 2.f * Menu->Scale, hue_pos.y + hue_size.y * Dialogue.animatedhue, 18.f * Menu->Scale, 4.f * Menu->Scale,
+			Col(255, 255, 255, ME));
+
+		Col colactual = col;
+		colactual[3] = ME;
+		Col colnoa = colactual;
+		colnoa[3] = 0.f;
+		Render::GradientFilledRect(x + 20.f * Menu->Scale, y + 175.f * Menu->Scale, hue_size.y, hue_size.x,
+			colactual, colnoa,
+			colactual, colnoa);
+
+		Dialogue.animatedfloat = (Dialogue.animatedfloat + (Dialogue.alpha - Dialogue.animatedfloat) * 0.02f * Menu->AnimationModifier);
+		Math::ClampPtr(Dialogue.animatedfloat, 0.f, 1.f);
+		Render::FilledRect(x + 20.f * Menu->Scale + hue_size.y * (1.f - Dialogue.animatedfloat), y + 173.f * Menu->Scale, 4.f * Menu->Scale, 18.f * Menu->Scale,
+			Col(255, 255, 255, ME));
+		bool HoveredAlpha = Menu->InRegion(x + 20.f * Menu->Scale, y + 175.f * Menu->Scale, hue_size.y, hue_size.x);
+		Render::FilledRect(x + 173.f * Menu->Scale, y + 20.f * Menu->Scale, 18.5f * Menu->Scale, 15.f * Menu->Scale,
+			colactual);
+
+		if (DialogueState == DialogueState_t::Color) {
+
+			if (LeftClick) {
+				if (HoveredPicker) {
+					Dialogue.type = 1;
+				}
+				else if (HoveredHue) {
+					Dialogue.type = 2;
+				}
+				else if (HoveredAlpha) {
+					Dialogue.type = 3;
+				}
+				
+					
+			
+			}
+			if (Drag || LeftClick) {
+				if (Dialogue.type == 1) {
+					float DifferenceX = Menu->MousePos.x - (x + 20.f * Menu->Scale);
+					float DifferenceY = Menu->MousePos.y - (y + 20.f * Menu->Scale);
+
+					Dialogue.saturation = std::clamp(DifferenceX / (140.f * Menu->Scale), 0.f, 1.f);
+					Dialogue.brightness = std::clamp(1.f - (DifferenceY / (140.f * Menu->Scale)), 0.f, 1.f);
+				}
+				else if (Dialogue.type == 2) {
+					Dialogue.hue = std::clamp((Menu->MousePos.y - (hue_pos.y)) / 140.f * Menu->Scale, 0.f, 1.f);
+				}
+				else if (Dialogue.type == 3) {
+					Dialogue.alpha = std::clamp(1.f - ((Menu->MousePos.x - (x + 20.f * Menu->Scale)) / 140.f), 0.f, 1.f);
+				}
+				*(Col*)Pointer = Col::hsb(Dialogue.hue, Dialogue.saturation, Dialogue.brightness);
+			}
+			else if (Dialogue.type != 0) {
+				Dialogue.type = 0;
+				if (Config->AutoSave)
+					ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
+			}
+
+			if (LeftClick && !Hovered) {
+				DialogueState = DialogueState_t::Closed;
+				
+
+
+			}
+		}
+	}
+
+	return false;
+}
+bool ColorPicker::ShouldRender() {
+	
+
+	return Before->GetOffset() > 0.f;
+}
+bool ColorPicker::ShouldOverlay() {
+	return DialogueState != DialogueState_t::Closed;
+}
+
+void ColorPicker::OnFree() {
+	if (BindedVar == "") {
+		throw IException("Menu Element has no Binded ConfigVar! (Memory Range Corrupt)", 0);
+	}
+
+	ConfigSystem->RemoveVar(BindedVar);
+}
 
 float Switch::GetOffset() {
 	return OffsetAnimation * Menu->Scale * 28.f;
