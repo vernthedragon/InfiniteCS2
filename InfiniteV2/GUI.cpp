@@ -221,6 +221,8 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	if (Hovered && LeftClick && !Open) {
 		LeftClick = false;
 		Open = true;
+		Scroll = 0.f;
+		AnimatedScroll = 0.f;
 	}
 
 
@@ -275,7 +277,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y + OffsetY, 5.f * Menu->Scale, 20.f * Menu->Scale, Col(170, 170, 255, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
 		}
 		else
-			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y, 5.f * Menu->Scale, 155.f * Menu->Scale, Col(170, 170, 255, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
+			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y, 5.f * Menu->Scale, 155.f * Menu->Scale, Col(11, 12, 18, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
 		Render::PopClipRect();
 		if (Open) {
 
@@ -390,6 +392,8 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 	if (Hovered && LeftClick && !Open) {
 		LeftClick = false;
 		Open = true;
+		Scroll = 0.f;
+		AnimatedScroll = 0.f;
 	}
 
 
@@ -450,7 +454,7 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y + OffsetY, 5.f * Menu->Scale, 20.f * Menu->Scale, Col(170, 170, 255, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
 		}
 		else
-			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y, 5.f * Menu->Scale, 155.f * Menu->Scale, Col(170, 170, 255, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
+			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y, 5.f * Menu->Scale, 155.f * Menu->Scale, Col(11, 12, 18, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
 		Render::PopClipRect();
 		if (Open) {
 
