@@ -148,8 +148,23 @@ void CMenu::SetupUser() {
 
 void CMenu::Draw() {
 	//ImGui::GetIO().MouseDrawCursor = true;
+	bool CanMoveMenu = true;
+	for (auto& Overlay : SettingsWindows) {
+		if (Overlay->OpenAnimation > 0.f)
+			CanMoveMenu = false;
 
+	}
+	if (IsHovered() && CanMoveMenu) {
+		if (MouseClick) {
+			MenuMoveCache.x = MousePos.x - Pos.x;
+			MenuMoveCache.y = MousePos.y - Pos.y;
+		}
 
+		if (MousePress) {
+			Pos.x = MousePos.x - MenuMoveCache.x;
+			Pos.y = MousePos.y - MenuMoveCache.y;
+		}
+	}
 
 	
 		Render::FilledRoundedRect(Pos.x, Pos.y, 900.f * Scale, 560.f * Scale, Col(1,2,4, Alpha), 4.f * Scale);
@@ -286,22 +301,12 @@ void CMenu::Draw() {
 		if(CurrentSubtab != CONFIGS && CurrentTab != SETTINGS && CurrentSubtab != SEARCHMAIN)
 			Childs[CurrentSubtab][RIGHT].Draw(Pos.x + 160 * Scale + (Childs[CurrentSubtab][LEFT].Size.x + 33 * Scale), Pos.y + (107.f - 25.f * Childs[CurrentSubtab][LEFT].OpenAnimation) * Scale, Alpha, MouseClick, MousePress);
 
-		bool CanMoveMenu = true;
-		for (auto& Overlay : SettingsWindows) {
-			if (Overlay->SpecialDraw(Alpha, Menu->MouseClick, Menu->MousePress))
-				CanMoveMenu = false;
-		}
-		if (IsHovered() && CanMoveMenu) {
-			if (MouseClick) {
-				MenuMoveCache.x = MousePos.x - Pos.x;
-				MenuMoveCache.y = MousePos.y - Pos.y;
-			}
 
-			if (MousePress) {
-				Pos.x = MousePos.x - MenuMoveCache.x;
-				Pos.y = MousePos.y - MenuMoveCache.y;
-			}
+		for (auto& Overlay : SettingsWindows) {
+			Overlay->SpecialDraw(Alpha, Menu->MouseClick, Menu->MousePress);
+			
 		}
+		
 		{
 			float x = Pos.x + 52.f * Scale;
 			float y = Pos.y + 518.f * Scale ;
