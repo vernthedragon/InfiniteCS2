@@ -267,7 +267,6 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		
 		y += AnimatedScroll;
 		bool ShouldScroll = Offset - 20.f * Menu->Scale > 155.f * Menu->Scale;
-		bool ShouldScroll = Offset - 20.f * Menu->Scale > 155.f * Menu->Scale;
 		if (ShouldScroll) {
 
 
