@@ -88,9 +88,10 @@ void CMenu::SetupUser() {
 
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
 	Childs[MOVEMENT][LEFT].New(new Switch("Switch", &Test));
-	Childs[MOVEMENT][LEFT].New(new ColorPicker("testcolor", 110.f,&tescl, Childs[MOVEMENT][LEFT].GetLastAddedElement()));
+
 	Childs[MOVEMENT][LEFT].New(new Switch("Another Switch with Long Name", &Test2, []() {return Test; }));
 	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" }, &test));
+	Childs[MOVEMENT][LEFT].New(new ColorPicker("testcolor", 110.f, &tescl, Childs[MOVEMENT][LEFT].GetLastAddedElement()));
 	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" , "nine" , "ten" }, &test3));
 	Childs[MOVEMENT][LEFT].New(new Switch("Hello there", &Test3));
 	Childs[MOVEMENT][LEFT].New(new Slider("Another Slider", 0, 100, &Config->Movement.BunnyhopStrafeType));
