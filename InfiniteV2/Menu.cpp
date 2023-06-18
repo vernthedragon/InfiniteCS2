@@ -154,6 +154,16 @@ void CMenu::Draw() {
 			CanMoveMenu = false;
 
 	}
+
+	if (Binder.OpenAnimation > 0.f)
+		CanMoveMenu = false;
+	else if (Binder.Parent) {
+		Binder.Free();
+		Binder.Parent = nullptr;
+
+	}
+
+
 	if (IsHovered() && CanMoveMenu) {
 		if (MouseClick) {
 			MenuMoveCache.x = MousePos.x - Pos.x;
@@ -306,6 +316,9 @@ void CMenu::Draw() {
 			Overlay->SpecialDraw(Alpha, Menu->MouseClick, Menu->MousePress);
 			
 		}
+		if(Binder.Parent != nullptr)
+			Binder.RenderAndUpdate(Alpha, Menu->MouseClick, Menu->MousePress);
+
 		
 		{
 			float x = Pos.x + 52.f * Scale;
@@ -421,6 +434,67 @@ void CMenu::OnRender() {
 
 	if (Client->KeyToggled(VK_INSERT)) {
 		Config->MenuOpen = !Config->MenuOpen;
+	}
+
+	for (auto& Var : ConfigSystem->BindedVariables) {
+		if (Var->Bind.VKey < 0 || Var->Bind.Type == BindOff)
+			continue;
+		if (Var->Bind.ParentType == BindParentType::BindtypeSlider) {
+			if (Var->Bind.Type == BindHold) {
+				*((int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((SliderBind*)Var->Bind.Data)->OldValue) : (((SliderBind*)Var->Bind.Data)->NewValue);
+			}
+			else if (Var->Bind.Type == BindToggle) {
+				if (Client->KeyToggled(Var->Bind.VKey))
+				{
+					(*((int*)Var->Var) != (((SliderBind*)Var->Bind.Data)->OldValue)) ? (((SliderBind*)Var->Bind.Data)->OldValue) : (((SliderBind*)Var->Bind.Data)->NewValue);
+				}
+			}
+			else if (Var->Bind.Type == BindRelease) {
+				*((int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((SliderBind*)Var->Bind.Data)->NewValue) : (((SliderBind*)Var->Bind.Data)->OldValue);
+			}
+		}
+		else if (Var->Bind.ParentType == BindParentType::BindtypeSelect) {
+			if (Var->Bind.Type == BindHold) {
+				*(( int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((SliderBind*)Var->Bind.Data)->OldValue) : (((SliderBind*)Var->Bind.Data)->NewValue);
+			}
+			else if (Var->Bind.Type == BindToggle) {
+				if (Client->KeyToggled(Var->Bind.VKey))
+				{
+					(*(( int*)Var->Var) != (((SliderBind*)Var->Bind.Data)->OldValue)) ? (((SliderBind*)Var->Bind.Data)->OldValue) : (((SliderBind*)Var->Bind.Data)->NewValue);
+				}
+			}
+			else if (Var->Bind.Type == BindRelease) {
+				*(( int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((SliderBind*)Var->Bind.Data)->NewValue) : (((SliderBind*)Var->Bind.Data)->OldValue);
+			}
+			
+		}
+		else if (Var->Bind.ParentType == BindParentType::BindtypeMultiselect) {
+			
+			if (Var->Bind.Type == BindHold) {
+				*((unsigned int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((MultiSelectBind*)Var->Bind.Data)->OldValue) : (((MultiSelectBind*)Var->Bind.Data)->NewValue);
+			}
+			else if (Var->Bind.Type == BindToggle) {
+				if (Client->KeyToggled(Var->Bind.VKey))
+				{
+					(*((unsigned int*)Var->Var) != (((MultiSelectBind*)Var->Bind.Data)->OldValue)) ? (((MultiSelectBind*)Var->Bind.Data)->OldValue) : (((MultiSelectBind*)Var->Bind.Data)->NewValue);
+				}
+			}
+			else if (Var->Bind.Type == BindRelease) {
+				*((unsigned int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((MultiSelectBind*)Var->Bind.Data)->NewValue) : (((MultiSelectBind*)Var->Bind.Data)->OldValue);
+			}
+		}
+		else {
+			if (Var->Bind.Type == BindHold) {
+				*((bool*)Var->Var) = Client->KeyPressed(Var->Bind.VKey);
+			}
+			else if (Var->Bind.Type == BindToggle) {
+				if (Client->KeyToggled(Var->Bind.VKey))
+					*((bool*)Var->Var) = !(*((bool*)Var->Var));
+			}
+			else if (Var->Bind.Type == BindRelease) {
+				*((bool*)Var->Var) = !Client->KeyPressed(Var->Bind.VKey);
+			}
+		}
 	}
 
 

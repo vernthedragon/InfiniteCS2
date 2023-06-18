@@ -16,10 +16,11 @@ public:
 	virtual bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) = 0;
 	virtual bool ShouldRender() = 0; //should we render this element?
 	virtual bool ShouldOverlay() = 0; //should we overlay this element? (rendered last above all other)
-	virtual float& GetAnimation() = 0; //related to open animation
+	virtual float GetAnimation() = 0; //related to open animation
 	virtual void OnFree() = 0; //related to element config
 
 };
+
 class Child {
 public:
 	Child() {
@@ -60,17 +61,15 @@ public:
 	MenuElement* GetLastAddedElement() {
 		return Elements.back();
 	}
-	void EraseElements() {
-		for (auto& Element : Elements) {
-			Element->OnFree();
-			delete Element;
-		}
 
-
-		Elements.clear();
-	}
 	std::deque< MenuElement* > Elements;
 };
+class Bind;
+class Switch;
+class Select;
+class MultiSelect;
+class Slider;
+
 class ConfigView : public MenuElement {
 public:
 	ConfigView() {
@@ -102,7 +101,7 @@ public:
 	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
 	bool ShouldRender();
 	bool ShouldOverlay();
-	float& GetAnimation() {
+	float GetAnimation() {
 		return Scroll;
 	}
 	void OnFree();
@@ -169,11 +168,10 @@ public:
 	bool ShouldOverlay() {
 		return Open;
 	}
-	float& GetAnimation() {
+	float GetAnimation() {
 		return HoverAnimation;
 	}
 	void OnFree() {
-		Overlay->EraseElements();
 		delete Overlay;
 	}
 	bool SpecialDraw(float MaxAlpha, bool& LeftClick, bool& Drag);
@@ -223,7 +221,7 @@ public:
 	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
 	bool ShouldRender();
 	bool ShouldOverlay();
-	float& GetAnimation() {
+	float GetAnimation() {
 		return HoverAnimation;
 	}
 	void OnFree();
@@ -288,12 +286,14 @@ public:
 
 		if (shouldrender != nullptr)
 			OffsetAnimation = shouldrender() ? 1.f : 0.f;
+
+		
 	}
 	float GetOffset();
 	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
 	bool ShouldRender();
 	bool ShouldOverlay();
-	float& GetAnimation() {
+	float GetAnimation() {
 		return OffsetAnimation;
 	}
 	void OnFree();
@@ -303,6 +303,7 @@ public:
 	bool(*ShouldRenderFn)();
 	std::string Label;
 	std::string BindedVar;
+
 	bool* Pointer;
 };
 class MultiSelect : public MenuElement {
@@ -348,7 +349,7 @@ public:
 	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
 	bool ShouldRender();
 	bool ShouldOverlay();
-	float& GetAnimation() {
+	float GetAnimation() {
 		return OffsetAnimation;
 	}
 	void OnFree();
@@ -408,7 +409,7 @@ public:
 	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
 	bool ShouldRender();
 	bool ShouldOverlay();
-	float& GetAnimation() {
+	float GetAnimation() {
 		return OffsetAnimation;
 	}
 	void OnFree();
@@ -467,7 +468,7 @@ public:
 	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
 	bool ShouldRender();
 	bool ShouldOverlay();
-	float& GetAnimation() {
+	float GetAnimation() {
 		return OffsetAnimation;
 	}
 	void OnFree();
@@ -486,7 +487,59 @@ public:
 	int MinValue;
 	int MaxValue;
 };
+class Spacer : public MenuElement {
+public:
+	Spacer() {
 
+	}
+	Spacer(bool(*ShouldRender)()) {
+
+	}
+	float GetOffset() {
+		return 28.f;
+	}
+	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
+		return false;
+	}
+	bool ShouldRender() {
+		return true;
+	}
+	bool ShouldOverlay() {
+		return false;
+	}
+	float GetAnimation() {
+		return 0.f;
+	}
+	void OnFree() {
+
+	}
+
+
+};
+
+class Bind : public MenuElement {
+public:
+	Bind() {
+		
+	}
+	Bind(std::string label, int* vkey) {
+		Label = label;
+		Pointer = vkey;
+		HoverAnimation = 0.f;
+	}
+	float GetOffset();
+	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
+	bool ShouldRender();
+	bool ShouldOverlay();
+	float GetAnimation() {
+		return 0.f;
+	}
+	void OnFree();
+	float HoverAnimation;
+	std::string Label;
+	int* Pointer;
+
+};
 class Text : public MenuElement {
 public:
 	Text() {
@@ -521,7 +574,7 @@ public:
 	bool ShouldOverlay() {
 		return false;
 	}
-	float& GetAnimation() {
+	float GetAnimation() {
 		return OffsetAnimation;
 	}
 	void OnFree() {
@@ -531,4 +584,32 @@ public:
 	bool(*ShouldRenderFn)();
 	std::string Label;
 
+};
+
+class Binder {
+public:
+	Binder() { Overlay = new Child(Vec2(260.f, 200.f), Col(0, 2, 4, 255), true); }
+	~Binder() {}
+	void Update(void* parent, const std::string& configvar, std::vector<std::string> el, int Min, int Max, BindParentType type);
+	void RenderAndUpdate(float MaxAlpha, bool& LeftClick, bool& Drag);
+	void BuildChild();
+	void Free();
+	ConfigVariable* Var;
+	Child* Overlay;
+	//child elements
+	Bind Keybind;
+	Select Type;
+	Select OldValue;
+	Select NewValue;
+	MultiSelect OldValue2;
+	MultiSelect NewValue2;
+	Slider OldValue3;
+	Slider NewValue3;
+	std::vector<std::string> WritableElements;
+	Vec2 Start;
+	int MinVal;
+	int MaxVal;
+	bool Open;
+	float OpenAnimation;
+	void* Parent;
 };

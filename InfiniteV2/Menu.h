@@ -95,6 +95,7 @@ public:
 	int LastMenuScale;
 	Col LastCopiedColor;
 	std::deque<Settings*> SettingsWindows;
+	Binder Binder;
 };
 
 extern CMenu* Menu;

@@ -132,6 +132,26 @@ bool CConfigSystem::SaveToConfig(const std::string& Bind) {
 	std::strftime(buffer, 32, "%a, %d.%m.%Y %H:%M", &ptm);
 	Root["UserConfigData"]["LastModified"] = std::string(buffer);
 
+	for (auto& Binds : BindedVariables) {
+		
+		Root["Binds"][Binds->Bind.Bind]["Key"] = Binds->Bind.VKey;
+		Root["Binds"][Binds->Bind.Bind]["Type"] = Binds->Bind.Type;
+		if (Binds->Bind.ParentType == BindParentType::BindtypeSlider) {
+			//(((SliderBind*)Var->Bind.Data)->NewValue)
+			Root["Binds"][Binds->Bind.Bind]["BindOnValue"] = (((SliderBind*)Binds->Bind.Data)->NewValue);
+			Root["Binds"][Binds->Bind.Bind]["BindOffValue"] = (((SliderBind*)Binds->Bind.Data)->OldValue);
+		}
+		else if (Binds->Bind.ParentType == BindParentType::BindtypeSelect) {
+			Root["Binds"][Binds->Bind.Bind]["BindOnValue"] = (((SliderBind*)Binds->Bind.Data)->NewValue);
+			Root["Binds"][Binds->Bind.Bind]["BindOffValue"] = (((SliderBind*)Binds->Bind.Data)->OldValue);
+		}
+		else if (Binds->Bind.ParentType == BindParentType::BindtypeMultiselect) {
+			Root["Binds"][Binds->Bind.Bind]["BindOnValue"] = (((MultiSelectBind*)Binds->Bind.Data)->NewValue);
+			Root["Binds"][Binds->Bind.Bind]["BindOffValue"] = (((MultiSelectBind*)Binds->Bind.Data)->OldValue);
+
+		}
+
+	}
 
 	for (auto& Var : Variables) {
 		if (Var.second->Type == VartypeColor) {
@@ -213,6 +233,32 @@ bool CConfigSystem::LoadToConfig(const std::string& Bind) {
 
 
 	Config->Base.Bind = Bind;
+
+	for (auto& Binds : BindedVariables) {
+		if (Root["Binds"][Binds->Bind.Bind].type() != Json::ValueType::objectValue) {
+			Client->Log("Failed to Load Bind (not in config): ");
+			Client->Log(Binds->Bind.Bind.c_str());
+			Client->Log("\n");
+			continue;
+		}
+		Binds->Bind.VKey = Root["Binds"][Binds->Bind.Bind]["Key"].asInt();
+		Binds->Bind.Type = Root["Binds"][Binds->Bind.Bind]["Type"].asInt();
+		if (Binds->Bind.ParentType == BindParentType::BindtypeSlider) {
+		//(((SliderBind*)Var->Bind.Data)->NewValue)
+			(((SliderBind*)Binds->Bind.Data)->NewValue) = Root["Binds"][Binds->Bind.Bind]["BindOnValue"].asInt();
+			(((SliderBind*)Binds->Bind.Data)->OldValue) = Root["Binds"][Binds->Bind.Bind]["BindOffValue"].asInt();
+		}
+		else if (Binds->Bind.ParentType == BindParentType::BindtypeSelect) {
+			(((SliderBind*)Binds->Bind.Data)->NewValue) = Root["Binds"][Binds->Bind.Bind]["BindOnValue"].asInt();
+			(((SliderBind*)Binds->Bind.Data)->OldValue) = Root["Binds"][Binds->Bind.Bind]["BindOffValue"].asInt();
+		}
+		else if (Binds->Bind.ParentType == BindParentType::BindtypeMultiselect) {
+			(((MultiSelectBind*)Binds->Bind.Data)->NewValue) = Root["Binds"][Binds->Bind.Bind]["BindOnValue"].asUInt();
+			(((MultiSelectBind*)Binds->Bind.Data)->OldValue) = Root["Binds"][Binds->Bind.Bind]["BindOffValue"].asUInt();
+			
+		}
+	
+	}
 
 	for (auto& Var : Variables) {
 		if (Root["Configuration"][Var.first].type() == Json::ValueType::nullValue) {

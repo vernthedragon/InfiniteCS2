@@ -165,8 +165,191 @@ Settings::Settings(float Offset, float sizex, float sizey, MenuElement* bind, bo
 	Overlay = new Child(Vec2(sizex, sizey), Col(0, 2, 4, 255), true);
 	Menu->SettingsWindows.push_back(this);
 }
+void Binder::Update(void* parent, const std::string& configvar, std::vector<std::string> el, int Min, int Max, BindParentType type) {
+	Var = ConfigSystem->BindBindWithVar(configvar, type);
+	if (!Var)
+		return;
+	MaxVal = Max;
+	MinVal = Min;
+	WritableElements.clear();
+	WritableElements = el;
+	BuildChild();
+	Parent = parent;
+}
+void Binder::Free() {
+	
+	/*
+	if (Keybind)
+		delete Keybind;
+
+	if (Type)
+		delete Type;
+
+	if (NewValue)
+		delete NewValue;
+	if (OldValue)
+		delete OldValue;
+
+	if (OldValue2)
+		delete OldValue2;
+	if (NewValue2)
+		delete NewValue2;
+
+	if (OldValue3)
+		delete OldValue3;
+	if (NewValue3)
+		delete NewValue3;
+
+	
+	Keybind = nullptr;
+	Type = nullptr;
+	OldValue = nullptr;
+	NewValue = nullptr;
+	OldValue2 = nullptr;
+	NewValue2 = nullptr;
+	OldValue3 = nullptr;
+	NewValue3 = nullptr;*/
+}
+void Binder::BuildChild() {
+	if(!Overlay)
+		Overlay = new Child(Vec2(260.f, 200.f), Col(0, 2, 4, 255), true);
+
+	Overlay->Elements.clear();
+	Keybind =  Bind("Binded Key", &Var->Bind.VKey);
+	Overlay->New(&Keybind);
+	if (Var->Bind.ParentType == BindParentType::BindtypeSlider) {
+		OldValue3 =  Slider("Bind Off Value", MinVal, MaxVal, &(((SliderBind*)Var->Bind.Data)->OldValue));
+		NewValue3 =   Slider("Bind On Value", MinVal, MaxVal, &(((SliderBind*)Var->Bind.Data)->NewValue));
+		Overlay->New(&OldValue3);
+		Overlay->New(&NewValue3);
+	}
+	else if(Var->Bind.ParentType == BindParentType::BindtypeSelect) {
+		OldValue =  Select("Bind Off Value",  WritableElements, &(((SliderBind*)Var->Bind.Data)->OldValue));
+		NewValue =  Select("Bind On Value", WritableElements, &(((SliderBind*)Var->Bind.Data)->NewValue));
+		Overlay->New(&OldValue);
+		Overlay->New(&NewValue);
+	}
+	else if (Var->Bind.ParentType == BindParentType::BindtypeMultiselect) {
+		OldValue2 =  MultiSelect("Bind Off Value", WritableElements, &(((MultiSelectBind*)Var->Bind.Data)->OldValue));
+		NewValue2 =  MultiSelect("Bind On Value", WritableElements, &(((MultiSelectBind*)Var->Bind.Data)->NewValue));
+		Overlay->New(&OldValue2);
+		Overlay->New(&NewValue2);
+	}
+	Type =  Select("Bind Type", { "Disabled", "Hold", "Toggle", "Release" }, &Var->Bind.Type);
+	Overlay->New(&Type);
+}
+void Binder::RenderAndUpdate(float MaxAlpha, bool& LeftClick, bool& Drag) {
+
+	if (!Var)
+		return;
+
+	if (MaxAlpha != 255.f)
+		Open = false;
+	MaxAlpha *= GUIAnimations::Ease(OpenAnimation);
+
+	GUIAnimations::EaseAnimate(OpenAnimation, Open, 0.0178f);
+
+	if (OpenAnimation <= 0.f) {
+		return;
+	}
+
+
+
+	MaxAlpha *= GUIAnimations::Ease(OpenAnimation);
+
+	Overlay->Size = Vec2(Var->Bind.ParentType == BindtypeSlider ? 350.f * Menu->Scale : 260.f * Menu->Scale, Var->Bind.ParentType == BindtypeSwitch ? 74.f * Menu->Scale : 130.f * Menu->Scale);
+
+	Overlay->Draw(Start.x, Start.y + 36.f * (1.f - OpenAnimation), MaxAlpha, LeftClick, Drag);
+	if (LeftClick) {
+		if (LeftClick && !Menu->InRegion(Start.x, Start.y, Overlay->Size.x, Overlay->Size.y))
+		{
+			Open = false;
+			LeftClick = false;
+		}
+	}
+}
 float Text::GetOffset() {
 	return OffsetAnimation * Menu->Scale * 28.f;
+}
+float Bind::GetOffset() {
+	return Menu->Scale * 28.f;
+}
+const std::vector<std::string> KeyStrings2 = {
+	"-", "Mouse 1", "Mouse 2", "cb", "Mouse 3", "Mouse 4", "Mouse 5",
+	"?", "Back", "Tab", "?", "?", "?", "Enter", "?", "?", "Shift", "Ctrl", "Alt", "?",
+	"Caps", "?", "?", "?", "?", "?", "?", "Escape", "?", "?", "?", "?", "Space",
+	"?", "?", "End", "Home", "Left", "Up", "Right", "Down", "?", "?", "?", "?", "Ins",
+	"Delete", "?", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "?", "?", "?", "?", "?", "?",
+	"?", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x",
+	"y", "z", "?", "?", "?", "?", "?", "n0", "n1", "n2", "n3", "n4", "n5", "n6",
+	"n7", "n8", "n9", "*", "+", "_", "-", ".", "/", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
+	"f13", "f14", "f15", "f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23", "f24", "?", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "Shift", "Shift", "Ctrl", "Ctrl", "Menu", "Menu", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
+	"?", "?", "?", "?", ";", "+", ",", "-", ".", "/?", "~", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "[{", "\\|", "}]", "'\"", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
+	"?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?","?", "?", "?"
+};
+bool Bind::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
+	float OriginalMaxAlpha = MaxAlpha;
+
+
+	if (MaxAlpha != 255.f && *Pointer < 0)
+		*Pointer = -1;
+	bool bHovered = Menu->InRegion(x + Size.x - 123.f * Menu->Scale , y - 10.f * Menu->Scale, 84.f * Menu->Scale, 23.f * Menu->Scale) && !disable ;
+	GUIAnimations::Animate(HoverAnimation, bHovered || *Pointer == -2);
+	Render::DrawString(x, y, Col(255, 255, 255, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
+	std::string Written = "-";
+
+	if (*Pointer == -2)
+		Written = "...";
+	else if (*Pointer > 0) {
+		if (*Pointer < KeyStrings2.size())
+			Written = KeyStrings2[*Pointer];
+		else
+			Written = "?";
+	}
+
+	Render::FilledRoundedRect(x + Size.x - 99.f * Menu->Scale, y - 4.f * Menu->Scale, 72.f * Menu->Scale, 24.f * Menu->Scale, Col(0, 0, 1, MaxAlpha * (0.36f + 0.5f * HoverAnimation)), 3.f * Menu->Scale);
+	Render::RoundedRect(x + Size.x - 99.f * Menu->Scale, y - 4.f * Menu->Scale, 72.f * Menu->Scale, 24.f * Menu->Scale, Col(100 + 155 * HoverAnimation, 104 + 151 * HoverAnimation, 110 + 145 * HoverAnimation, MaxAlpha * (0.36f + 0.5f * HoverAnimation)), 0.9f * Menu->Scale, 3.f * Menu->Scale);
+	Render::PushClipRect(x + Size.x - 99.f * Menu->Scale, y - 4.f * Menu->Scale, 72.f * Menu->Scale, 24.f * Menu->Scale, true);
+	Render::DrawString(x + Size.x - 62.5f * Menu->Scale, y - 1.5f * Menu->Scale, Col(255, 255, 255, MaxAlpha), Fonts::MenuThin, Render::centered_x, Written.c_str());
+	Render::PopClipRect();
+
+	if (bHovered && LeftClick && *Pointer != -2) {
+		*Pointer = -2;
+
+		
+	}
+	else if (*Pointer == -2) {
+		for (auto i = 0; i < 256; i++) {
+			if (Client->KeyToggled(i)) {
+				if (i == VK_ESCAPE) {
+					*Pointer = -1;
+				}
+				else {
+					*Pointer = i;
+				}
+				
+			}
+		}
+
+	}
+	return false;
+}
+bool Bind::ShouldRender() {
+	
+
+	return true;
+}
+bool Bind::ShouldOverlay() {
+	return false;
+}
+void Bind::OnFree() {
+
 }
 Settings::Settings(float Offset, float sizex, float sizey, MenuElement* bind, void(*Setup)(Child*), bool(*shouldrender)() ) {
 
@@ -441,7 +624,16 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		if(Config->AutoSave)
 			ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 	}
-
+	else if (Hovered && Menu->MouseRightClick) {
+		if (Menu->Binder.Parent == nullptr) {
+			Menu->Binder.Update(this, BindedVar, {}, 0, 0, BindtypeSwitch);
+			Menu->MouseRightClick = false;
+			Menu->Binder.Open = true;
+			Menu->Binder.Start = Menu->MousePos;
+		}
+	}
+	
+		
 	
 
 	if (Render::TextSize(Fonts::MenuThin, Label.c_str()).x > Size.x - 103.f * Menu->Scale) {
@@ -484,7 +676,9 @@ bool Switch::ShouldRender() {
 	return ret || OffsetAnimation > 0.f;
 }
 bool Switch::ShouldOverlay() {
-	return false;
+	
+	return Menu->Binder.Parent == this;
+
 }
 /*
 float& Switch::GetAnimation() {
@@ -526,6 +720,18 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		Open = true;
 		Scroll = 0.f;
 		AnimatedScroll = 0.f;
+	}
+	else if (Hovered && Menu->MouseRightClick) {
+		if (Menu->Binder.Parent == nullptr) {
+			std::vector<std::string> El;
+			for (auto& Element : Elements)
+				El.push_back(Element.second);
+
+			Menu->Binder.Update(this, BindedVar, El, 0, 0, BindtypeSelect);
+			Menu->MouseRightClick = false;
+			Menu->Binder.Open = true;
+			Menu->Binder.Start = Menu->MousePos;
+		}
 	}
 
 
@@ -701,7 +907,18 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 		Scroll = 0.f;
 		AnimatedScroll = 0.f;
 	}
+	else if (Hovered && Menu->MouseRightClick) {
+		if (Menu->Binder.Parent == nullptr) {
+			std::vector<std::string> El;
+			for (auto& Element : Elements)
+				El.push_back(Element.second);
 
+			Menu->Binder.Update(this, BindedVar, El, 0,0, BindtypeMultiselect);
+			Menu->MouseRightClick = false;
+			Menu->Binder.Open = true;
+			Menu->Binder.Start = Menu->MousePos;
+		}
+	}
 
 
 
@@ -900,6 +1117,15 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 
 		Drag = false;
 	}
+	else if (bHovered && Menu->MouseRightClick) {
+		if (Menu->Binder.Parent == nullptr) {
+			Menu->Binder.Update(this, BindedVar, {}, MinValue, MaxValue, BindtypeSlider);
+			Menu->MouseRightClick = false;
+			Menu->Binder.Open = true;
+			Menu->Binder.Start = Menu->MousePos;
+		}
+	}
+
 	GUIAnimations::Animate(HoverAnimation, bHovered);
 
 
@@ -917,6 +1143,14 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 			LeftClick = false;
 			TextOpen = true;
 			Menu->EditTextAnimation = Menu->CurrentClock;
+		}
+		else if (Menu->MouseRightClick) {
+			if (Menu->Binder.Parent == nullptr) {
+				Menu->Binder.Update(this, BindedVar, {}, MinValue, MaxValue, BindtypeSlider);
+				Menu->MouseRightClick = false;
+				Menu->Binder.Open = true;
+				Menu->Binder.Start = Menu->MousePos;
+			}
 		}
 		ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
 	}
