@@ -162,7 +162,7 @@ Settings::Settings(float Offset, float sizex, float sizey, MenuElement* bind, bo
 
 	offset = Offset;
 	OriginalSize = Vec2(sizex, sizey);
-	Overlay = new Child(Vec2(sizex, sizey), Col(0, 3, 6, 255), true);
+	Overlay = new Child(Vec2(sizex, sizey), Col(0, 2, 4, 255), true);
 	Menu->SettingsWindows.push_back(this);
 }
 float Text::GetOffset() {
@@ -181,7 +181,7 @@ Settings::Settings(float Offset, float sizex, float sizey, MenuElement* bind, vo
 
 	offset = Offset;
 	OriginalSize = Vec2(sizex, sizey);
-	Overlay = new Child(Vec2(sizex, sizey), Col(0, 3, 6, 255), true);
+	Overlay = new Child(Vec2(sizex, sizey), Col(0, 2, 4, 255), true);
 	Setup(Overlay);
 	Menu->SettingsWindows.push_back(this);
 }
@@ -330,7 +330,7 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 		}
 		Dialogue.animatedhue = (Dialogue.animatedhue + (Dialogue.hue - Dialogue.animatedhue) * 0.02f * Menu->AnimationModifier);
 		Math::ClampPtr(Dialogue.animatedhue, 0.f, 1.f);
-		bool HoveredHue = Menu->InRegion(x + 175.f * Menu->Scale, y + 20 * Menu->Scale, 15.f * Menu->Scale, 140.f * Menu->Scale);
+		bool HoveredHue = Menu->InRegion(hue_pos.x, hue_pos.y, hue_size.x, hue_size.y);
 		Render::FilledRect(hue_pos.x - 2.f * Menu->Scale, hue_pos.y + hue_size.y * Dialogue.animatedhue, 18.f * Menu->Scale, 4.f * Menu->Scale,
 			Col(255, 255, 255, ME));
 
