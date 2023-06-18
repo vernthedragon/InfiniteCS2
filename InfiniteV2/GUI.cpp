@@ -536,7 +536,7 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 			Col(255, 255, 255, ME));
 		bool HoveredAlpha = Menu->InRegion(x + 20.f * Menu->Scale, y + 175.f * Menu->Scale, hue_size.y, hue_size.x);
 		Render::FilledRect(x + 173.f * Menu->Scale, y + 20.f * Menu->Scale, 18.5f * Menu->Scale, 15.f * Menu->Scale,
-			colactual);
+			*Pointer);
 
 		if (DialogueState == DialogueState_t::Color) {
 
