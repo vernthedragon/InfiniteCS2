@@ -91,7 +91,7 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 		if (Element->ShouldRender())
 		{
 			if (Element == Overlay) { 
-				OverlayContextStartY = StartY;
+				OverlayContextStartY = y - 13.f * Menu->Scale + StartY;
 				continue;
 			}
 			Element->Draw(x + 15.f * Menu->Scale, y - 13.f * Menu->Scale + StartY, Size, MaxAlpha, Menu->MouseClick, Menu->MousePress, Disable);
