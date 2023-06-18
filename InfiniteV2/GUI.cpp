@@ -535,6 +535,7 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 		Render::FilledRect(x + 20.f * Menu->Scale + hue_size.y * (1.f - Dialogue.animatedfloat), y + 173.f * Menu->Scale, 4.f * Menu->Scale, 18.f * Menu->Scale,
 			Col(255, 255, 255, ME));
 		bool HoveredAlpha = Menu->InRegion(x + 20.f * Menu->Scale, y + 175.f * Menu->Scale, hue_size.y, hue_size.x);
+		colactual[3] = col[3] * (ME * 0.00392156862f);
 		Render::FilledRect(x + 173.f * Menu->Scale, y + 20.f * Menu->Scale, 18.5f * Menu->Scale, 15.f * Menu->Scale,
 			colactual);
 
