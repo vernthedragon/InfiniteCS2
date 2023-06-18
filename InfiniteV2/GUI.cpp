@@ -232,7 +232,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	GUIAnimations::Animate(HoverAnimation, Hovered);
 
 	Render::DrawString(x + Size.x - ed, y, Col(W, W, W, MaxAlpha), Fonts::MenuThin, 0, (Elements[*Pointer].second).c_str());
-	Render::DrawString(x + Size.x - 39.f * Menu->Scale, y - 1.f * Menu->Scale, Col(W, W, W, MaxAlpha), Fonts::MenuIcons, 0, "X");
+	Render::DrawString(x + Size.x - 39.f * Menu->Scale, y - 1.f * Menu->Scale, Col(W, W, W, MaxAlpha * (OpenAnimation > 0.5f ? (OpenAnimation - 0.5f) * 2.f : (0.5f - OpenAnimation) * 2.f)), Fonts::MenuIcons, 0, OpenAnimation > 0.5f ? "Y" : "X");
 
 
 
@@ -405,7 +405,7 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 	GUIAnimations::Animate(HoverAnimation, Hovered);
 	
 	Render::DrawString(x + Size.x - ed, y, Col(W, W, W, MaxAlpha), Fonts::MenuThin, 0, (Rendered).c_str());
-	Render::DrawString(x + Size.x - 39.f * Menu->Scale, y - 1.f * Menu->Scale, Col(W, W, W, MaxAlpha), Fonts::MenuIcons, 0, "X");
+	Render::DrawString(x + Size.x - 39.f * Menu->Scale, y - 1.f * Menu->Scale, Col(W, W, W, MaxAlpha * (OpenAnimation > 0.5f ? (OpenAnimation - 0.5f) * 2.f : (0.5f - OpenAnimation) * 2.f)), Fonts::MenuIcons, 0, OpenAnimation > 0.5f ? "Y" : "X");
 
 
 
