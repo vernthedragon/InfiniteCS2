@@ -213,14 +213,14 @@ void CMenu::Draw() {
 		if ((SettingsInRegion && MenuStateButtonAnimations[0] < 1.f) || (!SettingsInRegion && MenuStateButtonAnimations[0] > 0.f))
 			MenuStateButtonAnimations[0] = Math::Clamp(MenuStateButtonAnimations[0] + ((SettingsInRegion ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
 
-		if (SettingsInRegion && MouseClick && !InSearch) {
-			if (!InSettings) {
-				LastTab = CurrentTab;
-				RawSubtabChangeAnimation = 0.f;
-			}
+		if (SettingsInRegion && MouseClick && !InSearch && !InSettings) {
+		
+			LastTab = CurrentTab;
+			RawSubtabChangeAnimation = 0.f;
+			
 
 			MouseClick = false;
-			CurrentTab = InSettings ? LastTab : SETTINGS;
+			CurrentTab = SETTINGS;
 			CurrentSubtab = LastSubtabs[6];
 			Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
 			Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
