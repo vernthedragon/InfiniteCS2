@@ -245,6 +245,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 
 		x = x + Size.x - 90.f * Menu->Scale - 28.f * Menu->Scale;
 		y = y + 25.f * Menu->Scale + (1.f - OpenAnimation) * 26.f * Menu->Scale;
+		bool MainHovered = Menu->InRegion(x - 10.f * Menu->Scale, y, 130.f * Menu->Scale, 155.f * Menu->Scale);
 		Render::FilledRoundedRect(x - 10.f * Menu->Scale, y, 130.f * Menu->Scale, 155.f * Menu->Scale, Col(0, 3, 6, MaxAlpha * Eased), 4.f * Menu->Scale);
 		float Offset = 10.f * Menu->Scale;
 		Render::PushClipRect(x - 10.f * Menu->Scale, y, 130.f * Menu->Scale, 155.f * Menu->Scale, true);
@@ -252,7 +253,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		y -= AnimatedScroll;
 		int Count = 0;
 		for (auto& Element : Elements) {
-			bool Hovered = Menu->InRegion(x, y + Offset - Menu->Scale * 3.f, 130.f * Menu->Scale, (24.f + 2.f) * Menu->Scale) && Open;
+			bool Hovered = Menu->InRegion(x, y + Offset - Menu->Scale * 3.f, 130.f * Menu->Scale, (24.f + 2.f) * Menu->Scale) && Open && MainHovered;
 			if (Hovered && LeftClick) {
 				*Pointer = Count;
 				LeftClick = false;
@@ -320,7 +321,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 
 			AnimatedScroll = (AnimatedScroll + (Scroll - AnimatedScroll) * 0.02f * Menu->AnimationModifier);
 
-			if (LeftClick && !Menu->InRegion(x - 10.f * Menu->Scale, y, 130.f * Menu->Scale, 155.f * Menu->Scale)) {
+			if (LeftClick && !MainHovered) {
 				Open = false;
 			}
 		}
@@ -419,6 +420,7 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 
 		x = x + Size.x - 90.f * Menu->Scale - 28.f * Menu->Scale;
 		y = y + 25.f * Menu->Scale + (1.f - OpenAnimation) * 26.f * Menu->Scale;
+		bool MainHovered = Menu->InRegion(x - 10.f * Menu->Scale, y, 130.f * Menu->Scale, 155.f * Menu->Scale);
 		Render::FilledRoundedRect(x - 10.f * Menu->Scale, y, 130.f * Menu->Scale, 155.f * Menu->Scale, Col(0, 3, 6, MaxAlpha * Eased), 4.f * Menu->Scale);
 		float Offset = 10.f * Menu->Scale;
 		Render::PushClipRect(x - 10.f * Menu->Scale, y, 130.f * Menu->Scale, 155.f * Menu->Scale, true);
@@ -426,7 +428,7 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 		y -= AnimatedScroll;
 		unsigned int Count = 0;
 		for (auto& Element : Elements) {
-			bool Hovered = Menu->InRegion(x, y + Offset - Menu->Scale * 3.f, 130.f * Menu->Scale, (24.f + 2.f) * Menu->Scale) && Open;
+			bool Hovered = Menu->InRegion(x, y + Offset - Menu->Scale * 3.f, 130.f * Menu->Scale, (24.f + 2.f) * Menu->Scale) && Open && MainHovered;
 			if (Hovered && LeftClick) {
 
 				if ((*Pointer) & (1 << Count)) {
@@ -499,7 +501,7 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 
 			AnimatedScroll = (AnimatedScroll + (Scroll - AnimatedScroll) * 0.02f * Menu->AnimationModifier);
 
-			if (LeftClick && !Menu->InRegion(x - 10.f * Menu->Scale, y, 130.f * Menu->Scale, 155.f * Menu->Scale)) {
+			if (LeftClick && !MainHovered) {
 				Open = false;
 			}
 		}
@@ -550,6 +552,7 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	//bool HoveredOverText = Menu->InRegion()
 	if (Config->AutoSave) {
 		if (OldPointer != *Pointer) {
+			*Pointer = Math::Clamp(*Pointer, MinValue, MaxValue);
 			OldPointer = *Pointer;
 			ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 		}
