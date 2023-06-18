@@ -566,9 +566,10 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 					Dialogue.hue = std::clamp((Menu->MousePos.y - (hue_pos.y)) / 140.f * Menu->Scale, 0.f, 1.f);
 				}
 				else if (Dialogue.type == 3) {
-					Dialogue.alpha = std::clamp(1.f - ((Menu->MousePos.x - (x + 20.f * Menu->Scale)) / 140.f), 0.f, 1.f);
+					Dialogue.alpha = std::clamp(1.f - ((Menu->MousePos.x - (x + 20.f * Menu->Scale)) / hue_size.y), 0.f, 1.f);
 				}
 				*(Col*)Pointer = Col::hsb(Dialogue.hue, Dialogue.saturation, Dialogue.brightness);
+				Pointer->operator[](3) = Dialogue.alpha * 255.f;
 			}
 			else if (Dialogue.type != 0) {
 				Dialogue.type = 0;
