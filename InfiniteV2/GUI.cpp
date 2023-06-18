@@ -275,7 +275,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 
 
 			//	float MaxScroll = Math::Clamp(AnimatedScroll, 0.f, Offset);
-			float OffsetY = (AnimatedScroll / Offset) * (154.f * Menu->Scale * 2.f);
+			float OffsetY = (AnimatedScroll / (Offset - (24.f * Menu->Scale * 6.f + 10.f * Menu->Scale))) * (135.f * Menu->Scale);
 			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y + OffsetY, 5.f * Menu->Scale, 20.f * Menu->Scale, Col(170, 170, 255, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
 		}
 		else
@@ -454,7 +454,7 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 
 
 			//	float MaxScroll = Math::Clamp(AnimatedScroll, 0.f, Offset);
-			float OffsetY = (AnimatedScroll / Offset) * (154.f * Menu->Scale * 2.f);
+			float OffsetY = (AnimatedScroll / (Offset - (24.f * Menu->Scale * 6.f + 10.f * Menu->Scale))) * (135.f * Menu->Scale);
 			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y + OffsetY, 5.f * Menu->Scale, 20.f * Menu->Scale, Col(170, 170, 255, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
 		}
 		else

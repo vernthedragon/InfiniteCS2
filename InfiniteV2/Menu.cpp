@@ -57,6 +57,7 @@ bool Test4 = false;
 bool Test5 = false;
 int Test6 = 45;
  int test = 0;
+ int test3 = 0;
  unsigned int test2;
 void CMenu::SetupUser() {
 	LastMenuScale = Config->MenuScale;
@@ -82,7 +83,8 @@ void CMenu::SetupUser() {
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
 	Childs[MOVEMENT][LEFT].New(new Switch("Switch", &Test));
 	Childs[MOVEMENT][LEFT].New(new Switch("Another Switch with Long Name", &Test2, []() {return Test; }));
-	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two" }, &test));
+	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" }, &test));
+	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" , "nine" , "ten" }, &test3));
 	Childs[MOVEMENT][LEFT].New(new Switch("Hello there", &Test3));
 	Childs[MOVEMENT][LEFT].New(new Slider("Another Slider", 0, 100, &Config->Movement.BunnyhopStrafeType));
 	Childs[MOVEMENT][LEFT].New(new Switch("Testing", &Test4));
