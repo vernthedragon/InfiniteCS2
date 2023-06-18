@@ -140,6 +140,118 @@ public:
 	std::string BindedVar;
 	bool* Pointer;
 };
+class MultiSelect : public MenuElement {
+public:
+	MultiSelect() {
+
+		Pointer = nullptr;
+		BindedVar = ""; //no bind which is an issue
+		HoverAnimation = 0.f;
+		OffsetAnimation = 0.f;
+		Scroll = 0.f;
+	}
+	MultiSelect(std::string label, const std::vector<std::string>& elements, unsigned int* val, bool(*shouldrender)() = nullptr) {
+		Pointer = val;
+		Label = label;
+		OpenAnimation = 0.f;
+		Scroll = 0.f;
+		AnimatedScroll = 0.f;
+		BindedVar = label;
+		HoverAnimation = 0.f;
+		ShouldRenderFn = shouldrender;
+		Open = false;
+		for (auto& Element : elements) {
+			Elements.push_back(std::make_pair(0.f, Element));
+		}
+
+		int It = 2;
+		std::string BindVar = BindedVar;
+
+		while (ConfigSystem->VarExists(BindVar)) {
+			BindVar = BindedVar + std::to_string(It);
+			It++;
+		}
+		BindedVar = BindVar;
+		ConfigSystem->AddVar(BindedVar, val);
+
+		OffsetAnimation = 1.f;
+
+		if (shouldrender != nullptr)
+			OffsetAnimation = shouldrender() ? 1.f : 0.f;
+	}
+	float GetOffset();
+	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
+	bool ShouldRender();
+	bool ShouldOverlay();
+	void OnFree();
+	float HoverAnimation;
+	float OpenAnimation;
+	bool Open;
+	float OffsetAnimation;
+	float Scroll;
+	float AnimatedScroll;
+	bool(*ShouldRenderFn)();
+	std::vector<std::pair<float, std::string>> Elements;
+	std::string Label;
+	std::string BindedVar;
+	unsigned int* Pointer;
+};
+class Select : public MenuElement {
+public:
+	Select() {
+
+		Pointer = nullptr;
+		BindedVar = ""; //no bind which is an issue
+		HoverAnimation = 0.f;
+		OffsetAnimation = 0.f;
+		Scroll = 0.f;
+	}
+	Select(std::string label, const std::vector<std::string>& elements, int* val, bool(*shouldrender)() = nullptr) {
+		Pointer = val;
+		Label = label;
+		OpenAnimation = 0.f;
+		Scroll = 0.f;
+		AnimatedScroll = 0.f;
+		BindedVar = label;
+		HoverAnimation = 0.f;
+		ShouldRenderFn = shouldrender;
+		Open = false;
+		for (auto& Element : elements) {
+			Elements.push_back(std::make_pair(0.f , Element));
+		}
+
+		int It = 2;
+		std::string BindVar = BindedVar;
+
+		while (ConfigSystem->VarExists(BindVar)) {
+			BindVar = BindedVar + std::to_string(It);
+			It++;
+		}
+		BindedVar = BindVar;
+		ConfigSystem->AddVar(BindedVar, val);
+
+		OffsetAnimation = 1.f;
+
+		if (shouldrender != nullptr)
+			OffsetAnimation = shouldrender() ? 1.f : 0.f;
+	}
+	float GetOffset();
+	bool Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable);
+	bool ShouldRender();
+	bool ShouldOverlay();
+	void OnFree();
+	float HoverAnimation;
+	float OpenAnimation;
+	bool Open;
+	float OffsetAnimation;
+	float Scroll;
+	float AnimatedScroll;
+	bool(*ShouldRenderFn)();
+	std::vector<std::pair<float, std::string>> Elements;
+	std::string Label;
+	std::string BindedVar;
+	int* Pointer;
+};
 
 class Slider : public MenuElement {
 public:

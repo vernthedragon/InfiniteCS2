@@ -91,6 +91,7 @@ public:
 	float SearchAnimation;
 	float SaveButton;
 	float EditTextAnimation;
+	int LastMenuScale;
 };
 
 extern CMenu* Menu;

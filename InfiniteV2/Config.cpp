@@ -252,7 +252,7 @@ bool CConfigSystem::LoadToConfig(const std::string& Bind) {
 			*reinterpret_cast<int*>(Var.second->Var) = Root["Configuration"][Var.first].asInt();
 		}
 		else if (Var.second->Type == VartypeUInt) {
-			if (Root["Configuration"][Var.first].type() != Json::ValueType::uintValue)
+			if ((Root["Configuration"][Var.first].type() == Json::ValueType::uintValue || Root["Configuration"][Var.first].type() == Json::ValueType::intValue))
 			{
 				Client->Log("Failed to Load ConfigVar (type missmatch): ");
 				Client->Log(Var.first.c_str());

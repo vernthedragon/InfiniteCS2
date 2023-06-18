@@ -55,8 +55,11 @@ bool Test2 = false;
 bool Test3 = true;
 bool Test4 = false;
 bool Test5 = false;
+int Test6 = 45;
+ int test = 0;
+ unsigned int test2;
 void CMenu::SetupUser() {
-
+	LastMenuScale = Config->MenuScale;
 	for (int i = 0; i < MAXSUBTABS; i++) {
 		Childs[i][LEFT].Update("", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
 		Childs[i][RIGHT].Update("", Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false, true);
@@ -71,18 +74,21 @@ void CMenu::SetupUser() {
 
 
 	Childs[MENUMAIN][LEFT].New(new Switch("Auto-Save Current Configuration", &Config->AutoSave));
+	Childs[MENUMAIN][LEFT].New(new Select("Menu Scale", { "50%", "80%", "100%", "140%", "170%" }, &Config->MenuScale));
 	Childs[MENUMAIN][LEFT].New(new Switch("Disable Complex Animations", &Config->DisableComplexAnimations));
 	Childs[MENUMAIN][LEFT].New(new Slider("Animation Speed", 20, 220, &Config->Menu.AnimationSpeed));
 	Childs[CONFIGS][LEFT].New(ConfigViewer);
 
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
-	Childs[MOVEMENT][LEFT].New(new Switch("Test", &Test));
-	Childs[MOVEMENT][LEFT].New(new Switch("Test", &Test2, []() {return Test; }));
-	Childs[MOVEMENT][LEFT].New(new Switch("Hello", &Test3));
-	Childs[MOVEMENT][LEFT].New(new Slider("Testing", 0, 100, &Config->Movement.BunnyhopStrafeType));
-	Childs[MOVEMENT][LEFT].New(new Switch("Font Testing", &Test4));
-	Childs[MOVEMENT][LEFT].New(new Switch("Test AntiAliassdafsdfsafsdafsafsadfsadfsafdasdf", &Test5, []() {return Test4; }));
-
+	Childs[MOVEMENT][LEFT].New(new Switch("Switch", &Test));
+	Childs[MOVEMENT][LEFT].New(new Switch("Another Switch with Long Name", &Test2, []() {return Test; }));
+	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two" }, &test));
+	Childs[MOVEMENT][LEFT].New(new Switch("Hello there", &Test3));
+	Childs[MOVEMENT][LEFT].New(new Slider("Another Slider", 0, 100, &Config->Movement.BunnyhopStrafeType));
+	Childs[MOVEMENT][LEFT].New(new Switch("Testing", &Test4));
+	Childs[MOVEMENT][LEFT].New(new Slider("Another  Slider with Long Name", 0, 100, &Test6, []() {return Test4; }));
+	Childs[MOVEMENT][LEFT].New(new Switch("Testing Switch Animation", &Test5, []() {return Test4; }));
+	Childs[MOVEMENT][LEFT].New(new MultiSelect("A Multiselect", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" , "nine" , "ten" }, &test2, []() {return Test4; }));
 
 	SetuppedUser = true;
 	SubtabChangeAnimation = 0.f;
@@ -395,26 +401,10 @@ void CMenu::OnRender() {
 		Config->MenuOpen = !Config->MenuOpen;
 	}
 
-	//only for testing dpi
-	if (Client->KeyToggled(VK_F2)) {
-		ConfigViewer->Reload();
-	}
-	if (Client->KeyToggled(VK_F1)) {
-		Config->MenuScale++;
 
-		//0 = 50%
-		//1 = 80%
-		//2 = 100%
-		//3 = 125%
-		//4 = 150%
-		//5 = 175%
-		if (Config->MenuScale > 4)
-			Config->MenuScale = 0;
-
-		
-		
+	if (Config->MenuScale != LastMenuScale) {
+		LastMenuScale = Config->MenuScale;
 		ShouldAdjustDPI = true;
-
 	}
 
 	if (!SetuppedUser)

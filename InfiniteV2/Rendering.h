@@ -21,6 +21,8 @@ namespace Render {
 	};
 	void DoRender(ID3D11Device* Device, ID3D11DeviceContext* Context, HWND Window, ID3D11RenderTargetView* RenderView);
 	void GradientCircle(float x, float y, float radius, Col inner, Col outer, bool antialiased = false);
+	void FilledTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Col clr);
+	void Line(float x, float y, float endx, float endy, Col clr, float thick);
 	void DrawTexture(float x, float y, float l, float w, void* text, Col color = Col(255,255,255,255));
 	void DrawRoundedTexture(float x, float y, float l, float w, void* text, float rounding, Col color = Col(255, 255, 255, 255));
 	void FilledRect(float x, float y, float l, float w, Col color);
