@@ -257,6 +257,8 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 				*Pointer = Count;
 				LeftClick = false;
 				Open = false;
+				if (Config->AutoSave)
+					ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 			}
 			GUIAnimations::Animate(Element.first, Hovered || (Count == *Pointer));
 			W = 120 + 135 * Element.first;
@@ -434,6 +436,8 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 					*Pointer |= (1 << Count);
 
 				LeftClick = false;
+				if (Config->AutoSave)
+					ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 			}
 			GUIAnimations::Animate(Element.first, Hovered || (*Pointer) & (1 << Count));
 			W = 120 + 135 * Element.first;
