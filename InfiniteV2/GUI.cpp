@@ -398,7 +398,12 @@ bool Settings::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick
 bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
 	float OriginalMaxAlpha = MaxAlpha;
 	MaxAlpha *= GUIAnimations::Ease(Before->GetAnimation());
-
+	if (DialogueState == DialogueState_t::Closed) {
+		Dialogue.hue = Pointer->Hue();
+		Dialogue.saturation = Pointer->Saturation();
+		Dialogue.brightness = Pointer->Brightness();
+		Dialogue.alpha = Pointer->operator[](3) * 0.00392156862f;
+	}
 	bool ButtonHovered = Menu->InRegion(x + Size.x - (offset + 8.f) * Menu->Scale, y - 2.f * Menu->Scale, 30.f * Menu->Scale, 19.f * Menu->Scale) && !disable;
 	GUIAnimations::Animate(HoverAnimation, ButtonHovered || ShouldOverlay());
 	Col col = *Pointer;
