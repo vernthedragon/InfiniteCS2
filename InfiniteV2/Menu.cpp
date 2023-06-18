@@ -76,7 +76,7 @@ void CMenu::SetupUser() {
 	Childs[MENUMAIN][LEFT].New(new Switch("Auto-Save Current Configuration", &Config->AutoSave));
 	Childs[MENUMAIN][LEFT].New(new Select("Menu Scale", { "50%", "80%", "100%", "140%", "170%" }, &Config->MenuScale));
 	Childs[MENUMAIN][LEFT].New(new Switch("Disable Complex Animations", &Config->DisableComplexAnimations));
-	Childs[MENUMAIN][LEFT].New(new Slider("Animation Speed", 20, 220, &Config->Menu.AnimationSpeed));
+	Childs[MENUMAIN][LEFT].New(new Slider("Animation Speed", 50, 150, &Config->Menu.AnimationSpeed));
 	Childs[CONFIGS][LEFT].New(ConfigViewer);
 
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
@@ -385,6 +385,9 @@ void CMenu::OnRender() {
 
 	AnimationModifier = RenderInterval;
 	AnimationModifier *= (float)(Config->Menu.AnimationSpeed * 0.01f);
+
+	if (Config->DisableComplexAnimations)
+		AnimationModifier *= 0.8f;
 
 	LastAnimationTime = CurrentClock;
 	
