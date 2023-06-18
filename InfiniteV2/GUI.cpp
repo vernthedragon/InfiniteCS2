@@ -260,9 +260,9 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 				if (Config->AutoSave)
 					ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 			}
-			GUIAnimations::Animate(Element.first, Hovered || (Count == *Pointer));
+			GUIAnimations::Animate(Element.first, Hovered);
 			W = 120 + 135 * Element.first;
-			Render::DrawString(x, y + Offset, Col(W,W,W, MaxAlpha * Eased), Fonts::MenuThin, 0, Element.second.c_str());
+			Render::DrawString(x, y + Offset, (Count == *Pointer) ? Col(170 + 30 * Element.first, 170 + 30 * Element.first, 255, MaxAlpha * Eased * (0.9f + 0.1f * Element.first)) : Col(W, W, W, MaxAlpha * Eased), Fonts::MenuThin, 0, Element.second.c_str());
 
 			Offset += 24.f * Menu->Scale;
 			Count++;
@@ -439,9 +439,9 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 				if (Config->AutoSave)
 					ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 			}
-			GUIAnimations::Animate(Element.first, Hovered || (*Pointer) & (1 << Count));
+			GUIAnimations::Animate(Element.first, Hovered);
 			W = 120 + 135 * Element.first;
-			Render::DrawString(x, y + Offset, Col(W, W, W, MaxAlpha * Eased), Fonts::MenuThin, 0, Element.second.c_str());
+			Render::DrawString(x, y + Offset, (*Pointer) & (1 << Count) ? Col(170 + 30 * Element.first, 170 + 30 * Element.first, 255, MaxAlpha * Eased * (0.9f + 0.1f * Element.first)) : Col(W, W, W, MaxAlpha * Eased), Fonts::MenuThin, 0, Element.second.c_str());
 
 			Offset += 24.f * Menu->Scale;
 			Count++;
