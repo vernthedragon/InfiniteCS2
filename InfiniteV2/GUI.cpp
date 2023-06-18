@@ -139,7 +139,7 @@ inline bool Child::InRegion(float x, float y, float w, float h) {
 #pragma endregion 
 bool Settings::SpecialDraw(float MaxAlpha, bool& LeftClick, bool& Drag) {
 	if (OpenAnimation <= 0.f)
-		return true;
+		return false;
 
 	MaxAlpha *= GUIAnimations::Ease(OpenAnimation);
 	
@@ -147,7 +147,7 @@ bool Settings::SpecialDraw(float MaxAlpha, bool& LeftClick, bool& Drag) {
 	Overlay->Size.x *= Menu->Scale;
 	Overlay->Size.y *= Menu->Scale;
 	Overlay->Draw(Start.x, Start.y + 36.f * (1.f - OpenAnimation), MaxAlpha, LeftClick, Drag);
-	return false;
+	return true;
 }
 Settings::Settings(float Offset, float sizex, float sizey, MenuElement* bind, bool(*shouldrender)() ) {
 
