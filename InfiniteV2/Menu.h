@@ -54,6 +54,16 @@ enum CSubTab : unsigned int {
 
 class CMenu {
 public:
+
+	struct RenderBind {
+		std::string* Label;
+		std::string Value;
+		float* Animation;
+		float TypeSize;
+		bool On;
+	};
+	std::vector< RenderBind > RenderBinds;
+	bool EmptyBinds;
 	void Draw();
 	void OnRender();
 	bool IsHovered();
@@ -61,6 +71,8 @@ public:
 	void AdjustDPI();
 	void RenderTab(float x, float y, CTabs _this, float& animation);
 	void RenderSubtab(float x, float y, CSubTab _this, float& animation);
+	bool RenderKeybinds(float x, float y);
+	void UpdateKeybinds();
 	inline bool InRegion(float x, float y, float w, float h);
 	bool MousePress = false;
 	bool MouseClick = false;
@@ -72,6 +84,9 @@ public:
 	Vec2 MousePos;
 	Vec2 Pos;
 	Vec2 MenuMoveCache;
+	Vec2 KeybindsMoveCache;
+	float KeybindsAlpha = 0.f;
+	float KeybindsWidth = 0.f;
 	float CurrentClock = 0.f;
 	float RenderInterval = 0.f;
 	float SubtabChangeAnimation = 0.f;
@@ -96,6 +111,7 @@ public:
 	Col LastCopiedColor;
 	std::deque<Settings*> SettingsWindows;
 	Binder Binder;
+	Col MainTheme;
 };
 
 extern CMenu* Menu;

@@ -4,6 +4,7 @@
 #include <map>
 #include <fstream>
 #include <vector>
+#include "Col.h"
 enum ConfigType : signed char {
 	VartypeBool = 0,
 	VartypeInt = 1,
@@ -44,6 +45,9 @@ struct Bind_t {
 	BindParentType ParentType;
 	int Type;
 	std::string Bind;
+	bool Show;
+	bool OnOff;
+	float Modifier;
 };
 struct ConfigVariable {
 	ConfigType Type;
@@ -75,8 +79,16 @@ public:
 
 	struct MenuSettings_t {
 		int AnimationSpeed = 100.f;
+		bool Keybinds = false;
+		int KeybindsSizeWidth = 0;
+		int KeybindsX = 0;
+		int KeybindsY = 0;
+		Col KeybindsCol;
+		Col KeybindsBackground;
+		Col KeybindsBackground2;
+		Col KeybindsText;
 	};
-	MenuSettings_t Menu;
+	MenuSettings_t MenuSettings;
 	bool MenuOpen = false;
 	int MenuScale = 2;
 	bool AutoSave = false;
@@ -95,7 +107,8 @@ public:
 	bool CreateConfig(const std::string& Name);
 	ConfigVariable* BindBindWithVar(const std::string& Bind, BindParentType type) {
 		ConfigVariable* variable = Variables[Bind];
-
+		if (!variable)
+			return nullptr;
 		if (variable->Bind.ParentType != BindtypeUnBinded) {
 			return variable; //dont rebind
 		}
@@ -105,6 +118,9 @@ public:
 		variable->Bind.VKey = -1;
 		variable->Bind.Data = nullptr;
 		variable->Bind.Bind = Bind;
+		variable->Bind.Show = true;
+		variable->Bind.Modifier = 0.f;
+		variable->Bind.OnOff = false;
 		if (type == BindtypeSlider || type == BindtypeSelect) {
 			variable->Bind.Data = new SliderBind{};
 		}
@@ -124,12 +140,14 @@ public:
 			return;
 		if (Bind == "Bind On Value")
 			return;
-
+		if (Bind == "Show In Keybinds")
+			return;
 		ConfigVariable* variable = new ConfigVariable{};
 		variable->Var = reinterpret_cast<void*>(Var);
 		variable->Type = VartypeBool;
 		variable->Bind.ParentType = BindtypeUnBinded;
 		Variables[Bind] = variable;
+		BindBindWithVar(Bind, BindParentType::BindtypeSwitch);
 	}
 	void AddVar(const std::string& Bind, int* Var) {
 		if (Bind == "Binded Key")
@@ -145,6 +163,7 @@ public:
 		variable->Type = VartypeInt;
 		variable->Bind.ParentType = BindtypeUnBinded;
 		Variables[Bind] = variable;
+		BindBindWithVar(Bind, BindParentType::BindtypeSlider);
 	}
 	void AddVar(const std::string& Bind, unsigned int* Var) {
 		if (Bind == "Binded Key")
@@ -160,6 +179,7 @@ public:
 		variable->Type = VartypeUInt;
 		variable->Bind.ParentType = BindtypeUnBinded;
 		Variables[Bind] = variable;
+		BindBindWithVar(Bind, BindParentType::BindtypeMultiselect);
 	}
 	void AddVar(const std::string& Bind, class Color* Var) {
 		if (Bind == "Binded Key")

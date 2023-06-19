@@ -147,6 +147,14 @@ bool Settings::SpecialDraw(float MaxAlpha, bool& LeftClick, bool& Drag) {
 	Overlay->Size.x *= Menu->Scale;
 	Overlay->Size.y *= Menu->Scale;
 	Overlay->Draw(Start.x, Start.y + 36.f * (1.f - OpenAnimation), MaxAlpha, LeftClick, Drag);
+
+	if (Open && LeftClick) {
+		if (!Menu->InRegion(Start.x, Start.y, OriginalSize.x * Menu->Scale, OriginalSize.y * Menu->Scale))
+		{
+			Open = false;
+		}
+	}
+
 	return true;
 }
 Settings::Settings(float Offset, float sizex, float sizey, MenuElement* bind, bool(*shouldrender)() ) {
@@ -217,6 +225,10 @@ void Binder::BuildChild() {
 	Overlay->Elements.clear();
 	Keybind =  Bind("Binded Key", &Var->Bind.VKey);
 	Overlay->New(&Keybind);
+
+	if (WritableElements.size() != 0 && Var->Bind.ParentType == BindParentType::BindtypeSlider)
+		Var->Bind.ParentType = BindParentType::BindtypeSelect;
+
 	if (Var->Bind.ParentType == BindParentType::BindtypeSlider) {
 		OldValue3 =  Slider("Bind Off Value", MinVal, MaxVal, &(((SliderBind*)Var->Bind.Data)->OldValue));
 		NewValue3 =   Slider("Bind On Value", MinVal, MaxVal, &(((SliderBind*)Var->Bind.Data)->NewValue));
@@ -237,6 +249,8 @@ void Binder::BuildChild() {
 	}
 	Type =  Select("Bind Type", { "Disabled", "Hold", "Toggle", "Release" }, &Var->Bind.Type);
 	Overlay->New(&Type);
+	ShowBind = Switch("Show In Keybinds", &Var->Bind.Show);
+	Overlay->New(&ShowBind);
 }
 void Binder::RenderAndUpdate(float MaxAlpha, bool& LeftClick, bool& Drag) {
 
@@ -257,7 +271,7 @@ void Binder::RenderAndUpdate(float MaxAlpha, bool& LeftClick, bool& Drag) {
 
 	MaxAlpha *= GUIAnimations::Ease(OpenAnimation);
 
-	Overlay->Size = Vec2(Var->Bind.ParentType == BindtypeSlider ? 350.f * Menu->Scale : 260.f * Menu->Scale, Var->Bind.ParentType == BindtypeSwitch ? 74.f * Menu->Scale : 130.f * Menu->Scale);
+	Overlay->Size = Vec2(Var->Bind.ParentType == BindtypeSlider ? 350.f * Menu->Scale : 260.f * Menu->Scale, Var->Bind.ParentType == BindtypeSwitch ? 102.f * Menu->Scale : 158.f * Menu->Scale);
 
 	Overlay->Draw(Start.x, Start.y + 36.f * (1.f - OpenAnimation), MaxAlpha, LeftClick, Drag);
 	if (LeftClick) {
@@ -297,8 +311,13 @@ bool Bind::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bo
 	float OriginalMaxAlpha = MaxAlpha;
 
 
-	if (MaxAlpha != 255.f && *Pointer < 0)
+	if (MaxAlpha != 255.f && *Pointer < 0) {
+		if (*Pointer == -2) {
+			if (Config->AutoSave)
+				ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
+		}
 		*Pointer = -1;
+	}
 	bool bHovered = Menu->InRegion(x + Size.x - 123.f * Menu->Scale , y - 10.f * Menu->Scale, 84.f * Menu->Scale, 23.f * Menu->Scale) && !disable ;
 	GUIAnimations::Animate(HoverAnimation, bHovered || *Pointer == -2);
 	Render::DrawString(x, y, Col(255, 255, 255, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
@@ -329,9 +348,13 @@ bool Bind::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bo
 			if (Client->KeyToggled(i)) {
 				if (i == VK_ESCAPE) {
 					*Pointer = -1;
+					if (Config->AutoSave)
+						ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 				}
 				else {
 					*Pointer = i;
+					if (Config->AutoSave)
+						ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 				}
 				
 			}
@@ -375,7 +398,7 @@ bool Settings::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick
 	bool ButtonHovered = Menu->InRegion(x + Size.x - (offset + 8.f) * Menu->Scale, y - 2.f * Menu->Scale, 30.f * Menu->Scale, 19.f * Menu->Scale) && !disable;
 	GUIAnimations::Animate(HoverAnimation, ButtonHovered || ShouldOverlay());
 
-	Render::DrawString(x + Size.x - offset * Menu->Scale, y + 9.f * Menu->Scale, Col(90 + HoverAnimation * 165, 90 + HoverAnimation * 165, 90 + HoverAnimation * 165, MaxAlpha * (0.8f + 0.2f * HoverAnimation)), Fonts::MenuIcons, Render::centered_y, "I");
+	Render::DrawString(x + Size.x - offset * Menu->Scale, y + 7.f * Menu->Scale, Col(90 + HoverAnimation * 165, 90 + HoverAnimation * 165, 90 + HoverAnimation * 165, MaxAlpha * (0.8f + 0.2f * HoverAnimation)), Fonts::MenuIcons, Render::centered_y, "I");
 
 	if (MaxAlpha < 254.8f)
 		Open = false;
@@ -386,12 +409,7 @@ bool Settings::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick
 		Open = true;
 		Start = Menu->MousePos;
 	}
-	else if (Open && LeftClick) {
-		if (!Menu->InRegion(Start.x, Start.y, OriginalSize.x * Menu->Scale, OriginalSize.y * Menu->Scale))
-		{
-			Open = false;
-		}
-	}
+	
 	return false;
 	
 }
@@ -426,6 +444,9 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 			Dialogue.saturation = Pointer->Saturation();
 			Dialogue.brightness = Pointer->Brightness();
 			Dialogue.alpha = Pointer->operator[](3) / 255.f;
+			Dialogue.animatedfloat = (Dialogue.hue);
+			Dialogue.animatedpicker = Vec2(140.f * Dialogue.saturation * Menu->Scale, 140.f * (1.f - Dialogue.brightness) * Menu->Scale);
+			Dialogue.animatedhue = (Dialogue.animatedhue);
 		}
 	}
 	GUIAnimations::EaseAnimate(CPDialogue.Open, DialogueState == DialogueState_t::CopyPaste, 0.0178f);
@@ -551,8 +572,13 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 				else if (HoveredAlpha) {
 					Dialogue.type = 3;
 				}
+				else
+				{
+					Dialogue.type = 0;
+					if (Config->AutoSave)
+						ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
+				}
 				
-					
 			
 			}
 			if (Drag || LeftClick) {
@@ -571,6 +597,11 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 				}
 				*(Col*)Pointer = Col::hsb(Dialogue.hue, Dialogue.saturation, Dialogue.brightness);
 				Pointer->operator[](3) = Dialogue.alpha * 255.f;
+
+				if (Drag)
+					Drag = false;
+
+				
 			}
 			else if (Dialogue.type != 0) {
 				Dialogue.type = 0;
@@ -582,8 +613,11 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 				DialogueState = DialogueState_t::Closed;
 				
 
-
+			
 			}
+
+			if (LeftClick)
+				LeftClick = false;
 		}
 	}
 
@@ -632,7 +666,7 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 			ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 	}
 	else if (Hovered && Menu->MouseRightClick) {
-		if (Menu->Binder.Parent == nullptr) {
+		if (Menu->Binder.Parent == nullptr && Label != "Show In Keybinds") {
 			Menu->Binder.Update(this, BindedVar, {}, 0, 0, BindtypeSwitch);
 			Menu->MouseRightClick = false;
 			Menu->Binder.Open = true;
@@ -642,7 +676,7 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 	
 		
 	
-
+	/*
 	if (Render::TextSize(Fonts::MenuThin, Label.c_str()).x > Size.x - 103.f * Menu->Scale) {
 		Render::PushClipRect(x, y - 4.f * Menu->Scale, Size.x - 103.f * Menu->Scale, 23.f * Menu->Scale, true);
 		Render::DrawString(x, y, Col(W, W, W, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
@@ -654,7 +688,7 @@ bool Switch::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		Render::GradientFilledRect(x + Size.x - 133.f * Menu->Scale, y - 4.f * Menu->Scale, 33.f * Menu->Scale, 26.f * Menu->Scale, Low, Full, Low, Full);
 		Render::PopClipRect();
 	}
-	else
+	else*/
 		Render::DrawString(x, y, Col(W, W, W, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
 
 	Col Main(11 + 132 * EasedSlide, 12 + 138 * EasedSlide, 18 + 237 * EasedSlide, MaxAlpha);
@@ -729,7 +763,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		AnimatedScroll = 0.f;
 	}
 	else if (Hovered && Menu->MouseRightClick) {
-		if (Menu->Binder.Parent == nullptr) {
+		if (Menu->Binder.Parent == nullptr && Label != "Bind On Value" && Label != "Bind Off Value") {
 			std::vector<std::string> El;
 			for (auto& Element : Elements)
 				El.push_back(Element.second);
@@ -793,7 +827,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 
 			//	float MaxScroll = Math::Clamp(AnimatedScroll, 0.f, Offset);
 			float OffsetY = (AnimatedScroll / (Offset - (24.f * Menu->Scale * 6.f + 10.f * Menu->Scale))) * (135.f * Menu->Scale);
-			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y + OffsetY, 5.f * Menu->Scale, 20.f * Menu->Scale, Col(170, 170, 255, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
+			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y + OffsetY, 5.f * Menu->Scale, 20.f * Menu->Scale, Menu->MainTheme.WithAlpha(MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
 		}
 		else
 			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y, 5.f * Menu->Scale, 155.f * Menu->Scale, Col(11, 12, 18, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
@@ -915,7 +949,7 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 		AnimatedScroll = 0.f;
 	}
 	else if (Hovered && Menu->MouseRightClick) {
-		if (Menu->Binder.Parent == nullptr) {
+		if (Menu->Binder.Parent == nullptr && Label != "Bind On Value" && Label != "Bind Off Value") {
 			std::vector<std::string> El;
 			for (auto& Element : Elements)
 				El.push_back(Element.second);
@@ -984,7 +1018,7 @@ bool MultiSelect::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 
 			//	float MaxScroll = Math::Clamp(AnimatedScroll, 0.f, Offset);
 			float OffsetY = (AnimatedScroll / (Offset - (24.f * Menu->Scale * 6.f + 10.f * Menu->Scale))) * (135.f * Menu->Scale);
-			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y + OffsetY, 5.f * Menu->Scale, 20.f * Menu->Scale, Col(170, 170, 255, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
+			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y + OffsetY, 5.f * Menu->Scale, 20.f * Menu->Scale, Menu->MainTheme.WithAlpha(MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
 		}
 		else
 			Render::FilledRoundedRectCustom(x + 115.f * Menu->Scale, y, 5.f * Menu->Scale, 155.f * Menu->Scale, Col(11, 12, 18, MaxAlpha * Eased), 4.f * Menu->Scale, ImDrawFlags_::ImDrawFlags_RoundCornersRight);
@@ -1084,7 +1118,7 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 			ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
 		}
 	}
-	
+	/*
 	if (Render::TextSize(Fonts::MenuThin, Label.c_str()).x > Size.x - 75.f * Menu->Scale - Size.x * 0.35f - 45.f * Menu->Scale) {
 		Render::PushClipRect(x, y - 4.f * Menu->Scale, Size.x - 75.f * Menu->Scale - Size.x * 0.35f - 5.f * Menu->Scale, 23.f * Menu->Scale, true);
 		Render::DrawString(x, y, Col(255,255,255, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
@@ -1096,7 +1130,7 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		Render::GradientFilledRect(x + Size.x - 75.f * Menu->Scale - Size.x * 0.35f - 28.f * Menu->Scale, y - 4.f * Menu->Scale, 23.f * Menu->Scale, 26.f * Menu->Scale, Low, Full, Low, Full);
 		Render::PopClipRect();
 	}
-	else
+	else*/
 		Render::DrawString(x, y, Col(255, 255, 255, MaxAlpha), Fonts::MenuThin, 0, Label.c_str());
 
 	Col Main(11 + 132, 12 + 138 , 18 + 237, MaxAlpha);
@@ -1125,7 +1159,7 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		Drag = false;
 	}
 	else if (bHovered && Menu->MouseRightClick) {
-		if (Menu->Binder.Parent == nullptr) {
+		if (Menu->Binder.Parent == nullptr && Label != "Bind On Value" && Label != "Bind Off Value") {
 			Menu->Binder.Update(this, BindedVar, {}, MinValue, MaxValue, BindtypeSlider);
 			Menu->MouseRightClick = false;
 			Menu->Binder.Open = true;
@@ -1152,7 +1186,7 @@ bool Slider::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 			Menu->EditTextAnimation = Menu->CurrentClock;
 		}
 		else if (Menu->MouseRightClick) {
-			if (Menu->Binder.Parent == nullptr) {
+			if (Menu->Binder.Parent == nullptr && Label != "Bind On Value" && Label != "Bind Off Value") {
 				Menu->Binder.Update(this, BindedVar, {}, MinValue, MaxValue, BindtypeSlider);
 				Menu->MouseRightClick = false;
 				Menu->Binder.Open = true;
@@ -1376,8 +1410,23 @@ void ConfigView::DrawConfig(float x, float y, float MaxAlpha, std::string label,
 
 bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, bool& Drag, bool& disable) {
 
-	if (MaxAlpha != 255.f && (int(Menu->CurrentClock * 0.08f) % 2) == 0)
+	if (MaxAlpha != 255.f && (int(Menu->CurrentClock * 0.08f) % 2) == 0) {
+		if (ConfigSystem->Configs.empty()) {
+			ConfigSystem->CreateConfig("Default");
+			ConfigSystem->LoadToConfig("Default");
+
+			ConfigSystem->Loaded = "Default";
+		}
+		else if (ConfigSystem->Configs.find("Default") == ConfigSystem->Configs.end()) {
+			ConfigSystem->CreateConfig("Default");
+		}
+
+		while (ConfigSystem->Configs.find("Default") == ConfigSystem->Configs.end())
+			Reload();
+
+
 		Reload();
+	}
 
 	Vec2 OrP	(x, y);
 	Render::PushClipRect(x, y, Size.x - 40.f * Menu->Scale, Size.y, true);

@@ -78,12 +78,26 @@ void CMenu::SetupUser() {
 	Childs[MENUMAIN][LEFT].New(new Switch("Auto-Save Current Configuration", &Config->AutoSave));
 	Childs[MENUMAIN][LEFT].New(new Select("Menu Scale", { "50%", "80%", "100%", "140%", "170%" }, &Config->MenuScale));
 	Childs[MENUMAIN][LEFT].New(new Switch("Disable Complex Animations", &Config->DisableComplexAnimations));
-	Childs[MENUMAIN][LEFT].New(new Slider("Animation Speed", 40, 170, &Config->Menu.AnimationSpeed));
+	Childs[MENUMAIN][LEFT].New(new Slider("Animation Speed", 40, 170, &Config->MenuSettings.AnimationSpeed));
 	Childs[MENUMAIN][LEFT].New(new Text("Menu Colours"));
 	Childs[MENUMAIN][LEFT].New(new Settings(47.f, 400.f, 300.f, Childs[MENUMAIN][LEFT].GetLastAddedElement(), [](Child* menu) {
-		menu->New(new Text("Main Theme"));
-		menu->New(new ColorPicker("Main Theme", 65.f, &tescl, menu->GetLastAddedElement()));
+		menu->New(new Text("Main Theme Colour"));
+		menu->New(new ColorPicker("Main Theme Colour", 65.f, &Menu->MainTheme, menu->GetLastAddedElement()));
 		}));
+	Childs[MENUMAIN][LEFT].New(new Switch("Keybinds", &Config->MenuSettings.Keybinds));
+	Childs[MENUMAIN][LEFT].New(new Settings(102.f, 340.f, 160.f, Childs[MENUMAIN][LEFT].GetLastAddedElement(), [](Child* menu) {
+		menu->New(new Slider("Keybinds Width", 100.f, 300.f, &Config->MenuSettings.KeybindsSizeWidth));
+		menu->New(new Text("Theme Colour"));
+		menu->New(new ColorPicker("Keybinds Theme Colour", 47.f, &Config->MenuSettings.KeybindsCol, menu->GetLastAddedElement()));
+		menu->New(new Text("Text Colour"));
+		menu->New(new ColorPicker("Keybinds Text Colour", 47.f, &Config->MenuSettings.KeybindsText, menu->GetLastAddedElement()));
+		menu->New(new Text("Background Colour"));
+		menu->New(new ColorPicker("Keybinds Background Colour", 47.f, &Config->MenuSettings.KeybindsBackground, menu->GetLastAddedElement()));
+		menu->New(new Text("Background 2 Colour"));
+		menu->New(new ColorPicker("Keybinds Background 2 Colour", 47.f, &Config->MenuSettings.KeybindsBackground2, menu->GetLastAddedElement()));
+		}));
+	ConfigSystem->AddVar("Keybinds X", &Config->MenuSettings.KeybindsX);
+	ConfigSystem->AddVar("Keybinds Y", &Config->MenuSettings.KeybindsX);
 	Childs[CONFIGS][LEFT].New(ConfigViewer);
 
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
@@ -122,7 +136,8 @@ void CMenu::SetupUser() {
 	LastTab = AIMBOT;
 	SearchAnimation = 0.f;
 	SettingAnimation = 0.f;
-
+	KeybindsAlpha = 0.f;
+	KeybindsWidth = 0.f;
 
 
 
@@ -145,8 +160,154 @@ void CMenu::SetupUser() {
 	ConfigSystem->Loaded = "Default";
 }
 
+void CMenu::UpdateKeybinds() {
+	RenderBinds.clear();
+	EmptyBinds = true;
+	for (auto& Var : ConfigSystem->BindedVariables) {
+		if (Var->Bind.VKey < 0 || Var->Bind.Type == BindOff)
+			continue;
+		if (Var->Bind.ParentType == BindParentType::BindtypeSlider || Var->Bind.ParentType == BindParentType::BindtypeSelect) {
+			if (Var->Bind.Type == BindHold) {
+				Var->Bind.OnOff = Client->KeyPressed(Var->Bind.VKey);
+			}
+			else if (Var->Bind.Type == BindToggle) {
+				if (Client->KeyToggled(Var->Bind.VKey))
+				{
+					Var->Bind.OnOff = !Var->Bind.OnOff;
+				}
+			}
+			else if (Var->Bind.Type == BindRelease) {
+				Var->Bind.OnOff = Client->KeyPressed(Var->Bind.VKey);
+			}
+			if (Var->Bind.OnOff) {
+				*(( int*)Var->Var) = ((SliderBind*)Var->Bind.Data)->NewValue;
+			}
+			else {
+				*(( int*)Var->Var) = ((SliderBind*)Var->Bind.Data)->OldValue;
+			}
+			if (Var->Bind.Show) {
+				GUIAnimations::EaseAnimate(Var->Bind.Modifier, (*((int*)Var->Var) == (((SliderBind*)Var->Bind.Data)->NewValue)), 0.0178f);
+				if (EmptyBinds) {
+					EmptyBinds = !Var->Bind.OnOff;
+				}
+				if (Var->Bind.Modifier > 0.f)
+				{
+
+					if (Var->Bind.ParentType == BindParentType::BindtypeSlider)
+						RenderBinds.push_back(RenderBind{ &Var->Bind.Bind,std::to_string((((SliderBind*)Var->Bind.Data)->NewValue)), &Var->Bind.Modifier });
+					else
+						RenderBinds.push_back(RenderBind{ &Var->Bind.Bind,Var->Bind.Type == BindHold ? "Hold" : Var->Bind.Type == BindToggle ? "Toggle" : "Release", &Var->Bind.Modifier, 0.f, (*((int*)Var->Var) == (((SliderBind*)Var->Bind.Data)->NewValue)) });
+				}
+			}
+		}
+		else if (Var->Bind.ParentType == BindParentType::BindtypeMultiselect) {
+
+			if (Var->Bind.Type == BindHold) {
+				Var->Bind.OnOff = Client->KeyPressed(Var->Bind.VKey);
+			}
+			else if (Var->Bind.Type == BindToggle) {
+				if (Client->KeyToggled(Var->Bind.VKey))
+				{
+					Var->Bind.OnOff = !Var->Bind.OnOff;
+				}
+			}
+			else if (Var->Bind.Type == BindRelease) {
+				Var->Bind.OnOff = Client->KeyPressed(Var->Bind.VKey);
+			}
+			if (Var->Bind.OnOff) {
+				*((unsigned int*)Var->Var) = ((MultiSelectBind*)Var->Bind.Data)->NewValue;
+			}
+			else {
+				*((unsigned int*)Var->Var) = ((MultiSelectBind*)Var->Bind.Data)->OldValue;
+			}
+			if (Var->Bind.Show) {
+				if (EmptyBinds) {
+					EmptyBinds = !Var->Bind.OnOff;
+				}
+				GUIAnimations::EaseAnimate(Var->Bind.Modifier, (*((unsigned int*)Var->Var) == (((MultiSelectBind*)Var->Bind.Data)->NewValue)), 0.0178f);
+				if (Var->Bind.Modifier > 0.f)
+					RenderBinds.push_back(RenderBind{ &Var->Bind.Bind,Var->Bind.Type == BindHold ? "Hold" : Var->Bind.Type == BindToggle ? "Toggle" : "Release", &Var->Bind.Modifier, 0.f, (*((unsigned int*)Var->Var) == (((MultiSelectBind*)Var->Bind.Data)->NewValue)) });
+			}
+		}
+		else {
+			if (Var->Bind.Type == BindHold) {
+				*((bool*)Var->Var) = Client->KeyPressed(Var->Bind.VKey);
+			}
+			else if (Var->Bind.Type == BindToggle) {
+				if (Client->KeyToggled(Var->Bind.VKey))
+					*((bool*)Var->Var) = !(*((bool*)Var->Var));
+			}
+			else if (Var->Bind.Type == BindRelease) {
+				*((bool*)Var->Var) = !Client->KeyPressed(Var->Bind.VKey);
+			}
+			if (Var->Bind.Show) {
+				if (EmptyBinds) {
+					EmptyBinds = !*((bool*)Var->Var);
+				}
+				GUIAnimations::EaseAnimate(Var->Bind.Modifier, *((bool*)Var->Var), 0.0178f);
+				if (Var->Bind.Modifier > 0.f)
+					RenderBinds.push_back(RenderBind{&Var->Bind.Bind,Var->Bind.Type == BindHold ? "Hold" : Var->Bind.Type == BindToggle ? "Toggle" : "Release", &Var->Bind.Modifier, 0.f, *((bool*)Var->Var) });
+			}
+		}
 
 
+	}
+}
+
+bool CMenu::RenderKeybinds(float x, float y) {
+
+	if (KeybindsAlpha <= 0 && !Config->MenuSettings.Keybinds)
+		return false;
+
+	float OffsetY = 21.f * Menu->Scale;
+	if (RenderBinds.empty()) {
+		if (KeybindsAlpha <= 0)
+			return false;
+		KeybindsWidth = (KeybindsWidth + ((Config->MenuSettings.KeybindsSizeWidth * Menu->Scale) - KeybindsWidth) * 0.016f * Menu->AnimationModifier);
+		Render::FilledRect(x, y + 36.f * Menu->Scale, KeybindsWidth, OffsetY - 24.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha));
+		Render::GradientFilledRect(x, y + 36.f * Menu->Scale + OffsetY - 24.f * Menu->Scale, KeybindsWidth, 15.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground.WithAlpha(0), Config->MenuSettings.KeybindsBackground.WithAlpha(0));
+		Render::FilledRoundedRectCustom(x, y - 2.f * Menu->Scale, KeybindsWidth, 36.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersTop);
+		Render::FilledRoundedRectCustom(x, y + 34.f * Menu->Scale, KeybindsWidth, 2.f * Menu->Scale, Config->MenuSettings.KeybindsCol.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersBottom);
+		Render::DrawString(x + 8.5f * Menu->Scale, y + 17.f * Menu->Scale, Config->MenuSettings.KeybindsCol.Manage(KeybindsAlpha), Fonts::MenuIcons, Render::centered_y, "b");
+		Render::DrawString(x + 37.f * Menu->Scale, y + 19.f * Menu->Scale, Config->MenuSettings.KeybindsText.Manage(KeybindsAlpha), Fonts::MenuThin, Render::centered_y, "Keybinds");
+
+		return false;
+	}
+
+	if(KeybindsAlpha <= 0)
+		return Config->MenuSettings.Keybinds;
+	
+	float MaxWidth = Config->MenuSettings.KeybindsSizeWidth * Menu->Scale;
+	float Collective = 0.f;
+	for (auto& BindR : RenderBinds) {
+		OffsetY += *BindR.Animation * 21.f * Menu->Scale;
+		BindR.TypeSize = Render::TextSize(Fonts::MenuMain, BindR.Value.c_str()).x;
+		Collective = BindR.TypeSize + Render::TextSize(Fonts::MenuMain, BindR.Label->c_str()).x + 10.f * Menu->Scale;
+		if (Collective > MaxWidth && BindR.On)
+			MaxWidth = Collective;
+	}
+	KeybindsWidth = (KeybindsWidth + (MaxWidth - KeybindsWidth) * 0.016f * Menu->AnimationModifier);
+	MaxWidth = KeybindsWidth;
+	Render::FilledRect(x, y + 36.f * Menu->Scale, KeybindsWidth, OffsetY - 24.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha));
+	Render::GradientFilledRect(x, y + 36.f * Menu->Scale + OffsetY - 24.f * Menu->Scale, KeybindsWidth, 18.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground.WithAlpha(0), Config->MenuSettings.KeybindsBackground.WithAlpha(0));
+	Render::PushClipRect(x, y + 36.f * Menu->Scale, KeybindsWidth, OffsetY + 15.f * Menu->Scale, true);
+	OffsetY = 21.f * Menu->Scale;
+	for (auto& BindR : RenderBinds) {
+		OffsetY += * BindR.Animation * 21.f * Menu->Scale;
+		Render::DrawString(x + 10.5f * Menu->Scale, y + OffsetY, Config->MenuSettings.KeybindsText.Manage(KeybindsAlpha * GUIAnimations::Ease(*BindR.Animation)), Fonts::MenuThin, 0, BindR.Label->c_str());
+		
+
+		Render::DrawString(x - 1.f * Menu->Scale + MaxWidth - BindR.TypeSize, y + OffsetY, Config->MenuSettings.KeybindsText.Manage(KeybindsAlpha * GUIAnimations::Ease(*BindR.Animation)), Fonts::MenuThin, 0, BindR.Value.c_str());
+
+	}
+	Render::PopClipRect();
+	Render::FilledRoundedRectCustom(x , y - 2.f * Menu->Scale, MaxWidth, 36.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersTop);
+	Render::FilledRoundedRectCustom(x , y + 34.f * Menu->Scale, MaxWidth, 2.f * Menu->Scale, Config->MenuSettings.KeybindsCol.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersBottom);
+	Render::DrawString(x + 8.5f * Menu->Scale, y + 17.f * Menu->Scale, Config->MenuSettings.KeybindsCol.Manage(KeybindsAlpha), Fonts::MenuIcons, Render::centered_y, "b");
+	Render::DrawString(x + 37.f * Menu->Scale, y + 19.f * Menu->Scale, Config->MenuSettings.KeybindsText.Manage(KeybindsAlpha), Fonts::MenuThin, Render::centered_y, "Keybinds");
+
+	return Config->MenuSettings.Keybinds;
+}
 void CMenu::Draw() {
 	//ImGui::GetIO().MouseDrawCursor = true;
 	bool CanMoveMenu = true;
@@ -163,6 +324,23 @@ void CMenu::Draw() {
 		Binder.Parent = nullptr;
 
 	}
+
+	if (Config->MenuSettings.Keybinds || KeybindsAlpha > 0.f) {
+		if (InRegion(Config->MenuSettings.KeybindsX, Config->MenuSettings.KeybindsY, KeybindsWidth, 40.f * Menu->Scale) && CanMoveMenu) {
+			CanMoveMenu = false;
+			if (MouseClick) {
+				KeybindsMoveCache.x = MousePos.x - Config->MenuSettings.KeybindsX;
+				KeybindsMoveCache.y = MousePos.y - Config->MenuSettings.KeybindsY;
+			}
+
+			if (MousePress) {
+				Config->MenuSettings.KeybindsX = MousePos.x - KeybindsMoveCache.x;
+				Config->MenuSettings.KeybindsY = MousePos.y - KeybindsMoveCache.y;
+			}
+		}
+	
+	}
+
 
 
 	if (IsHovered() && CanMoveMenu) {
@@ -208,7 +386,7 @@ void CMenu::Draw() {
 		if ((FindInRegion && MenuStateButtonAnimations[1] < 1.f) || (!FindInRegion && MenuStateButtonAnimations[1] > 0.f))
 			MenuStateButtonAnimations[1] = Math::Clamp(MenuStateButtonAnimations[1] + ((FindInRegion ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
 
-		Render::DrawString(Pos.x + (828.f) * Scale, Pos.y + 30.f * Scale, InSettings ? Col(170, 170, 255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[0], 130 + 125 * MenuStateButtonAnimations[0], 130 + 125 * MenuStateButtonAnimations[0], Alpha), Fonts::MenuIcons, Render::centered_xy, "I");
+		Render::DrawString(Pos.x + (828.f) * Scale, Pos.y + 30.f * Scale, InSettings ? MainTheme.WithAlpha(Alpha) : Col(130 + 125 * MenuStateButtonAnimations[0], 130 + 125 * MenuStateButtonAnimations[0], 130 + 125 * MenuStateButtonAnimations[0], Alpha), Fonts::MenuIcons, Render::centered_xy, "I");
 		bool SettingsInRegion = InRegion(Pos.x + 803.f * Scale, Pos.y + 5.f * Scale, 40.f * Scale, 40.f * Scale);	
 		if ((SettingsInRegion && MenuStateButtonAnimations[0] < 1.f) || (!SettingsInRegion && MenuStateButtonAnimations[0] > 0.f))
 			MenuStateButtonAnimations[0] = Math::Clamp(MenuStateButtonAnimations[0] + ((SettingsInRegion ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
@@ -233,7 +411,7 @@ void CMenu::Draw() {
 	//		SearchAnimation = Math::Clamp(SearchAnimation + ((InSearch ? 1 : -1) * 0.00742f * AnimationModifier), 0.f, 1.f);
 		GUIAnimations::EaseAnimate(SearchAnimation, InSearch, 0.02f);
 
-		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 30.f * Scale, Col(170, 170, 255, Alpha), Fonts::MenuMain, Render::centered_xy, "INFINITE");
+		Render::DrawString(Pos.x + 62.5f * Scale, Pos.y + 30.f * Scale, MainTheme.WithAlpha(Alpha), Fonts::MenuMain, Render::centered_xy, "INFINITE");
 
 
 		RenderTab(Pos.x + 150.f * Scale, Pos.y + 30.f * Scale, AIMBOT, TabAnimations[AIMBOT]);
@@ -416,7 +594,7 @@ void CMenu::OnRender() {
 
 
 	AnimationModifier = RenderInterval;
-	AnimationModifier *= (float)(Config->Menu.AnimationSpeed * 0.01f);
+	AnimationModifier *= (float)(Config->MenuSettings.AnimationSpeed * 0.01f);
 
 	if (Config->DisableComplexAnimations)
 		AnimationModifier *= 0.65f;
@@ -437,66 +615,7 @@ void CMenu::OnRender() {
 		Config->MenuOpen = !Config->MenuOpen;
 	}
 
-	for (auto& Var : ConfigSystem->BindedVariables) {
-		if (Var->Bind.VKey < 0 || Var->Bind.Type == BindOff)
-			continue;
-		if (Var->Bind.ParentType == BindParentType::BindtypeSlider) {
-			if (Var->Bind.Type == BindHold) {
-				*((int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((SliderBind*)Var->Bind.Data)->OldValue) : (((SliderBind*)Var->Bind.Data)->NewValue);
-			}
-			else if (Var->Bind.Type == BindToggle) {
-				if (Client->KeyToggled(Var->Bind.VKey))
-				{
-					(*((int*)Var->Var) != (((SliderBind*)Var->Bind.Data)->OldValue)) ? (((SliderBind*)Var->Bind.Data)->OldValue) : (((SliderBind*)Var->Bind.Data)->NewValue);
-				}
-			}
-			else if (Var->Bind.Type == BindRelease) {
-				*((int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((SliderBind*)Var->Bind.Data)->NewValue) : (((SliderBind*)Var->Bind.Data)->OldValue);
-			}
-		}
-		else if (Var->Bind.ParentType == BindParentType::BindtypeSelect) {
-			if (Var->Bind.Type == BindHold) {
-				*(( int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((SliderBind*)Var->Bind.Data)->OldValue) : (((SliderBind*)Var->Bind.Data)->NewValue);
-			}
-			else if (Var->Bind.Type == BindToggle) {
-				if (Client->KeyToggled(Var->Bind.VKey))
-				{
-					(*(( int*)Var->Var) != (((SliderBind*)Var->Bind.Data)->OldValue)) ? (((SliderBind*)Var->Bind.Data)->OldValue) : (((SliderBind*)Var->Bind.Data)->NewValue);
-				}
-			}
-			else if (Var->Bind.Type == BindRelease) {
-				*(( int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((SliderBind*)Var->Bind.Data)->NewValue) : (((SliderBind*)Var->Bind.Data)->OldValue);
-			}
-			
-		}
-		else if (Var->Bind.ParentType == BindParentType::BindtypeMultiselect) {
-			
-			if (Var->Bind.Type == BindHold) {
-				*((unsigned int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((MultiSelectBind*)Var->Bind.Data)->OldValue) : (((MultiSelectBind*)Var->Bind.Data)->NewValue);
-			}
-			else if (Var->Bind.Type == BindToggle) {
-				if (Client->KeyToggled(Var->Bind.VKey))
-				{
-					(*((unsigned int*)Var->Var) != (((MultiSelectBind*)Var->Bind.Data)->OldValue)) ? (((MultiSelectBind*)Var->Bind.Data)->OldValue) : (((MultiSelectBind*)Var->Bind.Data)->NewValue);
-				}
-			}
-			else if (Var->Bind.Type == BindRelease) {
-				*((unsigned int*)Var->Var) = Client->KeyPressed(Var->Bind.VKey) ? (((MultiSelectBind*)Var->Bind.Data)->NewValue) : (((MultiSelectBind*)Var->Bind.Data)->OldValue);
-			}
-		}
-		else {
-			if (Var->Bind.Type == BindHold) {
-				*((bool*)Var->Var) = Client->KeyPressed(Var->Bind.VKey);
-			}
-			else if (Var->Bind.Type == BindToggle) {
-				if (Client->KeyToggled(Var->Bind.VKey))
-					*((bool*)Var->Var) = !(*((bool*)Var->Var));
-			}
-			else if (Var->Bind.Type == BindRelease) {
-				*((bool*)Var->Var) = !Client->KeyPressed(Var->Bind.VKey);
-			}
-		}
-	}
+	UpdateKeybinds();
 
 
 	if (Config->MenuScale != LastMenuScale) {
@@ -515,11 +634,17 @@ void CMenu::OnRender() {
 	else {
 		ImGui::GetIO().MouseDrawCursor = false;
 	}
+
+	if (Config->MenuSettings.Keybinds || KeybindsAlpha > 0.f) {
+		bool ShouldRender = RenderKeybinds(Config->MenuSettings.KeybindsX, Config->MenuSettings.KeybindsY);
+		KeybindsAlpha = Math::Clamp(KeybindsAlpha + ((((Config->MenuOpen && Config->MenuSettings.Keybinds) || (ShouldRender && !EmptyBinds)) ? 1 : -1) * 0.00980392156 * AnimationModifier), 0.f, 1.f);
+	}
+
 }
 void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 
 
-	Render::DrawString(x - ((1.f - SubtabChangeAnimation) * 18.f * Scale), y, CurrentSubtab == _this ? Col(170, 170, 255, Alpha * SubtabChangeAnimation)
+	Render::DrawString(x - ((1.f - SubtabChangeAnimation) * 18.f * Scale), y, CurrentSubtab == _this ? MainTheme.WithAlpha( Alpha * SubtabChangeAnimation)
 		: Col(130 + 125 * animation, 130 + 125 * animation, 130 + 125 * animation, Alpha * SubtabChangeAnimation), Fonts::MenuThin, Render::centered_xy, SubtabText[_this]);
 
 	float Offset = Render::TextSize(Fonts::MenuThin, SubtabText[_this]).x * 0.5f;
@@ -540,7 +665,7 @@ void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 }
 void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 	bool ThisSelected = CurrentTab == _this;
-	Col RenderColor = ThisSelected ? Col(170, 170, 255, Alpha) 
+	Col RenderColor = ThisSelected ? MainTheme.WithAlpha(Alpha)
 		: Col(130 + 125 * animation, 130 + 125 * animation, 130 + 125 * animation, Alpha);
 
 	Render::DrawString(x, y, RenderColor, Fonts::MenuIcons, Render::centered_y, TabIcons[_this]);

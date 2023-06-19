@@ -605,6 +605,7 @@ public:
 	MultiSelect NewValue2;
 	Slider OldValue3;
 	Slider NewValue3;
+	Switch ShowBind;
 	std::vector<std::string> WritableElements;
 	Vec2 Start;
 	int MinVal;

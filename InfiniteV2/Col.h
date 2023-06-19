@@ -44,6 +44,14 @@ public:
 	{
 		return Color[index];
 	}
+	Col WithAlpha(float a)
+	{
+		return Col(Color[0], Color[1], Color[2], a);
+	}
+	Col Manage(float a)
+	{
+		return Col(Color[0], Color[1], Color[2], a * Color[3]);
+	}
 	double Hue()
 	{
 		double r = Color[0] / 255.f;

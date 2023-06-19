@@ -1,5 +1,6 @@
 #include "Config.h"
 #include "Client.h"
+#include "Menu.h"
 #include <json.h>
 #include <json-forwards.h>
 #include <fstream>
@@ -136,6 +137,7 @@ bool CConfigSystem::SaveToConfig(const std::string& Bind) {
 		
 		Root["Binds"][Binds->Bind.Bind]["Key"] = Binds->Bind.VKey;
 		Root["Binds"][Binds->Bind.Bind]["Type"] = Binds->Bind.Type;
+		Root["Binds"][Binds->Bind.Bind]["ShowInBinds"] = Binds->Bind.Show;
 		if (Binds->Bind.ParentType == BindParentType::BindtypeSlider) {
 			//(((SliderBind*)Var->Bind.Data)->NewValue)
 			Root["Binds"][Binds->Bind.Bind]["BindOnValue"] = (((SliderBind*)Binds->Bind.Data)->NewValue);
@@ -243,6 +245,7 @@ bool CConfigSystem::LoadToConfig(const std::string& Bind) {
 		}
 		Binds->Bind.VKey = Root["Binds"][Binds->Bind.Bind]["Key"].asInt();
 		Binds->Bind.Type = Root["Binds"][Binds->Bind.Bind]["Type"].asInt();
+		Binds->Bind.Show = Root["Binds"][Binds->Bind.Bind]["ShowInBinds"].asBool();
 		if (Binds->Bind.ParentType == BindParentType::BindtypeSlider) {
 		//(((SliderBind*)Var->Bind.Data)->NewValue)
 			(((SliderBind*)Binds->Bind.Data)->NewValue) = Root["Binds"][Binds->Bind.Bind]["BindOnValue"].asInt();
@@ -351,6 +354,15 @@ void CConfig::ResetValues() {
 	this->Movement.Bunnyhop = false;
 	this->Movement.BunnyhopStrafeType = 0;
 	this->DisableComplexAnimations = false;
-	this->Menu.AnimationSpeed = 100;
+	this->MenuSettings.AnimationSpeed = 100;
 	this->AutoSave = true;
+	Menu->MainTheme = Col(170, 170, 255);
+	this->MenuSettings.KeybindsSizeWidth = 300;
+	this->MenuSettings.KeybindsX = 400;
+	this->MenuSettings.KeybindsY = 400;
+	this->MenuSettings.Keybinds = false;
+	this->MenuSettings.KeybindsCol = Col(170, 170, 255, 255);
+	this->MenuSettings.KeybindsBackground = Col(255, 255, 255, 20);//0,1,2
+	this->MenuSettings.KeybindsBackground2 = Col(255, 255, 255, 6);
+	this->MenuSettings.KeybindsText = Col(255, 255, 255, 255);
 }
