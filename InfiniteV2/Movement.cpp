@@ -129,12 +129,13 @@ void Movement::QuickStop(UserCmd* cmd) {
 		return;
 
 
-	if (Client->cache.VelocityLength2D > 15.f) {
+	if (Client->cache.VelocityLength2D > 30.f) {
 		//Client->Log(std::to_string(Client->cache.VelocityLength2D).c_str()); Client->Log("\n");
-		Vec3 direction = Client->cache.Velocity;
+		Vec3 direction = Client->local->m_vecVelocity();
+		direction.NormalizeInPlace();
 		direction.ToAngles();
-		direction.y = Client->ActiveViewAngle.y - direction.y;
-		
+		direction.y = Client->OriginalViewAngles.y - direction.y;
+		direction.Normalize();
 		direction.ToVector();
 
 		direction *= -1.f;
@@ -147,7 +148,7 @@ void Movement::QuickStop(UserCmd* cmd) {
 	}
 }
 void Movement::MoveFix(UserCmd* cmd) {
-
+	/*
 	Vec3 Movement(cmd->Base->forwardmove, cmd->Base->sidemove, cmd->Base->upmove);
 	float MoveSpeed = Movement.Length2D();
 
@@ -182,7 +183,7 @@ void Movement::MoveFix(UserCmd* cmd) {
 	{
 
 		cmd->Buttons.Button1 |= in_moveleft;
-	}
+	}*/
 }
 
 void Movement::DoBunnyhop(UserCmd* cmd) {

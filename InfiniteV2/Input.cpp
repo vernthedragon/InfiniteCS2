@@ -3,9 +3,9 @@
 std::unique_ptr< VMTHook > Hooks::InputVMTHook = nullptr;
 
 bool __fastcall Hooks::CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint8_t a3) {
- //   if (!Hooks::oCreateMove) {
-  //      Hooks::oCreateMove = Hooks::InputVMTHook->GetOriginal<Hooks::CreateMove_t>(IInputVTable::CREATEMOVE);
- //   }
+    if (!Hooks::oCreateMove) {
+        Hooks::oCreateMove = Hooks::InputVMTHook->GetOriginal<Hooks::CreateMove_t>(IInputVTable::CREATEMOVE);
+   }
 
     Client->UpdateLocal(); //should be in FSN
 
@@ -22,9 +22,9 @@ bool __fastcall Hooks::CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint
         return ret;
 
     Client->OriginalViewAngles = cmd->Base->view->angles;
-    Client->ViewAngle = Client->ActiveViewAngle; //set to client viewangle since InputCreateMove is late?
+    Client->ViewAngle = Client->OriginalViewAngles; //set to client viewangle since InputCreateMove is late?
     
-    AntiAim::DoAntiAim(cmd);
+    //AntiAim::DoAntiAim(cmd);
     
     Movement::DoMovement(cmd);
     Client->ViewAngle.Normalize();

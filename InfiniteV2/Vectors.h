@@ -90,6 +90,12 @@ public:
 	inline float LengthSqr() {
 		return x * x + y * y + z * z;
 	}
+	void NormalizeInPlace() {
+		float Inv = Math::InvSqrt(x * x + y * y + z * z);
+		x *= Inv;
+		y *= Inv;
+		z *= Inv;
+	}
 	void Normalize() {
 		while (y < -180.0f)
 			y += 360.0f;

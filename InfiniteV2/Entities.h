@@ -195,6 +195,8 @@ public:
     SCHEMA("C_BaseEntity", "m_fFlags", m_fFlags, unsigned int);
     //m_vecVelocity
     SCHEMA("C_BaseEntity", "m_vecAbsVelocity", m_vecAbsVelocity, Vec3);
+    SCHEMA("C_BaseEntity", "m_vecVelocity", m_vecVelocity, Vec3);
+    SCHEMA("C_BaseEntity", "m_vecBaseVelocity", m_vecBaseVelocity, Vec3);
 };
 class IEntityUnknown : IEntity {
 public:
