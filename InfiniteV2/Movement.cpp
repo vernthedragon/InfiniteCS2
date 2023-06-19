@@ -148,7 +148,7 @@ void Movement::QuickStop(UserCmd* cmd) {
 	}
 }
 void Movement::MoveFix(UserCmd* cmd) {
-	/*
+	
 	Vec3 Movement(cmd->Base->forwardmove, cmd->Base->sidemove, cmd->Base->upmove);
 	float MoveSpeed = Movement.Length2D();
 
@@ -183,7 +183,7 @@ void Movement::MoveFix(UserCmd* cmd) {
 	{
 
 		cmd->Buttons.Button1 |= in_moveleft;
-	}*/
+	}
 }
 
 void Movement::DoBunnyhop(UserCmd* cmd) {
