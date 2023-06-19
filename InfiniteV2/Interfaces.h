@@ -22,4 +22,5 @@ extern ITrace* g_Trace;
 extern CSGlobalVars* g_GlobalVars;
 extern ICvar* g_Cvar;
 
+
 bool InitializeCSInterfaces();

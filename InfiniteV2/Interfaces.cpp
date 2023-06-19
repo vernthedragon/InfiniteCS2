@@ -75,8 +75,7 @@ bool InitializeCSInterfaces() {
 	g_Trace = *reinterpret_cast<ITrace**>(Client->ResolveRIP(Client->FindPattern(GetModuleHandleA("client.dll"), TRACE_MANAGER), 3, 7));
 	g_GlobalVars = *reinterpret_cast<CSGlobalVars**>(Client->ResolveRIP(Client->FindPattern(GetModuleHandleA("client.dll"), GLOBAL_VARS), 3, 7));
 	g_Cvar = GetGameInterface<ICvar>(("tier0.dll"), "VEngineCvar007");
-
-
+	
 	
 	return true;
 }

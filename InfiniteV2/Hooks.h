@@ -19,6 +19,7 @@ namespace Hooks {
 	extern std::unique_ptr< VMTHook > SwapChainVMTHook;
 	extern std::unique_ptr< VMTHook > InputVMTHook;
 
+
 	using SwapChainPresent_t = HRESULT(__fastcall*)(IDXGISwapChain*, std::uint32_t, std::uint32_t);
 	static SwapChainPresent_t oSwapChainPresent = nullptr;
 	HRESULT __fastcall SwapChainPresent(IDXGISwapChain* swap_chain, std::uint32_t sync_interval, std::uint32_t flags);

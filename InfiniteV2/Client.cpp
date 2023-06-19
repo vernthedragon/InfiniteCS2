@@ -88,16 +88,16 @@ bool CClient::SetupHooks() {
 
 	Hooks::SwapChainVMTHook = std::make_unique< VMTHook >();
 	Hooks::InputVMTHook = std::make_unique< VMTHook >();
-
+	
 	Hooks::SwapChainVMTHook->Setup(g_Renderer->SwapChain);
 	Hooks::InputVMTHook->Setup(g_Input);
-
-
+	
 	Hooks::SwapChainVMTHook->Hook(IRendererVTable::PRESENT, Hooks::SwapChainPresent);
 	Hooks::SwapChainVMTHook->Hook(IRendererVTable::RESIZE_BUFFERS, Hooks::SwapChainResizeBuffers);
 
 	Hooks::InputVMTHook->Hook(IInputVTable::CREATEMOVE, Hooks::CreateMove);
 
+	
 	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
 	{
 		return false;
@@ -139,10 +139,11 @@ void CClient::Initialize() {
 
 	while (!GetModuleHandleA("client.dll"))
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	
+	Log("Found client.dll\n");
 	while (!GetModuleHandleA("engine2.dll"))
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
-
+	Log("Found engine2.dll\n");
+	
 	if (InitializeCSInterfaces()) {
 		Log("Successfully Setup all CS Interfaces\n");
 	}

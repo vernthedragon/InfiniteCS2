@@ -309,6 +309,8 @@ void Render::FilledTriangle(float x1, float y1, float x2, float y2, float x3, fl
 {
 	DrawList->AddTriangleFilled(ImVec2(x1, y1), ImVec2(x2, y2), ImVec2(x3, y3), clr.u32());
 }
+
+
 void  Render::Line(float x, float y, float endx, float endy, Col clr, float thick) {
 	Render::DrawList->AddLine(ImVec2(x,y), ImVec2(endx, endy), clr.u32(), thick);
 }
