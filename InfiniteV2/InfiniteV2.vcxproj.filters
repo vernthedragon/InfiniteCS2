@@ -155,6 +155,9 @@
     <ClCompile Include="ESP.cpp">
       <Filter>Client\Features</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerHandler.cpp">
+      <Filter>Client\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">
@@ -329,6 +332,12 @@
       <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="ESP.h">
+      <Filter>Client\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="IViewRender.h">
+      <Filter>SDK\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHandler.h">
       <Filter>Client\Features</Filter>
     </ClInclude>
   </ItemGroup>

@@ -180,7 +180,7 @@ public:
     bool IsViewModel();
 
     const Vec3& GetOrigin();
-    bool GetBoundingBox(BoundingBox& out, bool computeSurroundingBox = false); //INPROGRESSZ
+    bool GetBoundingBox(BoundingBox& out); 
     bool ComputeHitboxSurroundingBox(Vec3& mins, Vec3& maxs);
     float DistanceToSquared(IEntity* pEntity); //INPROGRESS
     SCHEMA("C_BaseEntity", "m_pGameSceneNode", m_pGameSceneNode, IGameSceneNode*);
@@ -194,6 +194,14 @@ public:
     //m_vecVelocity
     SCHEMA("C_BaseEntity", "m_vecAbsVelocity", m_vecAbsVelocity, Vec3);
 };
+struct alignas(16) bone_data {
+    Vec3 Position;
+    float Scale;
+    Vec4 Rotation;
+};
+
+static_assert(sizeof(bone_data) == 0x20);
+
 
 class IPlayer : public IEntity
 {

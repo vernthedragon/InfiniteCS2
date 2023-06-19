@@ -42,11 +42,12 @@ namespace Render {
 	Vec2 TextSize(ImFont* font, const char* message);
 	void DrawFullscreenBlur();
 	void Initialize();
+	void UpdateProjectionMatrix();
 	static bool Initialized = false;
 	static constexpr auto SinCosPoints = 64;
 	static std::vector<Vec2> SinCosTable;
 	static ImDrawList* DrawList;
-
+	static Mat4x4 ProjectionMatrix;
 };
 
 namespace Fonts {

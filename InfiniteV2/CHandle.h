@@ -8,9 +8,10 @@
 class IEntity;
 
 class CHandle {
+public:
     IEntity* GetBaseEntity() const;
 
-public:
+
     bool operator==(CHandle rhs) const { return m_Index == rhs.m_Index; }
     bool IsValid() const { return m_Index != INVALID_EHANDLE_INDEX; }
 

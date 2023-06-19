@@ -32,7 +32,9 @@
 #define GLOBAL_VARS "48 8B 05 ? ? ? ? 4C 8D 0D ? ? ? ? F2 0F 11 74 24 ? 4C 8D 05 ? ? ? ? BA"
 #define RENDERER "66 0F 7F 05 ? ? ? ? 66 0F 7F 0D ? ? ? ? 48 89 35"
 #define TRACE_MANAGER "4C 8B 3D ? ? ? ? 24 ? 0C ? 66 0F 7F 45"
+#define VIEW_RENDER "E8 ? ? ? ? 44 8B CB 4C 8D 44 24"
 
+#define WORLD_TO_SCREEN_PROJECTION_MATRIX "48 8D 05 ? ? ? ? 48 8B D3 4C 8D 05"
 #define WORLD_TO_SCREEN "48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B 1D ? ? ? ? 48 8B FA"
 
 #define RESOLVE_HANDLE "48 83 EC ? 83 F9 ? 75 ? 48 8B 0D ? ? ? ? 48 8D 54 24 ? 48 8B 01 FF 90 ? ? ? ? 8B 08 48 63 C1 48 8D 0D ? ? ? ? 48 8B 0C C1"

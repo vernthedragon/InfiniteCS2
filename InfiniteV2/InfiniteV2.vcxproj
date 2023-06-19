@@ -194,6 +194,7 @@
     <ClCompile Include="minhook\hook.c" />
     <ClCompile Include="minhook\trampoline.c" />
     <ClCompile Include="Movement.cpp" />
+    <ClCompile Include="PlayerHandler.cpp" />
     <ClCompile Include="RenderHook.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="Schema.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="ISchemaSystem.h" />
     <ClInclude Include="ITrace.h" />
+    <ClInclude Include="IViewRender.h" />
     <ClInclude Include="Json\json-forwards.h" />
     <ClInclude Include="Json\json.h" />
     <ClInclude Include="Math.h" />
@@ -245,6 +247,7 @@
     <ClInclude Include="minhook\MinHook.h" />
     <ClInclude Include="minhook\trampoline.h" />
     <ClInclude Include="Movement.h" />
+    <ClInclude Include="PlayerHandler.h" />
     <ClInclude Include="QAngle.h" />
     <ClInclude Include="Rendering.h" />
     <ClInclude Include="Schema.h" />

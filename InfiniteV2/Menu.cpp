@@ -706,6 +706,14 @@ void CMenu::OnRender() {
 		bool ShouldRender = RenderKeybinds(Config->MenuSettings.KeybindsX, Config->MenuSettings.KeybindsY);
 		KeybindsAlpha = Math::Clamp(KeybindsAlpha + ((((Config->MenuOpen && Config->MenuSettings.Keybinds) || (ShouldRender && !EmptyBinds)) ? 1 : -1) * 0.00980392156 * AnimationModifier), 0.f, 1.f);
 	}
+	if (Client->local) { //testing w2s function and example for patate
+		if (Client->cache.Alive) {
+			BoundingBox test;
+			if (Client->local->GetBoundingBox(test))
+				Render::Rect(test.x, test.y, test.w, test.h, Col(255,255,255,255), 2.f);
+		}
+	}
+
 	//if(Client->cmd)
 	//	Render::DrawString(500,500, Col(255,255,255,255), Fonts::MenuThin, Render::centered_y, std::to_string(Client->ActiveViewAngle.x).c_str());
 	//this on top is onl used for debugging variables ingame

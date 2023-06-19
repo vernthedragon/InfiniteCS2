@@ -312,19 +312,99 @@ void Render::FilledTriangle(float x1, float y1, float x2, float y2, float x3, fl
 void  Render::Line(float x, float y, float endx, float endy, Col clr, float thick) {
 	Render::DrawList->AddLine(ImVec2(x,y), ImVec2(endx, endy), clr.u32(), thick);
 }
-
+#include "PlayerHandler.h"
 void Render::DoRender(ID3D11Device* Device, ID3D11DeviceContext* Context, HWND Window, ID3D11RenderTargetView* RenderView) {
 
 	DrawList = ImGui::GetBackgroundDrawList();
 
 	Client->UpdateKeyStates();
 
-	
+	//Render::UpdateProjectionMatrix();
+	PlayerHandler->UpdateRender();
 	Menu->OnRender();
 
 
 }
+void Render::UpdateProjectionMatrix() {
+	static Mat4x4* ProjectionMatrixPtr =(Mat4x4*)Client->FindPattern(GetModuleHandleA("client.dll"), WORLD_TO_SCREEN_PROJECTION_MATRIX);
+	ProjectionMatrix = *ProjectionMatrixPtr;
+}
+/*
+bool Math::screen_transform(const Vector& in, Vector& out)
+{
+	const auto& Render::ProjectionMatrix = world_to_screen_matrix();
+	out.x = Render::ProjectionMatrix[0][0] * x + Render::ProjectionMatrix[0][1] * in[1] + Render::ProjectionMatrix[0][2] * in[2] + Render::ProjectionMatrix[0][3];
+	out.y = Render::ProjectionMatrix[1][0] * x + Render::ProjectionMatrix[1][1] * in[1] + Render::ProjectionMatrix[1][2] * in[2] + Render::ProjectionMatrix[1][3];
+	out.z = 0.0f;
 
+	const auto w = Render::ProjectionMatrix[3][0] * in.x + Render::ProjectionMatrix[3][1] * in.y + Render::ProjectionMatrix[3][2] * in.z + Render::ProjectionMatrix[3][3];
+
+	if (w < 0.001f)
+	{
+		out.x *= 100000;
+		out.y *= 100000;
+		return false;
+	}
+
+	const auto invw = 1.0f / w;
+	out.x *= invw;
+	out.y *= invw;
+
+	return true;
+}
+*/
+bool Vec2::WorldToScreen(Vec3& Vec, Vec2& Out) {
+	using function_t = bool(__fastcall*)(Vec3&, Vec3&);
+	static function_t function = reinterpret_cast<function_t>(Client->FindPattern(GetModuleHandleA("client.dll"), WORLD_TO_SCREEN));
+
+	Vec3 out = { };
+	if (function(Vec, out))
+	{
+		return false;
+	}
+	Out.x = (1.0f + out.x) * (Client->ScreenSize.x * 0.5f);
+	Out.y = (1.0f - out.y) * (Client->ScreenSize.y * 0.5f);
+	return true;
+}
+Vec2 Vec3::ToScreen() //check success with OnScreen()
+{
+	using function_t = bool(__fastcall*)(Vec3&, Vec3&);
+	static function_t function = reinterpret_cast<function_t>(Client->FindPattern(GetModuleHandleA("client.dll"), WORLD_TO_SCREEN));
+
+	Vec3 out = { };
+	if (function(*this, out))
+	{
+		return Vec2(-1337.f, -1337.f);
+	}
+	Vec2 screen;
+	screen.x = (1.0f + out.x) * (Client->ScreenSize.x * 0.5f);
+	screen.y = (1.0f - out.y) * (Client->ScreenSize.y * 0.5f);
+	return screen;
+	/*
+	Render::UpdateProjectionMatrix();
+	
+	Vec2 Return(-1337.f, -1337.f);
+	const auto wh = Render::ProjectionMatrix[3][0] * x + Render::ProjectionMatrix[3][1] * y + Render::ProjectionMatrix[3][2] * z + Render::ProjectionMatrix[3][3];
+	
+	if (wh < 0.001f)
+	{
+		return Return;
+	}
+	Return.x = Render::ProjectionMatrix[0][0] * x + Render::ProjectionMatrix[0][1] * y + Render::ProjectionMatrix[0][2] * z + Render::ProjectionMatrix[0][3];
+	Return.y = Render::ProjectionMatrix[1][0] * x + Render::ProjectionMatrix[1][1] * y + Render::ProjectionMatrix[1][2] * z + Render::ProjectionMatrix[1][3];
+	const auto invw = 1.0f / wh;
+	Return.x *= invw;
+	Return.y *= invw;
+
+	int32_t w = 0;
+	int32_t h = 0;
+	g_Engine->GetScreenSize(w, h);
+
+	Return.x = (w / 2.0f) + (Return.x * w) / 2.0f;
+	Return.y = (h / 2.0f) - (Return.y * h) / 2.0f;
+
+	return Return;*/
+}
 void Render::Initialize() {
 	if (Initialized)
 		return;

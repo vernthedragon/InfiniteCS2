@@ -31,6 +31,8 @@
 #include <rpcndr.h>
 #include <thread>
 #include <chrono>
+#include <shared_mutex>
+#include <unordered_map>
 #include "Config.h"
 #include "Exception.h"
 #include "Math.h"

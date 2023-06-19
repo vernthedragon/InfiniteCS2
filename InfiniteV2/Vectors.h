@@ -38,6 +38,10 @@ public:
 	bool operator!=(const Vec2& v) const { return (v.x != x || v.y != y); }
 	inline void Zero();
 	inline ImVec2 ToImVec();
+	bool ToScreenSuccess() {
+		return x != -1337.f && y != -1337.f;
+	}
+	static bool WorldToScreen( Vec3& Vec, Vec2& Out);
 };
 
 class Vec3 {
@@ -76,6 +80,7 @@ public:
 	inline Vec3 operator-(float fl) const;
 	Vec3& ToAngles();
 	Vec3& ToVector();
+	Vec2 ToScreen();
 	inline float Length2D() {
 		return Math::Sqrt(x * x + y * y);
 	}
