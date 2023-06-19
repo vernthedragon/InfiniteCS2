@@ -152,6 +152,9 @@
     <ClCompile Include="Exception.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="ESP.cpp">
+      <Filter>Client\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">
@@ -324,6 +327,9 @@
     </ClInclude>
     <ClInclude Include="Exception.h">
       <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="ESP.h">
+      <Filter>Client\Features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

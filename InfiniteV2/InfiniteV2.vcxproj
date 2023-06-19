@@ -173,6 +173,7 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Entities.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
+    <ClCompile Include="ESP.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="CSGlobalVars.h" />
     <ClInclude Include="Entities.h" />
+    <ClInclude Include="ESP.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Features.h" />
     <ClInclude Include="Hooks.h" />
