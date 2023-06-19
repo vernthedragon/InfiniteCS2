@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AntiAim.cpp" />
     <ClCompile Include="CHandle.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Col.cpp" />
@@ -202,6 +203,7 @@
     <ClCompile Include="Menu.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AntiAim.h" />
     <ClInclude Include="BuildConfig.h" />
     <ClInclude Include="ByteData.h" />
     <ClInclude Include="CHandle.h" />

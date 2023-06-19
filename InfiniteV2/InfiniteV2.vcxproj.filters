@@ -158,6 +158,9 @@
     <ClCompile Include="PlayerHandler.cpp">
       <Filter>Client\Features</Filter>
     </ClCompile>
+    <ClCompile Include="AntiAim.cpp">
+      <Filter>Client\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">
@@ -338,6 +341,9 @@
       <Filter>SDK\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="PlayerHandler.h">
+      <Filter>Client\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="AntiAim.h">
       <Filter>Client\Features</Filter>
     </ClInclude>
   </ItemGroup>

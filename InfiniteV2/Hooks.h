@@ -32,4 +32,8 @@ namespace Hooks {
 	using CreateMove_t = bool(__fastcall*)(IInput*, uint32_t, uint8_t);
 	static CreateMove_t oCreateMove = nullptr;
 	bool __fastcall CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint8_t a3);
+
+	using SendMove_t = std::int64_t(__fastcall*)(DWORD*);
+	static SendMove_t oSendMove = nullptr;
+	std::int64_t __stdcall SendMove(DWORD* a1); //possibly very wrong
 };
