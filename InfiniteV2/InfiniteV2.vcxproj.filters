@@ -159,7 +159,7 @@
       <Filter>Client\Features</Filter>
     </ClCompile>
     <ClCompile Include="AntiAim.cpp">
-      <Filter>Client\Features</Filter>
+      <Filter>Client\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

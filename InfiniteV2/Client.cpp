@@ -98,13 +98,6 @@ bool CClient::SetupHooks() {
 
 	Hooks::InputVMTHook->Hook(IInputVTable::CREATEMOVE, Hooks::CreateMove);
 
-	void* SendMove = FindPattern(GetModuleHandleA("engine2.dll"), SEND_MOVE);
-	if (MH_CreateHook(SendMove, &Hooks::SendMove, reinterpret_cast<void**>(&Hooks::oSendMove)) != MH_OK)
-	{
-		Log("Failed to Hook CL_SendMove\n");
-		return false;
-	}
-
 	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
 	{
 		return false;
