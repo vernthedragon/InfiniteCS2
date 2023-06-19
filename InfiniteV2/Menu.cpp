@@ -251,9 +251,9 @@ bool CMenu::RenderKeybinds(float x, float y) {
 		if (KeybindsAlpha <= 0)
 			return false;
 		KeybindsWidth = (KeybindsWidth + ((Config->MenuSettings.KeybindsSizeWidth * Menu->Scale) - KeybindsWidth) * 0.016f * Menu->AnimationModifier);
-		Render::FilledRect(x, y + 36.f * Menu->Scale, KeybindsWidth, OffsetY - 24.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha));
-		Render::GradientFilledRect(x, y + 36.f * Menu->Scale + OffsetY - 24.f * Menu->Scale, KeybindsWidth, 15.f * Menu->Scale, Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground.WithAlpha(0), Config->MenuSettings.KeybindsBackground.WithAlpha(0));
-		Render::FilledRoundedRectCustom(x, y - 2.f * Menu->Scale, KeybindsWidth, 36.f * Menu->Scale, Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersTop);
+		Render::FilledRect(x, y + 36.f * Menu->Scale, KeybindsWidth, OffsetY - 24.f * Menu->Scale, Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha));
+		Render::GradientFilledRect(x, y + 36.f * Menu->Scale + OffsetY - 24.f * Menu->Scale, KeybindsWidth, 15.f * Menu->Scale, Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground2.WithAlpha(0), Config->MenuSettings.KeybindsBackground2.WithAlpha(0));
+		Render::FilledRoundedRectCustom(x, y - 2.f * Menu->Scale, KeybindsWidth, 36.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersTop);
 		Render::FilledRoundedRectCustom(x, y + 34.f * Menu->Scale, KeybindsWidth, 2.f * Menu->Scale, Config->MenuSettings.KeybindsCol.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersBottom);
 		Render::DrawString(x + 8.5f * Menu->Scale, y + 17.f * Menu->Scale, Config->MenuSettings.KeybindsCol.Manage(KeybindsAlpha), Fonts::MenuIcons, Render::centered_y, "b");
 		Render::DrawString(x + 37.f * Menu->Scale, y + 19.f * Menu->Scale, Config->MenuSettings.KeybindsText.Manage(KeybindsAlpha), Fonts::MenuThin, Render::centered_y, "Keybinds");
@@ -275,8 +275,8 @@ bool CMenu::RenderKeybinds(float x, float y) {
 	}
 	KeybindsWidth = (KeybindsWidth + (MaxWidth - KeybindsWidth) * 0.016f * Menu->AnimationModifier);
 	MaxWidth = KeybindsWidth;
-	Render::FilledRect(x, y + 36.f * Menu->Scale, KeybindsWidth, OffsetY - 24.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha));
-	Render::GradientFilledRect(x, y + 36.f * Menu->Scale + OffsetY - 24.f * Menu->Scale, KeybindsWidth, 18.f * Menu->Scale, Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground.WithAlpha(0), Config->MenuSettings.KeybindsBackground.WithAlpha(0));
+	Render::FilledRect(x, y + 36.f * Menu->Scale, KeybindsWidth, OffsetY - 24.f * Menu->Scale, Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha));
+	Render::GradientFilledRect(x, y + 36.f * Menu->Scale + OffsetY - 24.f * Menu->Scale, KeybindsWidth, 18.f * Menu->Scale, Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha), Config->MenuSettings.KeybindsBackground2.WithAlpha(0), Config->MenuSettings.KeybindsBackground2.WithAlpha(0));
 	Render::PushClipRect(x, y + 36.f * Menu->Scale, KeybindsWidth, OffsetY + 15.f * Menu->Scale, true);
 	OffsetY = 21.f * Menu->Scale;
 	for (auto& BindR : RenderBinds) {
@@ -288,7 +288,7 @@ bool CMenu::RenderKeybinds(float x, float y) {
 
 	}
 	Render::PopClipRect();
-	Render::FilledRoundedRectCustom(x , y - 2.f * Menu->Scale, MaxWidth, 36.f * Menu->Scale, Config->MenuSettings.KeybindsBackground2.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersTop);
+	Render::FilledRoundedRectCustom(x , y - 2.f * Menu->Scale, MaxWidth, 36.f * Menu->Scale, Config->MenuSettings.KeybindsBackground.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersTop);
 	Render::FilledRoundedRectCustom(x , y + 34.f * Menu->Scale, MaxWidth, 2.f * Menu->Scale, Config->MenuSettings.KeybindsCol.Manage(KeybindsAlpha), 5.f * Menu->Scale, ImDrawFlags_RoundCornersBottom);
 	Render::DrawString(x + 8.5f * Menu->Scale, y + 17.f * Menu->Scale, Config->MenuSettings.KeybindsCol.Manage(KeybindsAlpha), Fonts::MenuIcons, Render::centered_y, "b");
 	Render::DrawString(x + 37.f * Menu->Scale, y + 19.f * Menu->Scale, Config->MenuSettings.KeybindsText.Manage(KeybindsAlpha), Fonts::MenuThin, Render::centered_y, "Keybinds");
