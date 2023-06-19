@@ -357,9 +357,9 @@ void CConfig::ResetValues() {
 	this->MenuSettings.AnimationSpeed = 100;
 	this->AutoSave = true;
 	Menu->MainTheme = Col(170, 170, 255);
-	this->MenuSettings.KeybindsSizeWidth = 300;
-	this->MenuSettings.KeybindsX = 400;
-	this->MenuSettings.KeybindsY = 400;
+	this->MenuSettings.KeybindsSizeWidth = 140;
+	this->MenuSettings.KeybindsX = 500;
+	this->MenuSettings.KeybindsY = 500;
 	this->MenuSettings.Keybinds = false;
 	this->MenuSettings.KeybindsCol = Col(170, 170, 255, 255);
 	this->MenuSettings.KeybindsBackground = Col(255, 255, 255, 20);//0,1,2

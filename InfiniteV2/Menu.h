@@ -85,6 +85,10 @@ public:
 	Vec2 Pos;
 	Vec2 MenuMoveCache;
 	Vec2 KeybindsMoveCache;
+	std::string SearchText;
+	std::string LastSearchText;
+	bool SearchInput;
+	float SearchAnimationText;
 	float KeybindsAlpha = 0.f;
 	float KeybindsWidth = 0.f;
 	float CurrentClock = 0.f;

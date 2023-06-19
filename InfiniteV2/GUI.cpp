@@ -83,6 +83,8 @@ void Child::Draw(float x, float y, float MaxAlpha, bool LeftClick, bool Drag) {
 		Menu->MousePress = false;
 		Disable = true;
 	}
+	if (Menu->Binder.Parent != nullptr && Menu->Binder.Overlay != this)
+		Disable = true;
  	for (auto& Element : this->Elements) {
 
 	
@@ -148,7 +150,7 @@ bool Settings::SpecialDraw(float MaxAlpha, bool& LeftClick, bool& Drag) {
 	Overlay->Size.y *= Menu->Scale;
 	Overlay->Draw(Start.x, Start.y + 36.f * (1.f - OpenAnimation), MaxAlpha, LeftClick, Drag);
 
-	if (Open && LeftClick) {
+	if (Open && LeftClick && Menu->Binder.Parent == nullptr) {
 		if (!Menu->InRegion(Start.x, Start.y, OriginalSize.x * Menu->Scale, OriginalSize.y * Menu->Scale))
 		{
 			Open = false;
@@ -482,10 +484,7 @@ bool ColorPicker::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCl
 				LeftClick = false;
 				
 			}
-			else if (Menu->MouseRightClick) {
-				DialogueState = DialogueState_t::Closed;
-				Menu->MouseRightClick = false;
-			}
+	
 		}
 	}
 	if (Dialogue.Open > 0.f) {

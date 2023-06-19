@@ -57,10 +57,10 @@ public:
 	void UpdateLocal();
 	std::string InfFolder;
 	InfUserData UserData;
+	Vec2 ScreenSize;
 	class UserCmd* cmd;
 	class IPlayer* local;
 	class IController* controller;
-	class ConVar* cl_sidespeed;
 	CLocalPlayerCache cache;
 	int ScrollAmmount = 0;
 	bool KeysPressed[256];

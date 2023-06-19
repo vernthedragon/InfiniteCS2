@@ -18,7 +18,7 @@ public:
 	virtual bool ShouldOverlay() = 0; //should we overlay this element? (rendered last above all other)
 	virtual float GetAnimation() = 0; //related to open animation
 	virtual void OnFree() = 0; //related to element config
-
+	virtual std::string GetLabel() = 0;
 };
 
 class Child {
@@ -105,6 +105,9 @@ public:
 		return Scroll;
 	}
 	void OnFree();
+	std::string GetLabel() {
+		return "";
+	}
 	float Scroll;
 	float AnimatedScroll;
 	std::string SelectedConfig;
@@ -174,6 +177,9 @@ public:
 	void OnFree() {
 		delete Overlay;
 	}
+	std::string GetLabel() {
+		return Before->GetLabel();
+	}
 	bool SpecialDraw(float MaxAlpha, bool& LeftClick, bool& Drag);
 	Vec2 OriginalSize;
 	Child* Overlay;
@@ -225,6 +231,9 @@ public:
 		return HoverAnimation;
 	}
 	void OnFree();
+	std::string GetLabel() {
+		return Before->GetLabel();
+	}
 	struct ColorPickerDialogue {
 		float Open;
 		float hue;
@@ -297,6 +306,9 @@ public:
 		return OffsetAnimation;
 	}
 	void OnFree();
+	std::string GetLabel() {
+		return Label;
+	}
 	float Slide;
 	float HoverAnimation;
 	float OffsetAnimation;
@@ -353,7 +365,9 @@ public:
 		return OffsetAnimation;
 	}
 	void OnFree();
-
+	std::string GetLabel() {
+		return Label;
+	}
 	float HoverAnimation;
 	float OpenAnimation;
 	bool Open;
@@ -413,7 +427,9 @@ public:
 		return OffsetAnimation;
 	}
 	void OnFree();
-
+	std::string GetLabel() {
+		return Label;
+	}
 	float HoverAnimation;
 	float OpenAnimation;
 	bool Open;
@@ -472,6 +488,9 @@ public:
 		return OffsetAnimation;
 	}
 	void OnFree();
+	std::string GetLabel() {
+		return Label;
+	}
 	float HoverAnimation;
 	float OffsetAnimation;
 	float HoverTextAnimation;
@@ -513,7 +532,9 @@ public:
 	void OnFree() {
 
 	}
-
+	std::string GetLabel() {
+		return "";
+	}
 
 };
 
@@ -535,6 +556,9 @@ public:
 		return 0.f;
 	}
 	void OnFree();
+	std::string GetLabel() {
+		return Label;
+	}
 	float HoverAnimation;
 	std::string Label;
 	int* Pointer;
@@ -579,6 +603,9 @@ public:
 	}
 	void OnFree() {
 
+	}
+	std::string GetLabel() {
+		return Label;
 	}
 	float OffsetAnimation;
 	bool(*ShouldRenderFn)();

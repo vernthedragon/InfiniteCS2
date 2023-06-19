@@ -166,8 +166,12 @@ void CClient::Initialize() {
 
 	Config->ResetValues();
 	Config->MenuOpen = true;
-
-
+	{
+		int32_t ScreenSizeX = 1920;
+		int32_t ScreenSizeY = 1080;
+		g_Engine->GetScreenSize(ScreenSizeX, ScreenSizeY);
+		ScreenSize = Vec2(ScreenSizeX, ScreenSizeY);
+	}
 }
 void CClient::Close() {
 #ifdef CONSOLELOG 

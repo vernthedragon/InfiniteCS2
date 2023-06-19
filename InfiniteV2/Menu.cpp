@@ -61,6 +61,7 @@ int Test6 = 45;
  unsigned int test2;
  Col tescl(255,0,0,255);
 void CMenu::SetupUser() {
+	Pos = Client->ScreenSize * 0.5f;
 	LastMenuScale = Config->MenuScale;
 	for (int i = 0; i < MAXSUBTABS; i++) {
 		Childs[i][LEFT].Update( Vec2(335 * Scale, 440 * Scale), Col(0, 1, 2, 255), false);
@@ -86,15 +87,15 @@ void CMenu::SetupUser() {
 		}));
 	Childs[MENUMAIN][LEFT].New(new Switch("Keybinds", &Config->MenuSettings.Keybinds));
 	Childs[MENUMAIN][LEFT].New(new Settings(102.f, 340.f, 160.f, Childs[MENUMAIN][LEFT].GetLastAddedElement(), [](Child* menu) {
-		menu->New(new Slider("Keybinds Width", 100.f, 300.f, &Config->MenuSettings.KeybindsSizeWidth));
+		menu->New(new Slider("Keybinds Width", 170.f, 300.f, &Config->MenuSettings.KeybindsSizeWidth));
 		menu->New(new Text("Theme Colour"));
-		menu->New(new ColorPicker("Keybinds Theme Colour", 47.f, &Config->MenuSettings.KeybindsCol, menu->GetLastAddedElement()));
+		menu->New(new ColorPicker("Theme Colour", 47.f, &Config->MenuSettings.KeybindsCol, menu->GetLastAddedElement()));
 		menu->New(new Text("Text Colour"));
-		menu->New(new ColorPicker("Keybinds Text Colour", 47.f, &Config->MenuSettings.KeybindsText, menu->GetLastAddedElement()));
+		menu->New(new ColorPicker("Text Colour", 47.f, &Config->MenuSettings.KeybindsText, menu->GetLastAddedElement()));
 		menu->New(new Text("Background Colour"));
-		menu->New(new ColorPicker("Keybinds Background Colour", 47.f, &Config->MenuSettings.KeybindsBackground, menu->GetLastAddedElement()));
+		menu->New(new ColorPicker("Background Colour", 47.f, &Config->MenuSettings.KeybindsBackground, menu->GetLastAddedElement()));
 		menu->New(new Text("Background 2 Colour"));
-		menu->New(new ColorPicker("Keybinds Background 2 Colour", 47.f, &Config->MenuSettings.KeybindsBackground2, menu->GetLastAddedElement()));
+		menu->New(new ColorPicker("Background 2 Colour", 47.f, &Config->MenuSettings.KeybindsBackground2, menu->GetLastAddedElement()));
 		}));
 	ConfigSystem->AddVar("Keybinds X", &Config->MenuSettings.KeybindsX);
 	ConfigSystem->AddVar("Keybinds Y", &Config->MenuSettings.KeybindsX);
@@ -158,6 +159,9 @@ void CMenu::SetupUser() {
 	ConfigSystem->LoadToConfig("Default");
 
 	ConfigSystem->Loaded = "Default";
+	AdjustDPI();
+	Pos.x -= 925.f * Scale * 0.5f;
+	Pos.y -= 585.f * Scale * 0.5f;
 }
 
 void CMenu::UpdateKeybinds() {
@@ -291,6 +295,26 @@ bool CMenu::RenderKeybinds(float x, float y) {
 
 	return Config->MenuSettings.Keybinds;
 }
+bool StringHasLettersCaseInsensitive(std::string a, std::string b) {
+
+	if (a == "")
+		return false;
+
+	bool found = false;
+	for (auto& letter : b) {
+		found = false;
+		for (auto& searchletter : a) {
+			if (std::tolower(letter) == std::tolower(searchletter)) {
+				found = true;
+				continue;
+			}
+		}
+		if (!found)
+			return false;
+
+	}
+	return true;
+}
 void CMenu::Draw() {
 	//ImGui::GetIO().MouseDrawCursor = true;
 	bool CanMoveMenu = true;
@@ -355,10 +379,15 @@ void CMenu::Draw() {
 				LastTab = CurrentTab;
 			
 				CurrentSubtab = SEARCHMAIN;
+				
 			}
 			else
 				CurrentSubtab = LastSubtabs[LastTab];
 
+			SearchText = "";
+			LastSearchText = "";
+			SearchInput = false;
+			SearchAnimation = 0.f;
 			MouseClick = false;
 			CurrentTab = InSearch ? LastTab : SEARCH;
 			RawSubtabChangeAnimation = 0.f;
@@ -503,13 +532,88 @@ void CMenu::Draw() {
 			
 		
 			Render::FilledRect(Pos.x + (125.f) * Scale, Pos.y, 775.f * Scale, 60.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation * 0.98f));
-			Render::Rect(Pos.x + 160.f * Scale, Pos.y + 48.f * Scale, 640.f * Scale, 1.f, Col(100, 100, 100, Alpha * SearchAnimation), 1.f * Scale);
+			std::string Written = SearchText == "" ? "Type and Search a Menu Element..." : SearchText;
+			if (Binder.Parent == nullptr) {
+				bool HoveredSearch = InRegion(Pos.x + (125.f) * Scale, Pos.y, 710.f * Scale, 60.f * Scale);
+				GUIAnimations::Animate(SearchAnimationText, HoveredSearch || SearchInput);
+				ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
+				
+				if (MouseClick && !SearchInput) {
+					SearchInput = true;
+					Menu->EditTextAnimation = Menu->CurrentClock;
+				}
+				else if (MouseClick || Alpha < 255.f) {
+					SearchInput = false;
+				}
+
+				if (SearchInput) {
+					if (SearchText == "")
+						Written = " ";
+					if ((int((Menu->CurrentClock - Menu->EditTextAnimation) * 0.0019f) % 2) == 0)
+						Written += "|";
+				
+
+					ImGui::GetIO().WantTextInput = true;
+
+					if (ImGui::GetIO().InputQueueCharacters.Size > 0) {
+						for (auto c : ImGui::GetIO().InputQueueCharacters) {
+
+							if (c == VK_RETURN) {
+								SearchInput = false;
+								continue;
+							}
+
+							if (c == VK_ESCAPE) {
+								SearchInput = false;
+								continue;
+							}
+							else if (c == VK_BACK)
+								SearchText = SearchText.substr(0, SearchText.size() - 1);
+							else {
+								if (SearchText.size() < 40)
+									SearchText += (unsigned char)c;
+							}
+						}
+					}
+				}
+
+				
+			}
+			else {
+				GUIAnimations::Animate(SearchAnimationText, false);
+				SearchInput = false;
+			}
+			if (SearchText != "") 
+				Render::DrawString(Pos.x + 162.f * Scale, Pos.y + 18.f * Scale, Col(200 + 50 * SearchAnimationText, 200 + 50 * SearchAnimationText, 200 + 50 * SearchAnimationText, Alpha* SearchAnimation), Fonts::MenuThin, 0, Written.c_str());
+			else 
+				Render::DrawString(Pos.x + 162.f * Scale, Pos.y + 18.f * Scale, Col(30, 30, 30, Alpha * SearchAnimation * 0.9f), Fonts::MenuThin, 0, Written.c_str());
+		
+
+			Render::Rect(Pos.x + 160.f * Scale, Pos.y + 48.f * Scale, 640.f * Scale, 1.f, Col(100 + 150 * SearchAnimationText, 100 + 150 * SearchAnimationText, 100 + 150 * SearchAnimationText, Alpha * SearchAnimation), 1.f * Scale);
 
 			Render::DrawString(Pos.x + (870.f) * Scale, Pos.y + (24.f + SearchAnimation * 6.f) * Scale, Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha * GUIAnimations::Ease(SearchAnimation)), Fonts::MenuIcons, Render::centered_xy, "M");
 			//Render::FilledRoundedRect(Pos.x + 430.f * Scale, Pos.y + (3.5f + 15.f * SearchAnimation) * Scale, 400.f * Scale, 35.f * Scale, Col(0, 1, 2, Alpha * SearchAnimation), 30.f);
 			//Render::RoundedRect(Pos.x + 430.f * Scale, Pos.y + (3.5f + 15.f * SearchAnimation) * Scale, 400.f * Scale, 35.f * Scale, Col(5, 6, 8, Alpha * SearchAnimation), 1.3f * Scale, 30.f);
 			Render::DrawString(Pos.x + (870.f - SearchAnimation * 42.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(255, 255, 255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
 
+			if (SearchText != LastSearchText) {
+				Childs[SEARCHMAIN][LEFT].Elements.clear();
+				if (SearchText != "") {
+					for (int i = 0; i < MAXSUBTABS; i++) {
+						if (i != SEARCHMAIN) {
+							for (auto& Element : Childs[i][LEFT].Elements) {
+								if (StringHasLettersCaseInsensitive(Element->GetLabel(), SearchText))
+									Childs[SEARCHMAIN][LEFT].Elements.push_back(Element);
+							}
+							for (auto& Element : Childs[i][RIGHT].Elements) {
+								if (StringHasLettersCaseInsensitive(Element->GetLabel(), SearchText))
+									Childs[SEARCHMAIN][LEFT].Elements.push_back(Element);
+							}
+						}
+					}
+				}
+				LastSearchText = SearchText;
+			}
 		}
 		else
 			Render::DrawString(Pos.x + (870.f - SearchAnimation * 42.f) * Scale, Pos.y + 30.f * Scale, InSearch ? Col(255,255,255, Alpha) : Col(130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], 130 + 125 * MenuStateButtonAnimations[1], Alpha), Fonts::MenuIcons, Render::centered_xy, "K");
