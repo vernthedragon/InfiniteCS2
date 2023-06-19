@@ -167,83 +167,66 @@ void CMenu::UpdateKeybinds() {
 		if (Var->Bind.VKey < 0 || Var->Bind.Type == BindOff)
 			continue;
 		if (Var->Bind.ParentType == BindParentType::BindtypeSlider || Var->Bind.ParentType == BindParentType::BindtypeSelect) {
-			if (Var->Bind.Type == BindHold) {
+			if (Var->Bind.Type == BindHold) 
 				Var->Bind.OnOff = Client->KeyPressed(Var->Bind.VKey);
-			}
-			else if (Var->Bind.Type == BindToggle) {
+			else if (Var->Bind.Type == BindToggle) 
 				if (Client->KeyToggled(Var->Bind.VKey))
-				{
 					Var->Bind.OnOff = !Var->Bind.OnOff;
-				}
-			}
-			else if (Var->Bind.Type == BindRelease) {
+			else if (Var->Bind.Type == BindRelease) 
 				Var->Bind.OnOff = Client->KeyPressed(Var->Bind.VKey);
-			}
-			if (Var->Bind.OnOff) {
+	
+			if (Var->Bind.OnOff) 
 				*(( int*)Var->Var) = ((SliderBind*)Var->Bind.Data)->NewValue;
-			}
-			else {
+			else 
 				*(( int*)Var->Var) = ((SliderBind*)Var->Bind.Data)->OldValue;
-			}
+			
 			if (Var->Bind.Show) {
 				GUIAnimations::EaseAnimate(Var->Bind.Modifier, (*((int*)Var->Var) == (((SliderBind*)Var->Bind.Data)->NewValue)), 0.0178f);
 				if (EmptyBinds) {
 					EmptyBinds = !Var->Bind.OnOff;
 				}
 				if (Var->Bind.Modifier > 0.f)
-				{
-
-					if (Var->Bind.ParentType == BindParentType::BindtypeSlider)
-						RenderBinds.push_back(RenderBind{ &Var->Bind.Bind,std::to_string((((SliderBind*)Var->Bind.Data)->NewValue)), &Var->Bind.Modifier });
-					else
-						RenderBinds.push_back(RenderBind{ &Var->Bind.Bind,Var->Bind.Type == BindHold ? "Hold" : Var->Bind.Type == BindToggle ? "Toggle" : "Release", &Var->Bind.Modifier, 0.f, (*((int*)Var->Var) == (((SliderBind*)Var->Bind.Data)->NewValue)) });
-				}
+					RenderBinds.push_back(RenderBind{ &Var->Bind.Bind,Var->Bind.Type == BindHold ? "Hold" : Var->Bind.Type == BindToggle ? "Toggle" : "Release", &Var->Bind.Modifier, 0.f, (*((int*)Var->Var) == (((SliderBind*)Var->Bind.Data)->NewValue)) });
+				
 			}
 		}
 		else if (Var->Bind.ParentType == BindParentType::BindtypeMultiselect) {
 
-			if (Var->Bind.Type == BindHold) {
+			if (Var->Bind.Type == BindHold) 
 				Var->Bind.OnOff = Client->KeyPressed(Var->Bind.VKey);
-			}
-			else if (Var->Bind.Type == BindToggle) {
+			else if (Var->Bind.Type == BindToggle) 
 				if (Client->KeyToggled(Var->Bind.VKey))
-				{
 					Var->Bind.OnOff = !Var->Bind.OnOff;
-				}
-			}
-			else if (Var->Bind.Type == BindRelease) {
+			else if (Var->Bind.Type == BindRelease) 
 				Var->Bind.OnOff = Client->KeyPressed(Var->Bind.VKey);
-			}
-			if (Var->Bind.OnOff) {
+			
+			if (Var->Bind.OnOff) 
 				*((unsigned int*)Var->Var) = ((MultiSelectBind*)Var->Bind.Data)->NewValue;
-			}
-			else {
+			else 
 				*((unsigned int*)Var->Var) = ((MultiSelectBind*)Var->Bind.Data)->OldValue;
-			}
+			
 			if (Var->Bind.Show) {
-				if (EmptyBinds) {
+				if (EmptyBinds) 
 					EmptyBinds = !Var->Bind.OnOff;
-				}
+				
 				GUIAnimations::EaseAnimate(Var->Bind.Modifier, (*((unsigned int*)Var->Var) == (((MultiSelectBind*)Var->Bind.Data)->NewValue)), 0.0178f);
 				if (Var->Bind.Modifier > 0.f)
 					RenderBinds.push_back(RenderBind{ &Var->Bind.Bind,Var->Bind.Type == BindHold ? "Hold" : Var->Bind.Type == BindToggle ? "Toggle" : "Release", &Var->Bind.Modifier, 0.f, (*((unsigned int*)Var->Var) == (((MultiSelectBind*)Var->Bind.Data)->NewValue)) });
 			}
 		}
 		else {
-			if (Var->Bind.Type == BindHold) {
+			if (Var->Bind.Type == BindHold) 
 				*((bool*)Var->Var) = Client->KeyPressed(Var->Bind.VKey);
-			}
-			else if (Var->Bind.Type == BindToggle) {
+			else if (Var->Bind.Type == BindToggle) 
 				if (Client->KeyToggled(Var->Bind.VKey))
 					*((bool*)Var->Var) = !(*((bool*)Var->Var));
-			}
-			else if (Var->Bind.Type == BindRelease) {
+			else if (Var->Bind.Type == BindRelease) 
 				*((bool*)Var->Var) = !Client->KeyPressed(Var->Bind.VKey);
-			}
+			
 			if (Var->Bind.Show) {
-				if (EmptyBinds) {
+				if (EmptyBinds) 
 					EmptyBinds = !*((bool*)Var->Var);
-				}
+				
 				GUIAnimations::EaseAnimate(Var->Bind.Modifier, *((bool*)Var->Var), 0.0178f);
 				if (Var->Bind.Modifier > 0.f)
 					RenderBinds.push_back(RenderBind{&Var->Bind.Bind,Var->Bind.Type == BindHold ? "Hold" : Var->Bind.Type == BindToggle ? "Toggle" : "Release", &Var->Bind.Modifier, 0.f, *((bool*)Var->Var) });
