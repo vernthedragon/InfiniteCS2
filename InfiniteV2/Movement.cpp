@@ -153,7 +153,7 @@ void Movement::MoveFix(UserCmd* cmd) {
 
 	Movement.ToAngles();
 
-	float yaw = DEG2RADF(Client->ViewAngle.y - Client->OriginalViewAngles.y + Movement.y);
+	float yaw = DEG2RADF(Client->ViewAngle.y - Client->ActiveViewAngle.y + Movement.y);
 
 	cmd->Base->forwardmove = cos(yaw) * MoveSpeed;
 	cmd->Base->sidemove = sin(yaw) * MoveSpeed;
