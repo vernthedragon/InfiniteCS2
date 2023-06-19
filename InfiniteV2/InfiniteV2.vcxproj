@@ -142,6 +142,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,6 +159,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,6 +170,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AntiAim.cpp" />
+    <ClCompile Include="AutoWall.cpp" />
     <ClCompile Include="CHandle.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Col.cpp" />
@@ -199,11 +202,14 @@
     <ClCompile Include="RenderHook.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="Schema.cpp" />
+    <ClCompile Include="Trace.cpp" />
+    <ClCompile Include="Utl.cpp" />
     <ClCompile Include="Vectors.cpp" />
     <ClCompile Include="Menu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AntiAim.h" />
+    <ClInclude Include="AutoWall.h" />
     <ClInclude Include="BuildConfig.h" />
     <ClInclude Include="ByteData.h" />
     <ClInclude Include="CHandle.h" />

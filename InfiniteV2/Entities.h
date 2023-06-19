@@ -117,11 +117,13 @@ class ICollisionProperty
 public:
     SCHEMA("CCollisionProperty", "m_vecMins", m_vecMins, Vec3);
     SCHEMA("CCollisionProperty", "m_vecMaxs", m_vecMaxs, Vec3);
-
+    SCHEMA("CCollisionProperty", "m_usSolidFlags", m_usSolidFlags, std::uint8_t);
     std::uint16_t GetCollisionMask()
     {
         return *reinterpret_cast<std::uint16_t*>(reinterpret_cast<std::uintptr_t>(this) + 0x38);
     }
+
+ 
 };
 
 class IEconItemView
@@ -194,13 +196,18 @@ public:
     //m_vecVelocity
     SCHEMA("C_BaseEntity", "m_vecAbsVelocity", m_vecAbsVelocity, Vec3);
 };
-struct alignas(16) bone_data {
+class IEntityUnknown : IEntity {
+public:
+    template<typename A>
+    A* Get() { return reinterpret_cast<A*>(this); }
+};
+struct alignas(16) BoneData {
     Vec3 Position;
     float Scale;
     Vec4 Rotation;
 };
 
-static_assert(sizeof(bone_data) == 0x20);
+static_assert(sizeof(BoneData) == 0x20);
 
 
 class IPlayer : public IEntity
@@ -212,7 +219,7 @@ public:
     SCHEMA("C_BaseEntity", "m_iHealth", m_iHealth, std::int32_t);
     SCHEMA("C_BaseEntity", "m_iTeamNum", m_iTeamNum, std::uint8_t);
     SCHEMA("C_BaseModelEntity", "m_vecViewOffset", m_vecViewOffset, Vec3);
-    SCHEMA("C_BasePlayerPawn", "m_hController", m_hController, std::uint32_t);
+    SCHEMA("C_BasePlayerPawn", "m_hController", m_hController, CHandle);
     SCHEMA("C_BasePlayerPawn", "v_angle", v_angle, Vec3);
 
     Vec3 GetEyePosition()
@@ -224,9 +231,9 @@ public:
 
         return position;
     }
-
-   
-
+    std::uint16_t GetCollisionMask();
+    std::uint32_t GetOwnerHandle();
+    std::uint32_t GetEntityHandle();
     bool IsAlive()
     {
         return this->m_iHealth() > 0;
@@ -237,7 +244,7 @@ class IController
 {
 public:
     SCHEMA("CBasePlayerController", "m_steamID", m_steamID, std::uint64_t);
-    SCHEMA("CBasePlayerController", "m_hPawn", m_hPawn, std::uint32_t);
+    SCHEMA("CBasePlayerController", "m_hPawn", m_hPawn, CHandle);
     SCHEMA("CBasePlayerController", "m_bIsLocalPlayerController", m_bIsLocalPlayerController, bool);
     SCHEMA("CCSPlayerController", "m_sSanitizedPlayerName", m_sSanitizedPlayerName, const char*);
 };

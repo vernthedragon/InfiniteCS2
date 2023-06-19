@@ -57,6 +57,9 @@
     <Filter Include="Client\Config\Json">
       <UniqueIdentifier>{e6a20031-841f-4fad-91cc-f900bd33e40a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Features\Aimbot">
+      <UniqueIdentifier>{a24cf156-fb11-48e4-8e1d-ed844393ef74}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -160,6 +163,15 @@
     </ClCompile>
     <ClCompile Include="AntiAim.cpp">
       <Filter>Client\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoWall.cpp">
+      <Filter>Client\Features\Aimbot</Filter>
+    </ClCompile>
+    <ClCompile Include="Utl.cpp">
+      <Filter>SDK\Classes %28CS%29</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace.cpp">
+      <Filter>SDK\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -345,6 +357,9 @@
     </ClInclude>
     <ClInclude Include="AntiAim.h">
       <Filter>Client\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoWall.h">
+      <Filter>Client\Features\Aimbot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

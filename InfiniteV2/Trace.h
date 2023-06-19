@@ -4,52 +4,84 @@
 #include "Entities.h"
 #include "Vectors.h"
 
-class Ray
+struct Ray
 {
-public:
-	Vec3 start;
-	Vec3 end;
-	Vec3 mins;
-	Vec3 maxs;
+	Vec3 Start;
+	Vec3 End;
+	Vec3 Mins;
+	Vec3 Maxs;
+	PAD(0x4);
+	std::uint8_t UnkType;
 };
 
-static_assert(sizeof(Ray) == 0x30, "Ray (Trace) has wrong size");
-
+struct SurfaceData
+{
+	PAD(0x8);
+	float PenetrationModifier;
+	float DamageModifier;
+	PAD(0x4);
+	int Material;
+};
 struct TraceHitboxData
 {
-	char pad1[0x58];
-	std::uint32_t hitgroup;
-	char pad2[0x4];
-	std::uint32_t hitbox_id;
+	PAD(0x58);
+	int Hitgroup;
+	PAD(0x4);
+	int HitboxId;
 };
+
 
 static_assert(sizeof(TraceHitboxData) == 0x64, "TraceHitboxData has wrong size");
 
-struct CTraceFilter
-{
-	std::uint64_t mask;
-	std::uint64_t unknown1[2];
-	std::uint32_t skip_handles[4];
-	std::uint16_t collisions[2];
-	std::uint16_t unknown2;
-	std::uint8_t layer;
-	std::uint8_t unknown3;
-	std::uint8_t unknown4;
-};
-
-static_assert(sizeof(CTraceFilter) == 0x38, "CTraceFilter has wrong size");
-
 struct CGameTrace
 {
-	void* surface;
-	IPlayer* player;
-	TraceHitboxData* hitbox_data;
-	char pad1[0x10];
-	std::uint32_t contents;
-	char pad2[0x58];
-	Vec3 endpos;
-	char pad3[0x1C];
-	float fraction;
+	CGameTrace() {};
+	SurfaceData* GetSurfaceData();
+
+	int GetHitboxId()
+	{
+		if (HitboxData)
+			return HitboxData->HitboxId;
+		return 0;
+	}
+
+	int GetHitgroup()
+	{
+		if (HitboxData)
+			return HitboxData->Hitgroup;
+		return 0;
+	}
+
+	void* Surface;
+	IEntityUnknown* HitEntity;
+	TraceHitboxData* HitboxData;
+	PAD(0x10);
+	std::uint32_t Contents;
+	PAD(0x58);
+	Vec3 EndPos;
+	PAD(0x1C);
+	float Fraction;
+	PAD(0x8);
+}; // Size: 0xB8
+class CTraceFilter
+{
+public:
+	std::uint64_t TraceMask;
+	std::uint64_t V1[2];
+	std::uint32_t SkipHandles[4];
+	std::uint16_t Collisions[2];
+	std::uint16_t V2;
+	std::uint8_t V3;
+	std::uint8_t V4;
+	std::uint8_t V5;
+
+	virtual ~CTraceFilter() {}
+	virtual bool ChinaNumberOne()
+	{
+		return true;
+	}
+
+	CTraceFilter() {};
+	CTraceFilter(std::uint32_t Mask, IPlayer* Skip1, IPlayer* Skip2, int Layer);
 };
 
-static_assert(sizeof(CGameTrace) == 0xB0, "CGameTrace has wrong size");

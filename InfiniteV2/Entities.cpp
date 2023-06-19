@@ -29,6 +29,31 @@ const Vec3& IEntity::GetOrigin() {
 
     return pGameSceneNode->m_vecAbsOrigin();
 }
+std::uint16_t IPlayer::GetCollisionMask()
+{
+	if (this && this->m_pCollision())
+		return this->m_pCollision()->GetCollisionMask(); // Collision + 0x38
+	return 0;
+}
+std::uint32_t IPlayer::GetEntityHandle() {
+	if (this && this->m_hController().IsValid()) {
+		return this->m_hController().Get<IController>()->m_hPawn().m_Index;
+	}
+	return INVALID_EHANDLE_INDEX;
+}
+std::uint32_t IPlayer::GetOwnerHandle()
+{
+	std::uint32_t Result = -1;
+	if (this && this->m_pCollision() && !(this->m_pCollision()->m_usSolidFlags() & 4))
+	{
+		auto* Entity = g_EntList->GetBaseEntityFromHandle(this->m_hOwnerEntity());
+		if (Entity)
+		{
+			Result = ((IPlayer*)Entity)->GetEntityHandle();
+		}
+	}
+	return Result;
+}
 bool IEntity::GetBoundingBox(BoundingBox& out) {
 	Vec3 origin = this->m_pGameSceneNode()->m_vecAbsOrigin();
 
