@@ -1512,20 +1512,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 
 	if (NewConfig && LeftClick) {
 		LeftClick = false;
-		std::string File = Client->InfFolder + "\\" + ConfigSystem->Loaded + ".infinite";
 
-
-
-		std::ifstream FileReader(File);
-
-		if (!FileReader.good()) {
-			FileReader.close();
-			return false;
-		}
-
-
-		Json::Value Root;
-		FileReader >> Root;
 	
 		int It = 2;
 		std::string NewConfigName = "New Config";
@@ -1535,17 +1522,7 @@ bool ConfigView::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftCli
 		}
 
 
-		std::string File2 = Client->InfFolder + "\\" + NewConfigName + ".infinite";
-		std::ofstream FileWriter(File2);
-
-		if (!FileWriter.good()) {
-			FileWriter.close();
-			return false;
-		}
-
-		FileWriter << Root;
-		FileWriter.close();
-		Root.clear();
+		ConfigSystem->CreateConfig(NewConfigName);
 
 		Reload();
 		/*

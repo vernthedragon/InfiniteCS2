@@ -186,12 +186,10 @@ bool CConfigSystem::SaveToConfig(const std::string& Bind) {
 	return true;
 }
 bool CConfigSystem::CreateConfig(const std::string& Name) {
-	//CConfig TempConfig;
-	//memcpy(&TempConfig, Config, sizeof(CConfig));
+	const CConfig TempConfig = *Config;
 	Config->ResetValues();
-	Loaded = Name;
 	bool Success = SaveToConfig(Name);
-
+	*Config = TempConfig;
 	if (!this->Reload())
 		return false;
 
