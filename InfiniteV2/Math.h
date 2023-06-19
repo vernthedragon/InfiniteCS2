@@ -8,11 +8,12 @@
 
 #define SPI			3.1415926535
 #define SFPI		3.1415926535f
-
-#define DEG2RADF(x) ((float)(x) * (float)((float)(PI) / 180.0f))
-#define RAD2DEGF(x) ((float)(x) * (float)(180.0f / (float)(PI)))
-#define DEG2RAD(x) ((int)(x) * (int)((int)(PI) / 180.0f))
-#define RAD2DEG(x) ((int)(x) * (int)(180.0f / (int)(PI)))
+#define INVPI		0.31830988618379067153f
+#define INV180		0.00555555555555555556f
+#define DEG2RADF(x) ((float)(x) * (float)((float)(FPI) * INV180))
+#define RAD2DEGF(x) ((float)(x) * (float)(180.0f * INVPI))
+#define DEG2RAD(x) ((int)(x) * (int)((int)((FPI) * INV180)))
+#define RAD2DEG(x) ((int)(x) * (int)(180.0f * INVPI))
 #define CheckIfNonValidNumber(x) (std::fpclassify(x) == FP_INFINITE || std::fpclassify(x) == FP_NAN || std::fpclassify(x) == FP_SUBNORMAL)
 namespace Math {
 	float InvSqrt(float number);
@@ -21,4 +22,5 @@ namespace Math {
 	void ClampPtr(float& a, float min, float max);
 	float NormalizeYaw(float yaw);
 	void NormalizeYawPtr(float& yaw);
+
 };

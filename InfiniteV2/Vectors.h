@@ -10,8 +10,8 @@ class Vec2 {
 public:
 	float x;
 	float y;
-	Vec2(Vec3& vector);
-	Vec2(Vec4& vector);
+	Vec2(Vec3& Vec3);
+	Vec2(Vec4& Vec3);
 	Vec2();
 	Vec2(float x, float y);
 	~Vec2();
@@ -45,8 +45,8 @@ public:
 	float x;
 	float y;
 	float z;
-	Vec3(Vec2& vector);
-	Vec3(Vec4& vector);
+	Vec3(Vec2& Vec3);
+	Vec3(Vec4& Vec3);
 	Vec3();
 	Vec3(float x, float y, float z);
 	~Vec3();
@@ -66,16 +66,16 @@ public:
 	__forceinline Vec3& operator/=(float s);
 	__forceinline Vec3& operator+=(float fl);
 	__forceinline Vec3& operator-=(float fl);
-
-	Vec3	operator-(const Vec3& v) const;
-	Vec3	operator+(const Vec3& v) const;
-	Vec3	operator*(const Vec3& v) const;
-	Vec3	operator/(const Vec3& v) const;
-	Vec3	operator*(float fl) const;
-	Vec3	operator/(float fl) const;
+	inline Vec3	operator-(const Vec3& v) const;
+	inline Vec3	operator+(const Vec3& v) const;
+	inline Vec3	operator*(const Vec3& v) const;
+	inline Vec3	operator/(const Vec3& v) const;
+	inline Vec3	operator*(float fl) const;
+	inline Vec3	operator/(float fl) const;
 	inline Vec3 operator+(float fl) const;
 	inline Vec3 operator-(float fl) const;
 	Vec3& ToAngles();
+	Vec3& ToVector();
 	inline float Length2D() {
 		return Math::Sqrt(x * x + y * y);
 	}
@@ -85,16 +85,136 @@ public:
 	inline float LengthSqr() {
 		return x * x + y * y + z * z;
 	}
+	void Normalize() {
+		while (y < -180.0f)
+			y += 360.0f;
+		while (y > 180.0f)
+			y -= 360.0f;
+		if (x > 89.0f)
+			x = 89.0f;
+		if (x < -89.0f)
+			x = -89.0f;
+		z = 0;
+	}
 };
 
+inline bool Vec3::operator==(const Vec3& src) const {
+	return (src.x == x) && (src.y == y) && (src.z == z);
+}
+
+inline bool Vec3::operator!=(const Vec3& src) const {
+	return (src.x != x) || (src.y != y) || (src.z != z);
+}
+
+__forceinline  Vec3& Vec3::operator+=(const Vec3& v) {
+	x += v.x; y += v.y; z += v.z;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator-=(const Vec3& v) {
+	x -= v.x; y -= v.y; z -= v.z;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator*=(float fl) {
+	x *= fl;
+	y *= fl;
+	z *= fl;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator*=(const Vec3& v) {
+	x *= v.x;
+	y *= v.y;
+	z *= v.z;
+	return *this;
+}
+
+__forceinline Vec3& Vec3::operator+=(float fl) {
+	x += fl;
+	y += fl;
+	z += fl;
+	return *this;
+}
+
+__forceinline Vec3& Vec3::operator-=(float fl) {
+	x -= fl;
+	y -= fl;
+	z -= fl;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator/=(float fl) {
+	float oofl = 1.0f / fl;
+	x *= oofl;
+	y *= oofl;
+	z *= oofl;
+	return *this;
+}
+
+__forceinline  Vec3& Vec3::operator/=(const Vec3& v) {
+	x /= v.x;
+	y /= v.y;
+	z /= v.z;
+	return *this;
+}
+
+inline Vec3 Vec3::operator+(const Vec3& v) const {
+	Vec3 res;
+	res.x = x + v.x;
+	res.y = y + v.y;
+	res.z = z + v.z;
+	return res;
+}
+
+
+inline Vec3 Vec3::operator-(const Vec3& v) const {
+	Vec3 res;
+	res.x = x - v.x;
+	res.y = y - v.y;
+	res.z = z - v.z;
+	return res;
+}
+
+inline Vec3 Vec3::operator*(float fl) const {
+	Vec3 res;
+	res.x = x * fl;
+	res.y = y * fl;
+	res.z = z * fl;
+	return res;
+}
+
+inline Vec3 Vec3::operator*(const Vec3& v) const {
+	Vec3 res;
+	res.x = x * v.x;
+	res.y = y * v.y;
+	res.z = z * v.z;
+	return res;
+}
+
+inline Vec3 Vec3::operator/(float fl) const {
+	Vec3 res;
+	res.x = x / fl;
+	res.y = y / fl;
+	res.z = z / fl;
+	return res;
+}
+
+inline Vec3 Vec3::operator/(const Vec3& v) const {
+	Vec3 res;
+	res.x = x / v.x;
+	res.y = y / v.y;
+	res.z = z / v.z;
+	return res;
+}
 class Vec4 {
 public:
 	float x;
 	float y;
 	float z;
 	float w;
-	Vec4(Vec2& vector);
-	Vec4(Vec3& vector);
+	Vec4(Vec2& Vec3);
+	Vec4(Vec3& Vec3);
 	Vec4();
 	Vec4(float x, float y, float z, float w);
 	~Vec4();

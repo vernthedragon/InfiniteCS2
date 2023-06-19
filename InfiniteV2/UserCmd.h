@@ -92,6 +92,19 @@ public:
     PAD(0x4) // 0x44
     UserCmdInButtonState Buttons; // 0x48
     PAD(0x8) // 0x68
+    void SetSubTickAngles(Vec3& angles)
+    {
+        SubtickCountainer container = Subticks;
+        for (std::int32_t i = 0; i < container.tick_count; i++)
+        {
+            InputHistoryEntry* tick = container.GetInputHistoryEntry(i);
+
+            if (tick && tick->view_angles)
+            {
+                tick->view_angles->angles = angles;
+            }
+        }
+    }
 };
 struct SubtickMoveStep {
     uint64_t Button;

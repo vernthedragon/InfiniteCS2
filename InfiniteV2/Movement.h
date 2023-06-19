@@ -5,7 +5,10 @@
 
 
 namespace Movement {
-	void DoBunnyhop();
-	void DoStrafe();
+	void DoBunnyhop(UserCmd* cmd);
+	void DoStrafe(UserCmd* cmd);
+	void MoveFix(UserCmd* cmd);
+	void QuickStop(UserCmd* cmd);
+	void DoMovement(UserCmd* cmd);
 	static int StrafeDirection;
 };

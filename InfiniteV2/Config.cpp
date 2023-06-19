@@ -351,6 +351,7 @@ void CConfig::ResetValues() {
 	this->MenuScale = 2;
 	this->Movement.Bunnyhop = false;
 	this->Movement.BunnyhopStrafeType = 0;
+	this->Movement.QuickStop = false;
 	this->DisableComplexAnimations = false;
 	this->MenuSettings.AnimationSpeed = 100;
 	this->AutoSave = true;

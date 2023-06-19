@@ -65,9 +65,10 @@ void CClient::UpdateLocal() {
 	cache.Alive = local->IsAlive();
 
 	if (cache.Alive) {
-		cache.Velocity = local->m_vecVelocity();
+		cache.Velocity = local->m_vecAbsVelocity();
 		cache.VelocityLength = cache.Velocity.Length();
 		cache.VelocityLength2D = cache.Velocity.Length2D();
+		ActiveViewAngle = local->v_angle();
 	}
 
 }

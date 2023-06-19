@@ -1,6 +1,5 @@
 #pragma once
 #include "Vectors.h"
-#include "Math.h"
 #include "Col.h"
 
 class Mat34

@@ -33,6 +33,7 @@
 #include <chrono>
 #include "Config.h"
 #include "Exception.h"
+#include "Math.h"
 struct InfUserData {
 	std::string Username;
 };
@@ -61,6 +62,9 @@ public:
 	class UserCmd* cmd;
 	class IPlayer* local;
 	class IController* controller;
+	Vec3 OriginalViewAngles;
+	Vec3 ActiveViewAngle;
+	Vec3 ViewAngle;
 	CLocalPlayerCache cache;
 	int ScrollAmmount = 0;
 	bool KeysPressed[256];

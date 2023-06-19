@@ -21,7 +21,10 @@ bool __fastcall Hooks::CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint
     if (!Client->cache.Alive)
         return ret;
 
-    Movement::DoBunnyhop();
-
+    Client->OriginalViewAngles = cmd->Base->view->angles;
+    Client->ViewAngle = Client->ActiveViewAngle; //set to client viewangle since InputCreateMove is late?
+    Movement::DoMovement(cmd);
+    Client->ViewAngle.Normalize();
+    cmd->Base->view->angles = Client->ViewAngle;
     return ret;
 }

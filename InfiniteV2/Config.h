@@ -72,6 +72,7 @@ public:
 	void ResetValues();
 	struct Movement_t {
 		bool Bunnyhop = false;
+		bool QuickStop = false;
 		int BunnyhopStrafeType = 0;
 	};
 

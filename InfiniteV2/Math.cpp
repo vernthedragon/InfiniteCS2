@@ -38,6 +38,7 @@ float Math::NormalizeYaw( float yaw)
 		yaw -= 360.f;
 	return yaw;
 }
+
 void Math::NormalizeYawPtr(float& yaw)
 {
 	while (yaw < -180.f)

@@ -50,16 +50,7 @@ static const char* SubtabText[] = {
 };
 
 
-bool Test = false;
-bool Test2 = false;
-bool Test3 = true;
-bool Test4 = false;
-bool Test5 = false;
-int Test6 = 45;
- int test = 0;
- int test3 = 0;
- unsigned int test2;
- Col tescl(255,0,0,255);
+
 void CMenu::SetupUser() {
 	Pos = Client->ScreenSize * 0.5f;
 	LastMenuScale = Config->MenuScale;
@@ -102,18 +93,7 @@ void CMenu::SetupUser() {
 	Childs[CONFIGS][LEFT].New(ConfigViewer);
 
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
-	Childs[MOVEMENT][LEFT].New(new Switch("Switch", &Test));
-
-	Childs[MOVEMENT][LEFT].New(new Switch("Another Switch", &Test2, []() {return Test; }));
-	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" }, &test));
-	Childs[MOVEMENT][LEFT].New(new ColorPicker("testcolor", 124.f, &tescl, Childs[MOVEMENT][LEFT].GetLastAddedElement()));
-	Childs[MOVEMENT][LEFT].New(new Select("SelectBox", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" , "nine" , "ten" }, &test3));
-	Childs[MOVEMENT][LEFT].New(new Switch("Hello there", &Test3));
-	Childs[MOVEMENT][LEFT].New(new Slider("Another Slider", 0, 100, &Config->Movement.BunnyhopStrafeType));
-	Childs[MOVEMENT][LEFT].New(new Switch("Testing", &Test4));
-	Childs[MOVEMENT][LEFT].New(new Slider("Another Slider", 0, 100, &Test6, []() {return Test4; }));
-	Childs[MOVEMENT][LEFT].New(new Switch("Testing Switch Animation", &Test5, []() {return Test4; }));
-	Childs[MOVEMENT][LEFT].New(new MultiSelect("A Multiselect", { "one", "two", "three", "four", "five" , "six" , "seven" , "eight" , "nine" , "ten" }, &test2, []() {return Test4; }));
+	Childs[MOVEMENT][LEFT].New(new Switch("Quick Stop", &Config->Movement.QuickStop));
 
 	SetuppedUser = true;
 	SubtabChangeAnimation = 0.f;
@@ -726,6 +706,9 @@ void CMenu::OnRender() {
 		bool ShouldRender = RenderKeybinds(Config->MenuSettings.KeybindsX, Config->MenuSettings.KeybindsY);
 		KeybindsAlpha = Math::Clamp(KeybindsAlpha + ((((Config->MenuOpen && Config->MenuSettings.Keybinds) || (ShouldRender && !EmptyBinds)) ? 1 : -1) * 0.00980392156 * AnimationModifier), 0.f, 1.f);
 	}
+	//if(Client->cmd)
+	//	Render::DrawString(500,500, Col(255,255,255,255), Fonts::MenuThin, Render::centered_y, std::to_string(Client->ActiveViewAngle.x).c_str());
+	//this on top is onl used for debugging variables ingame
 
 }
 void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {

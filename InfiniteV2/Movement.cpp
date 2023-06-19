@@ -1,63 +1,193 @@
 #include "Features.h"
 
 //BROKEN STRAFE
-void Movement::DoStrafe() {
-	static auto StrafeDirection = 1.f;
-	StrafeDirection = -StrafeDirection;
+void Movement::DoStrafe(UserCmd* cmd) {
 
-	auto velocity = Client->cache.Velocity;
+	static float yaw_add = 0.f;
+	
+	//	static const auto cl_forwardspeed = interfaces.cvars->FindVar("cl_forwardspeed");
+	//	cl_sidespeed->SetValue(450 + 100);
+	//	cl_forwardspeed->SetValue(450 + 100);
+	static auto old_yaw = 0.0f;
 
-	Vec3 wish_angle = Client->cmd->Base->view->angles;
-
-	auto speed = velocity.Length2D();
-	auto ideal_strafe = std::clamp(RAD2DEGF(atan(15.f / speed)), 0.f, 90.f);
-
-	Client->cmd->Base->forwardmove = 0.f;
-
-
-	static float old_yaw = 0.f;
-	auto yaw_delta = std::remainderf(wish_angle.y - old_yaw, 360.f);
-	auto abs_yaw_delta = abs(yaw_delta);
-	old_yaw = wish_angle.y;
-
-
-
-	if (abs_yaw_delta <= ideal_strafe || abs_yaw_delta >= 30.f)
+	auto get_velocity_degree = [](float velocity)
 	{
-		velocity.ToAngles();
-		auto velocity_delta = std::remainderf(wish_angle.y - velocity.y, 360.0f);
-		auto retrack = std::clamp(RAD2DEGF(atan(30.f / speed)), 0.f, 90.f) * 2.f;
-		if (velocity_delta <= retrack || speed <= 15.f)
+		auto tmp = RAD2DEGF(atan(30.0f / velocity));
+
+		if (CheckIfNonValidNumber(tmp) || tmp > 90.0f)
+			return 90.0f;
+
+		else if (tmp < 0.0f)
+			return 0.0f;
+		else
+			return tmp;
+	};
+
+
+	float side_speed = 1.f;
+	auto velocity = Client->cache.Velocity;
+	velocity.z = 0.0f;
+
+	auto forwardmove = cmd->Base->forwardmove;
+	auto sidemove = cmd->Base->sidemove;
+
+	if (velocity.Length2D() < 5.0f && !forwardmove && !sidemove)
+		return;
+
+	static auto flip = false;
+	flip = !flip;
+
+	auto turn_direction_modifier = flip ? 1.0f : -1.0f;
+	auto viewangles = cmd->Base->view->angles;
+
+	if (forwardmove || sidemove)
+	{
+		cmd->Base->forwardmove = 0.0f;
+		cmd->Base->sidemove = 0.0f;
+
+		auto turn_angle = atan2(-sidemove, forwardmove);
+		viewangles.y += turn_angle * 57.295779513082f;
+	}
+	else if (forwardmove) //-V550
+		cmd->Base->forwardmove = 0.0f;
+
+	auto strafe_angle = RAD2DEG(atan(15.0f / velocity.Length2D()));
+
+	if (strafe_angle > 90.0f)
+		strafe_angle = 90.0f;
+	else if (strafe_angle < 0.0f)
+		strafe_angle = 0.0f;
+
+	auto temp = Vec3(0.0f, viewangles.y - old_yaw, 0.0f);
+	temp.y = Math::NormalizeYaw(temp.y);
+
+	auto yaw_delta = temp.y;
+	old_yaw = viewangles.y;
+
+	auto abs_yaw_delta = fabs(yaw_delta);
+
+	if (abs_yaw_delta <= strafe_angle || abs_yaw_delta >= 15.0f) // whatsapp turbo ativado
+	{
+		Vec3 velocity_angles = velocity;
+		velocity_angles = velocity_angles.ToAngles();
+
+		temp = Vec3(0.0f, viewangles.y - velocity_angles.y, 0.0f);
+		temp.y = Math::NormalizeYaw(temp.y);
+
+		auto velocityangle_yawdelta = temp.y;
+		auto velocity_degree = get_velocity_degree(velocity.Length2D());
+
+		if (velocityangle_yawdelta <= velocity_degree || velocity.Length2D() <= 15.0f)
 		{
-			if (-retrack <= velocity_delta || speed <= 15.0f)
+			if (-velocity_degree <= velocityangle_yawdelta || velocity.Length2D() <= 15.0f)
 			{
-				wish_angle.y += StrafeDirection * ideal_strafe;
-				Client->cmd->Base->sidemove = StrafeDirection;
+				viewangles.y += strafe_angle * turn_direction_modifier;
+				cmd->Base->sidemove = side_speed * turn_direction_modifier;
 			}
 			else
 			{
-				wish_angle.y = velocity.y - retrack;
-				Client->cmd->Base->sidemove = 1.f;
+				viewangles.y = velocity_angles.y - velocity_degree;
+				cmd->Base->sidemove = side_speed;
 			}
 		}
 		else
 		{
-			wish_angle.y = velocity.y + retrack;
-			Client->cmd->Base->sidemove = -1.f;
+			viewangles.y = velocity_angles.y + velocity_degree;
+			cmd->Base->sidemove = -side_speed;
 		}
+	}
+	else if (yaw_delta > 0.0f)
+		cmd->Base->sidemove = -side_speed;
+	else if (yaw_delta < 0.0f)
+		cmd->Base->sidemove = side_speed;
 
+	auto move = Vec3(cmd->Base->forwardmove, cmd->Base->sidemove, 0.0f);
+	auto speed = move.Length();
+
+	Vec3 angles_move = move;
+	angles_move.ToAngles();
+
+	auto normalized_x = fmod(cmd->Base->view->angles.x + 180.0f, 360.0f) - 180.0f;
+	auto normalized_y = fmod(cmd->Base->view->angles.y + 180.0f, 360.0f) - 180.0f;
+
+	auto yaw = DEG2RAD(normalized_y - viewangles.y + angles_move.y);
+
+	if (normalized_x >= 90.0f || normalized_x <= -90.0f || cmd->Base->view->angles.x >= 90.0f && cmd->Base->view->angles.x <= 200.0f || cmd->Base->view->angles.x <= -90.0f && cmd->Base->view->angles.x <= 200.0f) //-V648
+		cmd->Base->forwardmove = -cos(yaw) * speed;
+	else
+		cmd->Base->forwardmove = cos(yaw) * speed;
+
+	cmd->Base->sidemove = sin(yaw) * speed;
+}
+void Movement::QuickStop(UserCmd* cmd) {
+	
+
+
+	bool pressed_move_key = cmd->Buttons.Button1 & in_moveforward || cmd->Buttons.Button1 & in_moveleft || cmd->Buttons.Button1 & in_moveright || cmd->Buttons.Button1 & in_moveback || cmd->Buttons.Button1 & in_jump;
+
+	if (pressed_move_key)
+		return;
+
+
+	if (Client->cache.VelocityLength2D > 15.f) {
+		//Client->Log(std::to_string(Client->cache.VelocityLength2D).c_str()); Client->Log("\n");
+		Vec3 direction = Client->cache.Velocity;
+		direction.ToAngles();
+		direction.y = Client->ActiveViewAngle.y - direction.y;
+		
+		direction.ToVector();
+
+		direction *= -1.f;
+
+		cmd->Base->forwardmove = direction.x * Client->cache.VelocityLength2D;
+
+
+		cmd->Base->sidemove = direction.y * Client->cache.VelocityLength2D;
 
 	}
-	else if (yaw_delta > 0.f)
-		Client->cmd->Base->sidemove = -1.f;
-	else
-		Client->cmd->Base->sidemove = 1.f;
+}
+void Movement::MoveFix(UserCmd* cmd) {
+
+	Vec3 Movement(cmd->Base->forwardmove, cmd->Base->sidemove, cmd->Base->upmove);
+	float MoveSpeed = Movement.Length2D();
+
+	Movement.ToAngles();
+
+	float yaw = DEG2RADF(Client->ViewAngle.y - Client->OriginalViewAngles.y + Movement.y);
+
+	cmd->Base->forwardmove = cos(yaw) * MoveSpeed;
+	cmd->Base->sidemove = sin(yaw) * MoveSpeed;
+
+
+
+
+
+	cmd->Buttons.Button1 &= ~in_moveforward;
+	cmd->Buttons.Button1 &= ~in_moveback;
+	cmd->Buttons.Button1 &= ~in_moveleft;
+	cmd->Buttons.Button1 &= ~in_moveright;
+
+
+	if (cmd->Base->forwardmove > 0.f)
+		cmd->Buttons.Button1 |= in_moveforward;
+	else if (cmd->Base->forwardmove < 0.f)
+		cmd->Buttons.Button1 |= in_moveback;
+
+	if (cmd->Base->sidemove > 0.f)
+	{
+
+		cmd->Buttons.Button1 |= in_moveright;
+	}
+	else if (cmd->Base->sidemove < 0.f)
+	{
+
+		cmd->Buttons.Button1 |= in_moveleft;
+	}
 }
 
-void Movement::DoBunnyhop() {
+void Movement::DoBunnyhop(UserCmd* cmd) {
 
-	if (!Config->Movement.Bunnyhop)
-		return;
+
 
 	static bool bLastJumped = false;
 	static bool bShouldFake = false;
@@ -65,9 +195,9 @@ void Movement::DoBunnyhop() {
 	if (!bLastJumped && bShouldFake)
 	{
 		bShouldFake = false;
-		Client->cmd->Buttons.Button1 |= IN_JUMP;
+		cmd->Buttons.Button1 |= in_jump;
 	}
-	else if (Client->cmd->Buttons.Button1 & IN_JUMP)
+	else if (cmd->Buttons.Button1 & in_jump)
 	{
 		if (OnGround)
 		{
@@ -75,7 +205,7 @@ void Movement::DoBunnyhop() {
 		}
 		else
 		{
-			Client->cmd->Buttons.Button1 &= ~IN_JUMP;
+			cmd->Buttons.Button1 &= ~in_jump;
 			bLastJumped = false;
 		}
 	}
@@ -87,11 +217,21 @@ void Movement::DoBunnyhop() {
 	if (movetype == MoveType_t::movetype_noclip || movetype == MoveType_t::movetype_ladder)
 		return;
 
-	if (/*Client->cmd->Buttons.Button1 & IN_SPEED  IN_SPEED doesnt exist*/ Client->cache.VelocityLength2D < 1.f)
+	if (/*cmd->Buttons.Button1 & IN_SPEED  IN_SPEED doesnt exist*/ Client->cache.VelocityLength2D < 1.f)
 		return; 
 
 	if (OnGround)
 		return;
 
-	Movement::DoStrafe();
+	Movement::DoStrafe(cmd);
+}
+
+void Movement::DoMovement(UserCmd* cmd) {
+	if(Config->Movement.Bunnyhop)
+		DoBunnyhop(cmd);
+
+	if (Config->Movement.QuickStop)
+		QuickStop(cmd);
+
+	MoveFix(cmd);
 }
