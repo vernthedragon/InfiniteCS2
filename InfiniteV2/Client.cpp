@@ -88,16 +88,18 @@ bool CClient::SetupHooks() {
 
 	Hooks::SwapChainVMTHook = std::make_unique< VMTHook >();
 	Hooks::InputVMTHook = std::make_unique< VMTHook >();
+	Hooks::PaintVMTHook = std::make_unique< VMTHook >();
 
 	Hooks::SwapChainVMTHook->Setup(g_Renderer->SwapChain);
 	Hooks::InputVMTHook->Setup(g_Input);
+	Hooks::PaintVMTHook->Setup(g_PaintSurface);
 
 
 	Hooks::SwapChainVMTHook->Hook(IRendererVTable::PRESENT, Hooks::SwapChainPresent);
 	Hooks::SwapChainVMTHook->Hook(IRendererVTable::RESIZE_BUFFERS, Hooks::SwapChainResizeBuffers);
 
 	Hooks::InputVMTHook->Hook(IInputVTable::CREATEMOVE, Hooks::CreateMove);
-
+	Hooks::PaintVMTHook->Hook(IVGuiPaintSurfaceVtTable::PAINTTRAVERSE, Hooks::PaintTraverse);
 
 
 	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)

@@ -57,6 +57,9 @@
     <Filter Include="Client\Config\Json">
       <UniqueIdentifier>{e6a20031-841f-4fad-91cc-f900bd33e40a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Surface">
+      <UniqueIdentifier>{789d55cd-779f-41f8-9817-c1132039b55a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -157,6 +160,12 @@
     </ClCompile>
     <ClCompile Include="PlayerHandler.cpp">
       <Filter>Client\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="SurfaceRenderer.cpp">
+      <Filter>Rendering\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="PaintTraverse.cpp">
+      <Filter>Client\Hooks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -339,6 +348,15 @@
     </ClInclude>
     <ClInclude Include="PlayerHandler.h">
       <Filter>Client\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="SurfaceRenderer.hpp">
+      <Filter>Rendering\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.hpp">
+      <Filter>SDK\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="IVGuiPaintSurface.h">
+      <Filter>SDK\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

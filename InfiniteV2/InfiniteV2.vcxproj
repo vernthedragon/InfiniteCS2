@@ -194,10 +194,12 @@
     <ClCompile Include="minhook\hook.c" />
     <ClCompile Include="minhook\trampoline.c" />
     <ClCompile Include="Movement.cpp" />
+    <ClCompile Include="PaintTraverse.cpp" />
     <ClCompile Include="PlayerHandler.cpp" />
     <ClCompile Include="RenderHook.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="Schema.cpp" />
+    <ClCompile Include="SurfaceRenderer.cpp" />
     <ClCompile Include="Vectors.cpp" />
     <ClCompile Include="Menu.cpp" />
   </ItemGroup>
@@ -233,6 +235,7 @@
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="ISchemaSystem.h" />
     <ClInclude Include="ITrace.h" />
+    <ClInclude Include="IVGuiPaintSurface.h" />
     <ClInclude Include="IViewRender.h" />
     <ClInclude Include="Json\json-forwards.h" />
     <ClInclude Include="Json\json.h" />
@@ -255,11 +258,13 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="STB_Image.h" />
+    <ClInclude Include="SurfaceRenderer.hpp" />
     <ClInclude Include="Trace.h" />
     <ClInclude Include="UserCmd.h" />
     <ClInclude Include="Utl.h" />
     <ClInclude Include="Vectors.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="Vertex.hpp" />
     <ClInclude Include="VMTHook.h" />
     <ClInclude Include="Menu.h" />
   </ItemGroup>

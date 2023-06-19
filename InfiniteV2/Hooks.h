@@ -18,6 +18,7 @@ namespace Hooks {
 	static IDXGISwapChain* SwapChain = nullptr;
 	extern std::unique_ptr< VMTHook > SwapChainVMTHook;
 	extern std::unique_ptr< VMTHook > InputVMTHook;
+	extern std::unique_ptr< VMTHook > PaintVMTHook;
 
 	using SwapChainPresent_t = HRESULT(__fastcall*)(IDXGISwapChain*, std::uint32_t, std::uint32_t);
 	static SwapChainPresent_t oSwapChainPresent = nullptr;
@@ -32,4 +33,8 @@ namespace Hooks {
 	using CreateMove_t = bool(__fastcall*)(IInput*, uint32_t, uint8_t);
 	static CreateMove_t oCreateMove = nullptr;
 	bool __fastcall CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint8_t a3);
+
+	using PaintTraverse_t = void(__fastcall*)(void*, IVGuiPaintSurface*, unsigned long long, bool, bool);
+	static PaintTraverse_t oPaintTraverse = nullptr;
+	void __fastcall PaintTraverse(void* Panel, IVGuiPaintSurface* Surface, unsigned long long VGuiPanel, bool ForceRepaint, bool AllowForce);
 };
