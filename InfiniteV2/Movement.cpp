@@ -234,5 +234,5 @@ void Movement::DoMovement(UserCmd* cmd) {
 	if (Config->Movement.QuickStop)
 		QuickStop(cmd);
 
-	MoveFix(cmd);
+	//MoveFix(cmd);
 }

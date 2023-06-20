@@ -7,6 +7,7 @@ class BasicRecord {
 public:
 	BoundingBox Box;
 	CHandle Handle;
+	bool BoundingBoxInView;
 };
 
 class PlayerAnimationRecord {
@@ -39,7 +40,6 @@ public:
 	}
 	void UpdateData();
 	void UpdateBoundingBox();
-	IController* Controller;
 	INade* Entity;
 };
 class CGameHandler {

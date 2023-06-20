@@ -10,13 +10,14 @@ void PlayerRecord::UpdateBoundingBox() {
 	if (!Entity->IsAlive())
 		return;
 
-	Entity->GetBoundingBox(Box);
+	BoundingBoxInView = Entity->GetBoundingBox(Box);
 }
 void NadeRecord::UpdateData() {
-
+	//Detonated = Entity->m_bExplodeEffectBegan();
 }
 void NadeRecord::UpdateBoundingBox() {
-	Entity->GetBoundingBox(Box);
+
+	BoundingBoxInView = Entity->GetBoundingBox(Box);
 }
 void CGameHandler::ForAllNades(void(*Function)(NadeRecord*)) {
 	if (!local || !localcontroller)
@@ -83,11 +84,16 @@ void CGameHandler::AddEntity(IEntityInstance* Instance, CHandle Handle) {
 		std::unique_lock lock(mutex);
 		Players[Handle.m_Index] = PlayerRecord(Handle, reinterpret_cast<IPlayer*> (Ent));
 	}
+	else if (strstr(Type, "C_BaseCSGrenadeProjectile") != nullptr) {
 
+		std::unique_lock lock(mutex);
+		Nades[Handle.m_Index] = NadeRecord(Handle, reinterpret_cast<INade*> (Ent));
+	}
 }
 void CGameHandler::RemoveEntity(IEntityInstance* Instance, CHandle Handle) {
 	std::unique_lock lock(mutex);
 	Players.erase(Handle.m_Index);
+	Nades.erase(Handle.m_Index);
 }
 
 void CGameHandler::Update(int Stage) {

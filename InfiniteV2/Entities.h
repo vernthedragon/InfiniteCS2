@@ -201,6 +201,7 @@ struct alignas(16) BoneData {
 static_assert(sizeof(BoneData) == 0x20);
 
 class INade : public IEntity {
+public:
     //C_BaseCSGrenadeProjectile
     SCHEMA("C_BaseCSGrenadeProjectile", "m_vInitialVelocity", m_vInitialVelocity, Vec3);
     SCHEMA("C_BaseCSGrenadeProjectile", "m_vecExplodeEffectOrigin", m_vecExplodeEffectOrigin, Vec3);
