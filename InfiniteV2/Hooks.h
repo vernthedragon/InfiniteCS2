@@ -19,7 +19,7 @@ namespace Hooks {
 	extern std::unique_ptr< VMTHook > SwapChainVMTHook;
 	extern std::unique_ptr< VMTHook > InputVMTHook;
 	extern std::unique_ptr< VMTHook > InputSystemVMTHook;
-
+	extern std::unique_ptr< VMTHook > EntListVMTHook;
 
 	void Setup();
 
@@ -43,6 +43,13 @@ namespace Hooks {
 	static CreateMove_t oCreateMove = nullptr;
 	bool __fastcall CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint8_t a3);
 
+	using OnAddEntity_t = void(__thiscall*)(IEntList*, IEntityInstance*, CHandle);
+	static OnAddEntity_t oOnAddEntity;
+	void __fastcall OnAddEntity(IEntList* This, IEntityInstance* Instance, CHandle Handle);
+
+	using OnRemoveEntity_t = void(__thiscall*)(IEntList*, IEntityInstance*, CHandle);
+	static OnRemoveEntity_t oOnRemoveEntity;
+	void __fastcall OnRemoveEntity(IEntList* This, IEntityInstance* Instance, CHandle Handle);
 
 	//MinHooks (by sig) (MAKE SURE TO USE EXTERN!)
 	using FrameStageNotify_t = void(__thiscall*)(IClient*, int);

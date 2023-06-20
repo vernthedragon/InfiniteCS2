@@ -4,3 +4,4 @@
 #include "GameHandler.h"
 #include "AntiAim.h"
 #include "AutoWall.h"
+#include "Rendering.h"

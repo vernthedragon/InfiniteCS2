@@ -160,14 +160,13 @@ public:
         CallVFunc<void*>(this, 2, &handle);
         return handle;
     }
-
+    const char* GetType();
     SCHEMA("CEntityInstance", "m_pEntity", m_pEntity, IEntityIdentity*);
 };
-class IEntity : IEntityInstance
+class IEntity : public IEntityInstance
 {
 public:
-    bool IsBasePlayerController();
-    bool IsBasePlayerWeapon();
+
     bool IsChicken();
     bool IsViewModel();
 
@@ -188,7 +187,7 @@ public:
     SCHEMA("C_BaseEntity", "m_vecVelocity", m_vecVelocity, Vec3);
     SCHEMA("C_BaseEntity", "m_vecBaseVelocity", m_vecBaseVelocity, Vec3);
 };
-class IEntityUnknown : IEntity {
+class IEntityUnknown : public IEntity {
 public:
     template<typename A>
     A* Get() { return reinterpret_cast<A*>(this); }
@@ -201,7 +200,13 @@ struct alignas(16) BoneData {
 
 static_assert(sizeof(BoneData) == 0x20);
 
-
+class INade : public IEntity {
+    //C_BaseCSGrenadeProjectile
+    SCHEMA("C_BaseCSGrenadeProjectile", "m_vInitialVelocity", m_vInitialVelocity, Vec3);
+    SCHEMA("C_BaseCSGrenadeProjectile", "m_vecExplodeEffectOrigin", m_vecExplodeEffectOrigin, Vec3);
+   // SCHEMA("C_BaseCSGrenadeProjectile", "m_flSpawnTime", m_flSpawnTime, GameTime);
+    SCHEMA("C_BaseCSGrenadeProjectile", "m_bExplodeEffectBegan", m_bExplodeEffectBegan, bool);
+};
 class IPlayer : public IEntity
 {
 public:
@@ -240,3 +245,8 @@ public:
     SCHEMA("CBasePlayerController", "m_bIsLocalPlayerController", m_bIsLocalPlayerController, bool);
     SCHEMA("CCSPlayerController", "m_sSanitizedPlayerName", m_sSanitizedPlayerName, const char*);
 };
+
+
+#define  CSPLAYERCONTROLLER "CCSPlayerController"
+#define  CSPLAYERPAWN "C_CSPlayerPawn"
+

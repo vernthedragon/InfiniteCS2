@@ -1,11 +1,15 @@
 #include "Entities.h"
 #include "Client.h"
 #include "Interfaces.h"
-bool IEntity::IsBasePlayerController() {
-	return CallVFunc<bool>(this, 141);
-}
-bool IEntity::IsBasePlayerWeapon() {
-	return CallVFunc<bool>(this, 147);
+
+const char* IEntityInstance::GetType() {
+	schema_class_info_data_t* pClassInfo = Schema_DynamicBinding();
+	if (!pClassInfo) return "";
+
+	const char* className = pClassInfo->GetName();
+	if (!className) return "";
+
+	return className;
 }
 bool IEntity::IsChicken() {
     schema_class_info_data_t* pClassInfo = Schema_DynamicBinding();

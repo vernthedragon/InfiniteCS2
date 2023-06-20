@@ -206,6 +206,15 @@
     <ClCompile Include="Visuals.cpp">
       <Filter>Client\Features\Visuals</Filter>
     </ClCompile>
+    <ClCompile Include="EntList.cpp">
+      <Filter>Client\Hooks\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Nades.cpp">
+      <Filter>Client\Features\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons.cpp">
+      <Filter>Client\Features\Visuals</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">

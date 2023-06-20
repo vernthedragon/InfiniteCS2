@@ -1,19 +1,16 @@
 #include "Features.h"
 
-void Visuals::DoESP() {
-	//TODO add ESP to the config and check wether it's on or not
+void DrawESPPerPlayer(PlayerRecord* Record) {
+	//now we dont do any sanity checks for the entity pointer since cs removes the entity after we removed it from our game handler
+	if (!Record->Entity->IsAlive())
+		return;
 
-	for (int i = 0; i < g_EntList->GetHighestEntityIndex(); i++) {
-		IEntity* ent = g_EntList->GetBaseEntity(i);
-		if (!ent) continue;
+	Record->UpdateBoundingBox();
 
-		if (ent->IsBasePlayerController()) continue; //i didn't put this check in the one b4, never trust the "execution order" as seen in "The C Programming Language"
-		
-		//if (ent->m_lifeState != ALIVE) continue; //TODO
-		
-		BoundingBox box;
-		ent->GetBoundingBox(box);
+	Render::Rect(Record->Box.x, Record->Box.y, Record->Box.w, Record->Box.h, Col(255, 255, 255, 255), 2.f);
+}
 
-		//ImGui::GetBackgroundDrawList()->AddRect()
-	}
+
+void Visuals::DoPlayers() {
+	GameHandler->ForAllOpponents(DrawESPPerPlayer);
 }

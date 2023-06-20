@@ -6,5 +6,7 @@
 
 namespace Visuals {
 	void OnRender();
-	void DoESP();
+	void DoPlayers();
+	void DoNades();
+	void DoWeapons();
 };

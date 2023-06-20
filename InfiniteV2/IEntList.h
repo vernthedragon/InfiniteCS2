@@ -4,6 +4,12 @@
 #include "Client.h"
 #include "Entities.h"
 
+enum EntListVTable
+{
+	ONADDENTITY = 14,
+	ONREMOVEENTITY = 15
+};
+
 class IEntList
 {
 public:

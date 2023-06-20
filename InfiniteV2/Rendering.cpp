@@ -1,7 +1,7 @@
 #include "Rendering.h"
 #include "Menu.h"
 #include "ByteData.h"
-
+#include "Features.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "STB_Image.h"
 #define NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = Math::InvSqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0
@@ -322,7 +322,8 @@ void Render::DoRender(ID3D11Device* Device, ID3D11DeviceContext* Context, HWND W
 	Client->UpdateKeyStates();
 
 	//Render::UpdateProjectionMatrix();
-	
+	Visuals::OnRender();
+
 	Menu->OnRender();
 
 

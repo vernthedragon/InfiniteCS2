@@ -176,7 +176,9 @@
     <ClCompile Include="Col.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Entities.cpp" />
+    <ClCompile Include="EntList.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
+    <ClCompile Include="Nades.cpp" />
     <ClCompile Include="Players.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="FrameStageNotify.cpp" />
@@ -211,6 +213,7 @@
     <ClCompile Include="Vectors.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Visuals.cpp" />
+    <ClCompile Include="Weapons.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>

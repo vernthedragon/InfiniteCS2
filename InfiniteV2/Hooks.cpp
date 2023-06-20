@@ -7,6 +7,8 @@ namespace Hooks {
 	std::unique_ptr< VMTHook > SwapChainVMTHook = nullptr;
 	std::unique_ptr< VMTHook > InputVMTHook = nullptr;
 	std::unique_ptr< VMTHook > InputSystemVMTHook = nullptr;
+	std::unique_ptr< VMTHook > EntListVMTHook = nullptr;
+
 	FrameStageNotify_t oFrameStageNotify = nullptr;
 	LevelInit_t oLevelInit = nullptr;
 
@@ -17,11 +19,12 @@ namespace Hooks {
 		SwapChainVMTHook = std::make_unique< VMTHook >();
 		InputVMTHook = std::make_unique< VMTHook >();
 		InputSystemVMTHook = std::make_unique< VMTHook >();
-
+		EntListVMTHook = std::make_unique< VMTHook >();
 
 		SwapChainVMTHook->Setup(g_Renderer->SwapChain, "SwapChain");
 		InputVMTHook->Setup(g_Input, "CSInput");
 		InputSystemVMTHook->Setup(g_InputSystem, "InputSystem");
+		EntListVMTHook->Setup(g_EntList, "EntityList");
 
 		SwapChainVMTHook->Hook(IRendererVTable::PRESENT, SwapChainPresent);
 		SwapChainVMTHook->Hook(IRendererVTable::RESIZE_BUFFERS, SwapChainResizeBuffers);
@@ -30,6 +33,8 @@ namespace Hooks {
 
 		InputSystemVMTHook->Hook(IInputSystemVTable::RELATIVEMOUSEMODE, RelativeMouseMode);
 
+		EntListVMTHook->Hook(EntListVTable::ONADDENTITY, OnAddEntity);
+		EntListVMTHook->Hook(EntListVTable::ONREMOVEENTITY, OnRemoveEntity);
 	
 		
 		if (MH_Initialize() != MH_OK)
