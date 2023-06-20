@@ -411,13 +411,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="NotesForDevelopers.txt">
-      <Filter>Entry</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <Library Include="freetype\objs\freetype.lib">
       <Filter>Rendering\ImGui</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="NotesForDevelopers.txt">
+      <Filter>Entry</Filter>
+    </Text>
   </ItemGroup>
 </Project>
