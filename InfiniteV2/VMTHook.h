@@ -125,13 +125,17 @@ public:
 		delete[] shadow_vtable;
 	}
 
-	inline void Setup(void* base = nullptr)
+	inline void Setup(void* base = nullptr, std::string name = "")
 	{
 		if (base != nullptr)
 			class_base = base;
 
-		if (class_base == nullptr)
+		if (class_base == nullptr) {
+
+			throw IException(("Failed to Setup VMTHook: " + name + ", (Base is nullptr)").c_str(), 0);
+
 			return;
+		}
 
 		original_vtable = *(uintptr_t**)class_base;
 		method_count = GetMethodCount(original_vtable);
@@ -178,6 +182,14 @@ public:
 	inline T GetOriginal(uint32_t index)
 	{
 		return (T)original_vtable[index];
+	}
+	template<typename Fn>
+	inline void GetOriginal(Fn& Out, uint32_t Index) {
+
+		if (Out != nullptr)
+			return;
+
+		Out = (Fn)original_vtable[Index];
 	}
 
 	inline void RestoreTable()

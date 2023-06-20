@@ -1,33 +1,31 @@
 #include "Hooks.h"
 #include "Features.h"
-std::unique_ptr< VMTHook > Hooks::InputVMTHook = nullptr;
+
 
 bool __fastcall Hooks::CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint8_t a3) {
-    if (!Hooks::oCreateMove) {
-        Hooks::oCreateMove = Hooks::InputVMTHook->GetOriginal<Hooks::CreateMove_t>(IInputVTable::CREATEMOVE);
-   }
+    InputVMTHook->GetOriginal(oCreateMove, IInputVTable::CREATEMOVE);
 
-    Client->UpdateLocal(); //should be in FSN
+ 
 
-    bool ret = Hooks::oCreateMove(Input, SplitScreenIndex, a3);
+    bool ret = oCreateMove(Input, SplitScreenIndex, a3);
 
  
 
     auto cmd = Input->GetUserCmd(SplitScreenIndex);
-    Client->cmd = cmd;
-    if (!cmd || !Client->local)
+    GameHandler->cmd = cmd;
+    if (!cmd || GameHandler->local == nullptr)
         return ret;
 
-    if (!Client->cache.Alive)
+    if (!GameHandler->Alive)
         return ret;
 
-    Client->OriginalViewAngles = cmd->Base->view->angles;
-    Client->ViewAngle = Client->OriginalViewAngles; //set to client viewangle since InputCreateMove is late?
+    GameHandler->OriginalCmdViewAngles = cmd->Base->view->angles;
+    GameHandler->CmdViewAngle = GameHandler->OriginalCmdViewAngles; //set to client viewangle since InputCreateMove is late?
     
     //AntiAim::DoAntiAim(cmd);
     
     Movement::DoMovement(cmd);
-    Client->ViewAngle.Normalize();
-    cmd->Base->view->angles = Client->ViewAngle;
+    GameHandler->CmdViewAngle.Normalize();
+    cmd->Base->view->angles = GameHandler->CmdViewAngle;
     return ret;
 }

@@ -177,9 +177,11 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Entities.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
-    <ClCompile Include="ESP.cpp" />
+    <ClCompile Include="Players.cpp" />
     <ClCompile Include="Exception.cpp" />
+    <ClCompile Include="FrameStageNotify.cpp" />
     <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="Hooks.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_draw.cpp" />
     <ClCompile Include="Imgui\imgui_impl_dx11.cpp" />
@@ -188,8 +190,10 @@
     <ClCompile Include="Imgui\imgui_widgets.cpp" />
     <ClCompile Include="InitializeThread.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="Interfaces.cpp" />
     <ClCompile Include="Json\jsoncpp.cpp" />
+    <ClCompile Include="LevelInit.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="minhook\buffer.c" />
@@ -198,7 +202,7 @@
     <ClCompile Include="minhook\hook.c" />
     <ClCompile Include="minhook\trampoline.c" />
     <ClCompile Include="Movement.cpp" />
-    <ClCompile Include="PlayerHandler.cpp" />
+    <ClCompile Include="GameHandler.cpp" />
     <ClCompile Include="RenderHook.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="Schema.cpp" />
@@ -206,6 +210,8 @@
     <ClCompile Include="Utl.cpp" />
     <ClCompile Include="Vectors.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Visuals.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AntiAim.h" />
@@ -218,7 +224,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="CSGlobalVars.h" />
     <ClInclude Include="Entities.h" />
-    <ClInclude Include="ESP.h" />
+    <ClInclude Include="Visuals.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Features.h" />
     <ClInclude Include="Hooks.h" />
@@ -255,7 +261,7 @@
     <ClInclude Include="minhook\MinHook.h" />
     <ClInclude Include="minhook\trampoline.h" />
     <ClInclude Include="Movement.h" />
-    <ClInclude Include="PlayerHandler.h" />
+    <ClInclude Include="GameHandler.h" />
     <ClInclude Include="QAngle.h" />
     <ClInclude Include="Rendering.h" />
     <ClInclude Include="Schema.h" />

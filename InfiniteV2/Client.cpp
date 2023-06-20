@@ -1,6 +1,5 @@
 #include "Client.h"
 #include "Interfaces.h"
-#include "minhook/MinHook.h"
 #include "Hooks.h"
 #include "Schema.h"
 #include "BuildConfig.h"
@@ -35,73 +34,16 @@ void CClient::UpdateKeyStates() {
 }
 
 bool CClient::Hook(LPVOID Target, LPVOID Detour, LPVOID* OutOriginal, const char* Name) {
-	if (MH_CreateHook(Target, Detour, OutOriginal) != MH_OK)
-	{
-		Log("Failed to Hook: ");
-		Log(Name);
-		Log("\n");
-		return false;
-	}
-	Log("Hooked: ");
-	Log(Name);
-	Log("\n");
+	
 	return true;
 }
-void CClient::UpdateLocal() {
-	if (!g_Engine->IsConnected() || !g_Engine->IsInGame())
-	{
-		local = nullptr;
-		controller = nullptr;
-		return;
-	}
-	local = g_EntList->GetLocalPlayer();
-	controller = g_EntList->GetLocalController();
 
-
-	if (!local || !controller) {
-		cache.Alive = false;
-		return;
-	}
-	cache.Alive = local->IsAlive();
-
-	if (cache.Alive) {
-		cache.Velocity = local->m_vecAbsVelocity();
-		cache.VelocityLength = cache.Velocity.Length();
-		cache.VelocityLength2D = cache.Velocity.Length2D();
-		ActiveViewAngle = local->v_angle();
-	}
-
-}
 bool CClient::SetupHooks() {
 
-	static auto GetVirtualFunction = [](void* class_pointer, std::uint32_t index)
-	{
-		void** vtable = *static_cast<void***>(class_pointer);
-		return vtable[index];
-	};
-
-	if (MH_Initialize() != MH_OK)
-	{
-		Log("MinHook failed to initialize\n");
-		return false;
-	}
-
-	Hooks::SwapChainVMTHook = std::make_unique< VMTHook >();
-	Hooks::InputVMTHook = std::make_unique< VMTHook >();
 	
-	Hooks::SwapChainVMTHook->Setup(g_Renderer->SwapChain);
-	Hooks::InputVMTHook->Setup(g_Input);
-	
-	Hooks::SwapChainVMTHook->Hook(IRendererVTable::PRESENT, Hooks::SwapChainPresent);
-	Hooks::SwapChainVMTHook->Hook(IRendererVTable::RESIZE_BUFFERS, Hooks::SwapChainResizeBuffers);
 
-	Hooks::InputVMTHook->Hook(IInputVTable::CREATEMOVE, Hooks::CreateMove);
+	Hooks::Setup();
 
-	
-	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
-	{
-		return false;
-	}
 
 	Log("Client Hooks initialized successfully\n");
 	return true;
@@ -166,12 +108,7 @@ void CClient::Initialize() {
 
 	Config->ResetValues();
 	Config->MenuOpen = true;
-	{
-		int32_t ScreenSizeX = 1920;
-		int32_t ScreenSizeY = 1080;
-		g_Engine->GetScreenSize(ScreenSizeX, ScreenSizeY);
-		ScreenSize = Vec2(ScreenSizeX, ScreenSizeY);
-	}
+
 }
 void CClient::Close() {
 #ifdef CONSOLELOG 

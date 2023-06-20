@@ -1,7 +1,10 @@
 #pragma once
 
 #include <cstdint>
-
+enum IInputSystemVTable
+{
+	RELATIVEMOUSEMODE = 76,
+};
 class IInputSystem
 {
 public:

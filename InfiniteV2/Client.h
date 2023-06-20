@@ -39,12 +39,7 @@
 struct InfUserData {
 	std::string Username;
 };
-struct CLocalPlayerCache {
-	Vec3 Velocity;
-	float VelocityLength;
-	float VelocityLength2D;
-	bool Alive;
-};
+
 class CClient {
 public:
 	void Initialize();
@@ -57,17 +52,11 @@ public:
 	bool KeyToggled( int VKEY);
 	std::uint8_t* FindPattern(HMODULE Module, const char* Signature);
 	std::uint8_t* ResolveRIP(std::uint8_t* address, std::uint32_t rva_offset, std::uint32_t rip_offset);
-	void UpdateLocal();
+	
 	std::string InfFolder;
 	InfUserData UserData;
 	Vec2 ScreenSize;
-	class UserCmd* cmd;
-	class IPlayer* local;
-	class IController* controller;
-	Vec3 OriginalViewAngles;
-	Vec3 ActiveViewAngle;
-	Vec3 ViewAngle;
-	CLocalPlayerCache cache;
+
 	int ScrollAmmount = 0;
 	bool KeysPressed[256];
 	bool KeyStates[256];

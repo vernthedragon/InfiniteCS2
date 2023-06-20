@@ -1,5 +1,6 @@
 #pragma once
 #include "Movement.h"
-#include "ESP.h"
-#include "PlayerHandler.h"
+#include "Visuals.h"
+#include "GameHandler.h"
 #include "AntiAim.h"
+#include "AutoWall.h"

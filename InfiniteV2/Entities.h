@@ -92,17 +92,7 @@ enum Flags_t : std::uint32_t
     fl_unblockable_by_player = (1 << 30)
 };*/
 
-enum FrameStage_t : std::int32_t
-{
-    FRAME_UNDEFINED = -1,
-    FRAME_START,
-    FRAME_NET_UPDATE_START,
-    FRAME_NET_UPDATE_POSTDATAUPDATE_START,
-    FRAME_NET_UPDATE_POSTDATAUPDATE_END,
-    FRAME_NET_UPDATE_END,
-    FRAME_RENDER_START,
-    FRAME_RENDER_END
-};
+
 
 class IGameSceneNode
 {

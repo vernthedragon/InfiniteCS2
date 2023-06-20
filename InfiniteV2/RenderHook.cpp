@@ -4,14 +4,14 @@
 #include "Menu.h"
 #pragma comment(lib, "d3d11.lib")
 
-std::unique_ptr< VMTHook > Hooks::SwapChainVMTHook = nullptr;
+
 
 HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint32_t SyncInterval, std::uint32_t Flags)
 {
-	if (!Hooks::oSwapChainPresent) {
-		Hooks::oSwapChainPresent = Hooks::SwapChainVMTHook->GetOriginal<Hooks::SwapChainPresent_t>(IRendererVTable::PRESENT);
+	if (!oSwapChainPresent) {
+		oSwapChainPresent = SwapChainVMTHook->GetOriginal<SwapChainPresent_t>(IRendererVTable::PRESENT);
 	}
-	if (!Hooks::Device)
+	if (!Device)
 	{
 		ID3D11Texture2D* buffer = nullptr;
 		DXGI_SWAP_CHAIN_DESC desc = { };
@@ -20,23 +20,23 @@ HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint3
 
 		if (buffer)
 		{
-			SwapChain->GetDevice(IID_PPV_ARGS(&Hooks::Device));
-			Hooks::Device->CreateRenderTargetView(buffer, nullptr, &Hooks::RenderView);
-			Hooks::Device->GetImmediateContext(&Hooks::Context);
+			SwapChain->GetDevice(IID_PPV_ARGS(&Device));
+			Device->CreateRenderTargetView(buffer, nullptr, &RenderView);
+			Device->GetImmediateContext(&Context);
 			DXGI_SWAP_CHAIN_DESC desc;
 			SwapChain->GetDesc(&desc);
-			Hooks::Window = desc.OutputWindow;
+			Window = desc.OutputWindow;
 		}
 
-		if (Hooks::oWindowProcedure && Hooks::Window)
+		if (oWindowProcedure && Window)
 		{
-			SetWindowLongPtrA(Hooks::Window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooks::oWindowProcedure));
-			Hooks::oWindowProcedure = nullptr;
+			SetWindowLongPtrA(Window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(oWindowProcedure));
+			oWindowProcedure = nullptr;
 		}
 
-		if (Hooks::Window)
+		if (Window)
 		{
-			Hooks::oWindowProcedure = reinterpret_cast<decltype(Hooks::oWindowProcedure)>(SetWindowLongPtr(Hooks::Window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooks::WindowProcedure)));
+			oWindowProcedure = reinterpret_cast<decltype(oWindowProcedure)>(SetWindowLongPtr(Window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WindowProcedure)));
 		}
 
 		ImGui::CreateContext();
@@ -44,12 +44,12 @@ HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint3
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags = ImGuiConfigFlags_NoMouseCursorChange;
 
-		ImGui_ImplWin32_Init(Hooks::Window);
-		ImGui_ImplDX11_Init(Hooks::Device, Hooks::Context);
+		ImGui_ImplWin32_Init(Window);
+		ImGui_ImplDX11_Init(Device, Context);
 		
 	//we update screen size here
 	}
-	Hooks::SwapChain = SwapChain;
+	SwapChain = SwapChain;
 	Render::Initialize();
 
 	if (Menu->ShouldAdjustDPI)
@@ -60,11 +60,11 @@ HRESULT __fastcall Hooks::SwapChainPresent(IDXGISwapChain* SwapChain, std::uint3
 	ImGui::NewFrame();
 
 //	Render::DrawList->PushClipRectFullScreen(); //all clip rect crashes
-	Render::DoRender(Hooks::Device, Hooks::Context, Hooks::Window, Hooks::RenderView);
+	Render::DoRender(Device, Context, Window, RenderView);
 
 	ImGui::Render();
 
-	Hooks::Context->OMSetRenderTargets(1, &Hooks::RenderView, nullptr);
+	Context->OMSetRenderTargets(1, &RenderView, nullptr);
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	return oSwapChainPresent(SwapChain, SyncInterval, Flags);
@@ -125,30 +125,30 @@ LRESULT __stdcall Hooks::WindowProcedure(HWND hwnd, std::uint32_t message, WPARA
 		}
 	}
 
-	return CallWindowProc(Hooks::oWindowProcedure, hwnd, message, wparam, lparam);
+	return CallWindowProc(oWindowProcedure, hwnd, message, wparam, lparam);
 }
 
 HRESULT __fastcall Hooks::SwapChainResizeBuffers(IDXGISwapChain* SwapChain, std::uint32_t buffer_count, std::uint32_t width, std::uint32_t height, DXGI_FORMAT new_format, std::uint32_t SwapChain_Flags)
 {
-	if (!Hooks::oSwapChainResizeBuffers) {
-		Hooks::oSwapChainResizeBuffers = Hooks::SwapChainVMTHook->GetOriginal<Hooks::SwapChainResizeBuffers_t>(IRendererVTable::RESIZE_BUFFERS);
+	if (!oSwapChainResizeBuffers) {
+		oSwapChainResizeBuffers = SwapChainVMTHook->GetOriginal<SwapChainResizeBuffers_t>(IRendererVTable::RESIZE_BUFFERS);
 	}
-	if (Hooks::RenderView)
+	if (RenderView)
 	{
-		Hooks::RenderView->Release();
-		Hooks::RenderView = nullptr;
-	}
-
-	if (Hooks::Context)
-	{
-		Hooks::Context->Release();
-		Hooks::Context = nullptr;
+		RenderView->Release();
+		RenderView = nullptr;
 	}
 
-	if (Hooks::Device)
+	if (Context)
 	{
-		Hooks::Device->Release();
-		Hooks::Device = nullptr;
+		Context->Release();
+		Context = nullptr;
+	}
+
+	if (Device)
+	{
+		Device->Release();
+		Device = nullptr;
 	}
 
 	ImGui_ImplDX11_Shutdown();

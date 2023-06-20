@@ -4,6 +4,7 @@
 #include "Interfaces.h"
 
 
-namespace ESP {
+namespace Visuals {
+	void OnRender();
 	void DoESP();
 };

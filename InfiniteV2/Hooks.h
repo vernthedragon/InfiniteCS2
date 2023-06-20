@@ -18,7 +18,10 @@ namespace Hooks {
 	static IDXGISwapChain* SwapChain = nullptr;
 	extern std::unique_ptr< VMTHook > SwapChainVMTHook;
 	extern std::unique_ptr< VMTHook > InputVMTHook;
+	extern std::unique_ptr< VMTHook > InputSystemVMTHook;
 
+
+	void Setup();
 
 	using SwapChainPresent_t = HRESULT(__fastcall*)(IDXGISwapChain*, std::uint32_t, std::uint32_t);
 	static SwapChainPresent_t oSwapChainPresent = nullptr;
@@ -30,9 +33,24 @@ namespace Hooks {
 	static WindowProcedure_t oWindowProcedure = nullptr;
 	LRESULT __stdcall WindowProcedure(HWND hwnd, std::uint32_t message, WPARAM wparam, LPARAM lparam);
 
+	//NOTE: USE STATIC FOR VMTHOOKS AND EXTERN FOR MINHOOKS
+	//VMTHooks
+	using RelativeMouseMode_t = uint64_t(__thiscall*)(void*, bool);
+	static RelativeMouseMode_t oRelativeMouseMode;
+	uint64_t __fastcall RelativeMouseMode(IInputSystem* InputSys, bool Enable);
+	
 	using CreateMove_t = bool(__fastcall*)(IInput*, uint32_t, uint8_t);
 	static CreateMove_t oCreateMove = nullptr;
 	bool __fastcall CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint8_t a3);
 
-	
+
+	//MinHooks (by sig) (MAKE SURE TO USE EXTERN!)
+	using FrameStageNotify_t = void(__thiscall*)(IClient*, int);
+	extern FrameStageNotify_t oFrameStageNotify;
+	void __fastcall FrameStageNotify(IClient* ecx, int stage);
+
+	using LevelInit_t = bool(__thiscall*)(void*);
+	extern LevelInit_t oLevelInit;
+	std::int64_t __fastcall LevelInit(void* ecx, std::int64_t a2);
+
 };

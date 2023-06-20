@@ -25,7 +25,7 @@ void Movement::DoStrafe(UserCmd* cmd) {
 
 
 	float side_speed = 1.f;
-	auto velocity = Client->cache.Velocity;
+	auto velocity = GameHandler->Velocity;
 	velocity.z = 0.0f;
 
 	auto forwardmove = cmd->Base->forwardmove;
@@ -129,21 +129,21 @@ void Movement::QuickStop(UserCmd* cmd) {
 		return;
 
 
-	if (Client->cache.VelocityLength2D > 30.f) {
-		//Client->Log(std::to_string(Client->cache.VelocityLength2D).c_str()); Client->Log("\n");
-		Vec3 direction = Client->local->m_vecVelocity();
+	if (GameHandler->VelocityLength2D > 30.f) {
+		//GameHandler->Log(std::to_string(GameHandler->cache.VelocityLength2D).c_str()); GameHandler->Log("\n");
+		Vec3 direction = GameHandler->local->m_vecVelocity();
 		direction.NormalizeInPlace();
 		direction.ToAngles();
-		direction.y = Client->OriginalViewAngles.y - direction.y;
+		direction.y = GameHandler->OriginalCmdViewAngles.y - direction.y;
 		direction.Normalize();
 		direction.ToVector();
 
 		direction *= -1.f;
 
-		cmd->Base->forwardmove = direction.x * Client->cache.VelocityLength2D;
+		cmd->Base->forwardmove = direction.x * GameHandler->VelocityLength2D;
 
 
-		cmd->Base->sidemove = direction.y * Client->cache.VelocityLength2D;
+		cmd->Base->sidemove = direction.y * GameHandler->VelocityLength2D;
 
 	}
 }
@@ -154,7 +154,7 @@ void Movement::MoveFix(UserCmd* cmd) {
 
 	Movement.ToAngles();
 
-	float yaw = DEG2RADF(Client->ViewAngle.y - Client->ActiveViewAngle.y + Movement.y);
+	float yaw = DEG2RADF(GameHandler->CmdViewAngle.y - GameHandler->ActiveViewAngle.y + Movement.y);
 
 	cmd->Base->forwardmove = cos(yaw) * MoveSpeed;
 	cmd->Base->sidemove = sin(yaw) * MoveSpeed;
@@ -192,7 +192,7 @@ void Movement::DoBunnyhop(UserCmd* cmd) {
 
 	static bool bLastJumped = false;
 	static bool bShouldFake = false;
-	bool OnGround = Client->local->m_fFlags() & FL_ONGROUND;
+	bool OnGround = GameHandler->local->m_fFlags() & FL_ONGROUND;
 	if (!bLastJumped && bShouldFake)
 	{
 		bShouldFake = false;
@@ -214,11 +214,11 @@ void Movement::DoBunnyhop(UserCmd* cmd) {
 	{
 		bShouldFake = bLastJumped = false;
 	}
-	auto movetype = Client->local->m_MoveType();
+	auto movetype = GameHandler->local->m_MoveType();
 	if (movetype == MoveType_t::movetype_noclip || movetype == MoveType_t::movetype_ladder)
 		return;
 
-	if (/*cmd->Buttons.Button1 & IN_SPEED  IN_SPEED doesnt exist*/ Client->cache.VelocityLength2D < 1.f)
+	if (/*cmd->Buttons.Button1 & IN_SPEED  IN_SPEED doesnt exist*/ GameHandler->VelocityLength2D < 1.f)
 		return; 
 
 	if (OnGround)

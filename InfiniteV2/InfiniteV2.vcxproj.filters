@@ -60,6 +60,21 @@
     <Filter Include="Client\Features\Aimbot">
       <UniqueIdentifier>{a24cf156-fb11-48e4-8e1d-ed844393ef74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Features\AntiAim">
+      <UniqueIdentifier>{288914d2-c606-4111-9ee9-aaf5f611ed7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Features\Movement">
+      <UniqueIdentifier>{036a094d-1fe1-409a-83af-1a2087003ae5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Features\Visuals">
+      <UniqueIdentifier>{da69dc7d-7059-44af-b31d-68bd099e2815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Hooks\Engine">
+      <UniqueIdentifier>{88b2d60d-c21b-49e3-a374-509ccc49ab55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Hooks\Client">
+      <UniqueIdentifier>{d8bbe96e-6d6b-4499-a273-b371e98ded4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -119,9 +134,6 @@
     <ClCompile Include="Rendering.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="RenderHook.cpp">
-      <Filter>Client\Hooks</Filter>
-    </ClCompile>
     <ClCompile Include="Config.cpp">
       <Filter>Client\Config</Filter>
     </ClCompile>
@@ -134,17 +146,11 @@
     <ClCompile Include="Menu.cpp">
       <Filter>Client\Menu\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Client\Hooks</Filter>
-    </ClCompile>
     <ClCompile Include="Entities.cpp">
       <Filter>SDK\Classes %28CS%29</Filter>
     </ClCompile>
     <ClCompile Include="CHandle.cpp">
       <Filter>SDK\Classes %28CS%29</Filter>
-    </ClCompile>
-    <ClCompile Include="Movement.cpp">
-      <Filter>Client\Features</Filter>
     </ClCompile>
     <ClCompile Include="GUI.cpp">
       <Filter>Client\Menu\GUI</Filter>
@@ -155,15 +161,6 @@
     <ClCompile Include="Exception.cpp">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="ESP.cpp">
-      <Filter>Client\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerHandler.cpp">
-      <Filter>Client\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="AntiAim.cpp">
-      <Filter>Client\Config</Filter>
-    </ClCompile>
     <ClCompile Include="AutoWall.cpp">
       <Filter>Client\Features\Aimbot</Filter>
     </ClCompile>
@@ -172,6 +169,42 @@
     </ClCompile>
     <ClCompile Include="Trace.cpp">
       <Filter>SDK\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Hooks.cpp">
+      <Filter>Client\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="AntiAim.cpp">
+      <Filter>Client\Features\AntiAim</Filter>
+    </ClCompile>
+    <ClCompile Include="Players.cpp">
+      <Filter>Client\Features\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement.cpp">
+      <Filter>Client\Features\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="GameHandler.cpp">
+      <Filter>Client\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameStageNotify.cpp">
+      <Filter>Client\Hooks\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Client\Hooks\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem.cpp">
+      <Filter>Client\Hooks\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelInit.cpp">
+      <Filter>Client\Hooks\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderHook.cpp">
+      <Filter>Client\Hooks\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Client\Features\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="Visuals.cpp">
+      <Filter>Client\Features\Visuals</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -322,9 +355,6 @@
     <ClInclude Include="CHandle.h">
       <Filter>SDK\Classes %28CS%29</Filter>
     </ClInclude>
-    <ClInclude Include="Movement.h">
-      <Filter>Client\Features</Filter>
-    </ClInclude>
     <ClInclude Include="Features.h">
       <Filter>Client\Features</Filter>
     </ClInclude>
@@ -346,20 +376,23 @@
     <ClInclude Include="Exception.h">
       <Filter>Client</Filter>
     </ClInclude>
-    <ClInclude Include="ESP.h">
-      <Filter>Client\Features</Filter>
-    </ClInclude>
     <ClInclude Include="IViewRender.h">
       <Filter>SDK\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerHandler.h">
-      <Filter>Client\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="AntiAim.h">
-      <Filter>Client\Features</Filter>
-    </ClInclude>
     <ClInclude Include="AutoWall.h">
       <Filter>Client\Features\Aimbot</Filter>
+    </ClInclude>
+    <ClInclude Include="AntiAim.h">
+      <Filter>Client\Features\AntiAim</Filter>
+    </ClInclude>
+    <ClInclude Include="Visuals.h">
+      <Filter>Client\Features\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement.h">
+      <Filter>Client\Features\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="GameHandler.h">
+      <Filter>Client\Features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

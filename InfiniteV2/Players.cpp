@@ -1,6 +1,6 @@
-#include "ESP.h"
+#include "Features.h"
 
-void ESP::DoESP() {
+void Visuals::DoESP() {
 	//TODO add ESP to the config and check wether it's on or not
 
 	for (int i = 0; i < g_EntList->GetHighestEntityIndex(); i++) {

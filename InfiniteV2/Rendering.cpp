@@ -314,7 +314,7 @@ void Render::FilledTriangle(float x1, float y1, float x2, float y2, float x3, fl
 void  Render::Line(float x, float y, float endx, float endy, Col clr, float thick) {
 	Render::DrawList->AddLine(ImVec2(x,y), ImVec2(endx, endy), clr.u32(), thick);
 }
-#include "PlayerHandler.h"
+
 void Render::DoRender(ID3D11Device* Device, ID3D11DeviceContext* Context, HWND Window, ID3D11RenderTargetView* RenderView) {
 
 	DrawList = ImGui::GetBackgroundDrawList();
@@ -322,7 +322,7 @@ void Render::DoRender(ID3D11Device* Device, ID3D11DeviceContext* Context, HWND W
 	Client->UpdateKeyStates();
 
 	//Render::UpdateProjectionMatrix();
-	PlayerHandler->UpdateRender();
+	
 	Menu->OnRender();
 
 

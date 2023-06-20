@@ -116,6 +116,7 @@ public:
 	std::deque<Settings*> SettingsWindows;
 	Binder Binder;
 	Col MainTheme;
+	bool LastRelativeMouseMode;
 };
 
 extern CMenu* Menu;
