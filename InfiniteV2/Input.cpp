@@ -13,7 +13,7 @@ bool __fastcall Hooks::CreateMove(IInput* Input, uint32_t SplitScreenIndex, uint
 
     auto cmd = Input->GetUserCmd(SplitScreenIndex);
     GameHandler->cmd = cmd;
-    if (!cmd || GameHandler->local == nullptr)
+    if (!cmd || !GameHandler->local || !GameHandler->localcontroller)
         return ret;
 
     if (!GameHandler->Alive)

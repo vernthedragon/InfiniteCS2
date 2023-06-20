@@ -15,6 +15,8 @@ void CGameHandler::UpdateLocal() {
 	local = g_EntList->GetLocalPlayer();
 	localcontroller = g_EntList->GetLocalController();
 
+	if(local)
+		Alive = local->IsAlive();
 }
 
 void CGameHandler::Update(int Stage) {
@@ -23,8 +25,6 @@ void CGameHandler::Update(int Stage) {
 		return;
 
 	std::unique_lock lock(mutex);
-
-	Alive = local->IsAlive();
 
 	if (Alive) {
 		Velocity = local->m_vecAbsVelocity();
