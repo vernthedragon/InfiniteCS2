@@ -52,6 +52,10 @@ namespace Hooks {
 	static OnRemoveEntity_t oOnRemoveEntity;
 	void __fastcall OnRemoveEntity(IEntList* This, IEntityInstance* Instance, CHandle Handle);
 
+	using IsConsoleEnabled_t = bool(__fastcall*)(__int64* a1);
+	static IsConsoleEnabled_t oConsoleEnabled;
+	bool __fastcall IsConsoleEnabled(__int64* a1);
+
 	//MinHooks (by sig) (MAKE SURE TO USE EXTERN!)
 	using FrameStageNotify_t = void(__thiscall*)(IClient*, int);
 	extern FrameStageNotify_t oFrameStageNotify;
@@ -60,8 +64,4 @@ namespace Hooks {
 	using LevelInit_t = bool(__thiscall*)(void*);
 	extern LevelInit_t oLevelInit;
 	std::int64_t __fastcall LevelInit(void* ecx, std::int64_t a2);
-
-	using IsConsoleEnabled_t = bool(__fastcall*)(__int64* a1);
-	extern IsConsoleEnabled_t oConsoleEnabled;
-	bool __fastcall IsConsoleEnabled(__int64* a1);
 };

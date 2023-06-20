@@ -12,7 +12,6 @@ namespace Hooks {
 
 	FrameStageNotify_t oFrameStageNotify = nullptr;
 	LevelInit_t oLevelInit = nullptr;
-	IsConsoleEnabled_t oConsoleEnabled = nullptr;
 
 
 	void Setup() {
