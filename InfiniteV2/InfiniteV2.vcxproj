@@ -175,6 +175,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Col.cpp" />
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="CursorControll.cpp" />
     <ClCompile Include="Entities.cpp" />
     <ClCompile Include="EntList.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
@@ -221,6 +222,7 @@
     <ClInclude Include="AutoWall.h" />
     <ClInclude Include="BuildConfig.h" />
     <ClInclude Include="ByteData.h" />
+    <ClInclude Include="CGameUIService.h" />
     <ClInclude Include="CHandle.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Col.h" />

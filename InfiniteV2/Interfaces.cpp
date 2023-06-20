@@ -10,6 +10,7 @@ ISchemaSystem* g_SchemaSystem = nullptr;
 ITrace* g_Trace = nullptr;
 CSGlobalVars* g_GlobalVars = nullptr;
 ICvar* g_Cvar = nullptr;
+CGameUIService* g_GameUIService = nullptr;
 
 template<typename T>
 static T* GetGameInterface(const char* module_name, const char* interface_name)
@@ -75,7 +76,7 @@ bool InitializeCSInterfaces() {
 	g_Trace = *reinterpret_cast<ITrace**>(Client->ResolveRIP(Client->FindPattern(GetModuleHandleA("client.dll"), TRACE_MANAGER), 3, 7));
 	g_GlobalVars = *reinterpret_cast<CSGlobalVars**>(Client->ResolveRIP(Client->FindPattern(GetModuleHandleA("client.dll"), GLOBAL_VARS), 3, 7));
 	g_Cvar = GetGameInterface<ICvar>(("tier0.dll"), "VEngineCvar007");
-	
+	g_GameUIService = GetGameInterface<CGameUIService>(("engine2.dll"), "GameUIService_001");
 	
 	return true;
 }

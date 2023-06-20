@@ -20,6 +20,7 @@ namespace Hooks {
 	extern std::unique_ptr< VMTHook > InputVMTHook;
 	extern std::unique_ptr< VMTHook > InputSystemVMTHook;
 	extern std::unique_ptr< VMTHook > EntListVMTHook;
+	extern std::unique_ptr< VMTHook > ConsoleEnabledVMTHook;
 
 	void Setup();
 
@@ -60,4 +61,7 @@ namespace Hooks {
 	extern LevelInit_t oLevelInit;
 	std::int64_t __fastcall LevelInit(void* ecx, std::int64_t a2);
 
+	using IsConsoleEnabled_t = bool(__fastcall*)(__int64* a1);
+	extern IsConsoleEnabled_t oConsoleEnabled;
+	bool __fastcall IsConsoleEnabled(__int64* a1);
 };

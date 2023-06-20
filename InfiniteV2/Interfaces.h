@@ -10,6 +10,7 @@
 #include "ITrace.h"
 #include "CSGlobalVars.h"
 #include "ICvar.h"
+#include "CGameUIService.h"
 
 extern IClient* g_Client;
 extern IInput* g_Input;
@@ -21,6 +22,6 @@ extern ISchemaSystem* g_SchemaSystem;
 extern ITrace* g_Trace;
 extern CSGlobalVars* g_GlobalVars;
 extern ICvar* g_Cvar;
-
+extern CGameUIService* g_GameUIService;
 
 bool InitializeCSInterfaces();

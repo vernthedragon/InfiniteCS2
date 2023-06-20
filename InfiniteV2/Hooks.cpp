@@ -8,9 +8,11 @@ namespace Hooks {
 	std::unique_ptr< VMTHook > InputVMTHook = nullptr;
 	std::unique_ptr< VMTHook > InputSystemVMTHook = nullptr;
 	std::unique_ptr< VMTHook > EntListVMTHook = nullptr;
+	std::unique_ptr< VMTHook > ConsoleEnabledVMTHook = nullptr;
 
 	FrameStageNotify_t oFrameStageNotify = nullptr;
 	LevelInit_t oLevelInit = nullptr;
+	IsConsoleEnabled_t oConsoleEnabled = nullptr;
 
 
 	void Setup() {
@@ -20,11 +22,13 @@ namespace Hooks {
 		InputVMTHook = std::make_unique< VMTHook >();
 		InputSystemVMTHook = std::make_unique< VMTHook >();
 		EntListVMTHook = std::make_unique< VMTHook >();
+		ConsoleEnabledVMTHook = std::make_unique< VMTHook >();
 
 		SwapChainVMTHook->Setup(g_Renderer->SwapChain, "SwapChain");
 		InputVMTHook->Setup(g_Input, "CSInput");
 		InputSystemVMTHook->Setup(g_InputSystem, "InputSystem");
 		EntListVMTHook->Setup(g_EntList, "EntityList");
+		ConsoleEnabledVMTHook->Setup(g_GameUIService, "GameUIService");
 
 		SwapChainVMTHook->Hook(IRendererVTable::PRESENT, SwapChainPresent);
 		SwapChainVMTHook->Hook(IRendererVTable::RESIZE_BUFFERS, SwapChainResizeBuffers);
@@ -35,6 +39,8 @@ namespace Hooks {
 
 		EntListVMTHook->Hook(EntListVTable::ONADDENTITY, OnAddEntity);
 		EntListVMTHook->Hook(EntListVTable::ONREMOVEENTITY, OnRemoveEntity);
+
+		ConsoleEnabledVMTHook->Hook(CGameUIServiceVTable::ISCONSOLEENABLED, IsConsoleEnabled);
 	
 		
 		if (MH_Initialize() != MH_OK)

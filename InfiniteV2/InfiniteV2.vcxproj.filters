@@ -215,6 +215,9 @@
     <ClCompile Include="Weapons.cpp">
       <Filter>Client\Features\Visuals</Filter>
     </ClCompile>
+    <ClCompile Include="CursorControll.cpp">
+      <Filter>Client\Hooks\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">
@@ -402,6 +405,9 @@
     </ClInclude>
     <ClInclude Include="GameHandler.h">
       <Filter>Client\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameUIService.h">
+      <Filter>SDK\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
