@@ -364,4 +364,29 @@ void CConfig::ResetValues() {
 	this->MenuSettings.KeybindsBackground = Col(255, 255, 255, 20);//0,1,2
 	this->MenuSettings.KeybindsBackground2 = Col(255, 255, 255, 6);
 	this->MenuSettings.KeybindsText = Col(255, 255, 255, 255);
+
+	for (int i = 0; i < 3; i++) {
+		this->Players[i].Name = false;
+		this->Players[i].NameCol = Col(255,255,255,255);
+		this->Players[i].HP = false;
+		this->Players[i].OverrideHP = false;
+		this->Players[i].HPCol = Col(176, 194, 255, 255);
+		this->Players[i].Weapon = false;
+		this->Players[i].WeaponCol = Col(255, 255, 255, 255);
+		this->Players[i].WeaponType = 0;
+		this->Players[i].WeaponIcon = Col(255, 255, 255, 255);
+		this->Players[i].Ammo = false;
+		this->Players[i].AmmoCol = Col(176, 194, 255, 255);
+		this->Players[i].ESPFlags = false;
+		this->Players[i].Armour = false;
+		this->Players[i].ArmourCol = Col(255, 255, 255, 255);
+		this->Players[i].Money = false;
+		this->Players[i].MoneyCol = Col(198, 255, 74, 255);
+		this->Players[i].Scoped = false;
+		this->Players[i].ScopedCol = Col(255, 255, 255, 255);
+		this->Players[i].Flashed = false;
+		this->Players[i].FlashedCol = Col(255, 255, 255, 255);
+		this->Players[i].Ping = false;
+		this->Players[i].PingCol = Col(255, 255, 255, 255);
+	}
 }

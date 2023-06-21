@@ -117,6 +117,8 @@ public:
 	Binder Binder;
 	Col MainTheme;
 	bool LastRelativeMouseMode;
+	int ConfigureForType;
+	Select* ConfigureForTypeSelect;
 };
 
 extern CMenu* Menu;

@@ -26,6 +26,8 @@
 #define FL_FAKECLIENT			(1<<9)	// Fake client, simulated server side; don't send network messages to them
 #define	FL_INWATER				(1<<10)	// In water
 
+typedef float GameTime_t;
+typedef int GameTick_t;
 //USERCMD BUTTONS
 enum buttons_t : std::uint32_t
 {
@@ -219,7 +221,10 @@ public:
     SCHEMA("C_BaseModelEntity", "m_vecViewOffset", m_vecViewOffset, Vec3);
     SCHEMA("C_BasePlayerPawn", "m_hController", m_hController, CHandle);
     SCHEMA("C_BasePlayerPawn", "v_angle", v_angle, Vec3);
-
+    SCHEMA("C_CSPlayerPawnBase", "m_bIsScoped", m_bIsScoped, bool);
+    SCHEMA("C_CSPlayerPawnBase", "m_flFlashMaxAlpha", m_flFlashMaxAlpha, float);
+    SCHEMA("C_CSPlayerPawnBase", "m_fLastGivenBombTime", m_fLastGivenBombTime, float);
+    SCHEMA("C_CSPlayerPawnBase", "m_fLastGivenDefuserTime", m_fLastGivenDefuserTime, float);
     Vec3 GetEyePosition()
     {
         Vec3 position;
@@ -236,15 +241,31 @@ public:
     {
         return this->m_iHealth() > 0;
     }
+
 };
 
+class IInGameServiceMoneyController
+{
+public:
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iAccount", m_iAccount, int);
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iStartAccount", m_iStartAccount, int);
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iTotalCashSpent", m_iTotalCashSpent, int);
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iCashSpentThisRound", m_iCashSpentThisRound, int);
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_nPreviousAccount", m_nPreviousAccount, int);
+};
 class IController
 {
 public:
+    SCHEMA("CBasePlayerController", "m_nFinalPredictedTick", m_nFinalPredictedTick, int);
+    SCHEMA("CBasePlayerController", "m_nTickBase", m_nTickBase, int);
     SCHEMA("CBasePlayerController", "m_steamID", m_steamID, std::uint64_t);
+    SCHEMA("CCSPlayerController", "m_iPing", m_iPing, unsigned int);
     SCHEMA("CBasePlayerController", "m_hPawn", m_hPawn, CHandle);
     SCHEMA("CBasePlayerController", "m_bIsLocalPlayerController", m_bIsLocalPlayerController, bool);
     SCHEMA("CCSPlayerController", "m_sSanitizedPlayerName", m_sSanitizedPlayerName, const char*);
+    SCHEMA("CCSPlayerController", "m_bPawnHasHelmet", m_bPawnHasHelmet, bool);
+    SCHEMA("CCSPlayerController", "m_iPawnArmor", m_iPawnArmor, int);
+    SCHEMA("CCSPlayerController", "m_pInGameMoneyServices", m_pInGameMoneyServices, IInGameServiceMoneyController*);
 };
 
 

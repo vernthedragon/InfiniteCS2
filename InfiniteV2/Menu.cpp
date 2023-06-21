@@ -52,6 +52,8 @@ static const char* SubtabText[] = {
 
 
 void CMenu::SetupUser() {
+	ConfigureForType = 0;
+
 	Client->ScreenSize.x = ImGui::GetIO().DisplaySize.x;
 	Client->ScreenSize.y = ImGui::GetIO().DisplaySize.y;
 	Pos = Client->ScreenSize * 0.5f;
@@ -97,6 +99,8 @@ void CMenu::SetupUser() {
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
 	Childs[MOVEMENT][LEFT].New(new Switch("Quick Stop", &Config->Movement.QuickStop));
 
+	ConfigureForTypeSelect = new Select("", { "Opponents", "Teammates", "Local" }, &ConfigureForType);
+
 	SetuppedUser = true;
 	SubtabChangeAnimation = 0.f;
 	RawSubtabChangeAnimation = 0.f;
@@ -141,6 +145,7 @@ void CMenu::SetupUser() {
 	ConfigSystem->LoadToConfig("Default");
 
 	ConfigSystem->Loaded = "Default";
+	ConfigureForType = 0;
 	AdjustDPI();
 	Pos.x -= 925.f * Scale * 0.5f;
 	Pos.y -= 585.f * Scale * 0.5f;
@@ -299,6 +304,10 @@ bool StringHasLettersCaseInsensitive(std::string a, std::string b) {
 }
 void CMenu::Draw() {
 	//ImGui::GetIO().MouseDrawCursor = true;
+
+	if (Alpha != 255.f)
+		ConfigureForTypeSelect->Open = false;
+
 	bool CanMoveMenu = true;
 	for (auto& Overlay : SettingsWindows) {
 		if (Overlay->OpenAnimation > 0.f)
@@ -492,12 +501,12 @@ void CMenu::Draw() {
 		if(Binder.Parent != nullptr)
 			Binder.RenderAndUpdate(Alpha, Menu->MouseClick, Menu->MousePress);
 
-		
+		//if(ConfigureForTypeSelect->OpenAnimation <= 0.f)
 		{
 			float x = Pos.x + 52.f * Scale;
 			float y = Pos.y + 518.f * Scale ;
 			Vec2 TextSize1 = Render::TextSize(Fonts::MenuMain, "Save");
-			bool HoveringSave = InRegion(x - TextSize1.x * 0.5f - 9.f * Menu->Scale, y - TextSize1.y * 0.5f - 9.f * Menu->Scale, TextSize1.x + 36.f * Menu->Scale, TextSize1.y + 21.f * Menu->Scale);
+			bool HoveringSave = InRegion(x - TextSize1.x * 0.5f - 9.f * Menu->Scale, y - TextSize1.y * 0.5f - 9.f * Menu->Scale, TextSize1.x + 36.f * Menu->Scale, TextSize1.y + 21.f * Menu->Scale) && ConfigureForTypeSelect->OpenAnimation <= 0.f;
 
 			if (HoveringSave && Menu->MouseClick) {
 				ConfigSystem->SaveToConfig(ConfigSystem->Loaded);
@@ -758,6 +767,13 @@ void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 		CurrentSubtab = LastSubtabs[_this];
 		Childs[CurrentSubtab][LEFT].OpenAnimation = 0.f;
 		Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
+	}
+
+	if (ThisSelected && _this == CTabs::PLAYERS) {
+		float x = Pos.x + 62.5f * Scale - (ConfigureForType == 0 ? 70.f * Scale : ConfigureForType == 2 ? 79.f * Scale : 72.f * Scale);
+		float y = Pos.y + (438.f + 20.f * SubtabChangeAnimation) * Scale  ;
+		bool Disable = Binder.Parent != nullptr;
+		ConfigureForTypeSelect->Draw(x, y, Vec2(150.f, 28.f), Alpha * GUIAnimations::Ease(SubtabChangeAnimation), MouseClick, MousePress, Disable);
 	}
 
 	if((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))

@@ -78,6 +78,33 @@ public:
 
 	Movement_t Movement;
 
+	struct Players_t {
+		//esp
+		bool ESP;
+		bool Name;
+		Col NameCol;
+		bool HP;
+		bool OverrideHP;
+		Col HPCol;
+		bool Weapon;
+		Col WeaponCol;
+		unsigned int WeaponType;
+		Col WeaponIcon;
+		bool Ammo;
+		Col AmmoCol;
+		bool ESPFlags;
+		bool Armour;
+		Col ArmourCol;
+		bool Money;
+		Col MoneyCol;
+		bool Scoped;
+		Col ScopedCol;
+		bool Flashed;
+		Col FlashedCol;
+		bool Ping;
+		Col PingCol;
+	};
+	Players_t Players[3]; //0 = Enemies, 1 = Teamates, 2 = Localplayer
 	struct MenuSettings_t {
 		int AnimationSpeed = 100.f;
 		bool Keybinds = false;
@@ -158,6 +185,8 @@ public:
 		if (Bind == "Bind Off Value")
 			return;
 		if (Bind == "Bind On Value")
+			return;
+		if (Bind == "")
 			return;
 		ConfigVariable* variable = new ConfigVariable{};
 		variable->Var = reinterpret_cast<void*>(Var);

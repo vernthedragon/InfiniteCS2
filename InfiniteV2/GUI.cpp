@@ -762,7 +762,7 @@ bool Select::Draw(float x, float y, Vec2 Size, float MaxAlpha, bool& LeftClick, 
 		AnimatedScroll = 0.f;
 	}
 	else if (Hovered && Menu->MouseRightClick) {
-		if (Menu->Binder.Parent == nullptr && Label != "Bind On Value" && Label != "Bind Off Value") {
+		if (Menu->Binder.Parent == nullptr && Label != "Bind On Value" && Label != "Bind Off Value" && Label != "") {
 			std::vector<std::string> El;
 			for (auto& Element : Elements)
 				El.push_back(Element.second);

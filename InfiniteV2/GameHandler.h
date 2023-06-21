@@ -30,6 +30,13 @@ public:
 	IPlayer* Entity;
 	IController* Controller;
 	float AnimatedHP;
+	bool IsScoped;
+	bool IsFlashed;
+	int Money;
+	int HP;
+	int Ping;
+	bool HasHelmet;
+	bool HasKevlar;
 };
 class NadeRecord : public BasicRecord {
 public:
