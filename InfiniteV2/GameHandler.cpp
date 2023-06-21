@@ -4,7 +4,12 @@ CGameHandler* GameHandler = new CGameHandler();
 void PlayerRecord::UpdateData() {
 	if (!Entity->IsAlive())
 		return;
-
+	Controller = nullptr;
+	Controller = Entity->m_hController().Get<IController>();
+	PlayerName = "";
+	if (!Controller)
+		return;
+	PlayerName = Controller->m_sSanitizedPlayerName();
 }
 void PlayerRecord::UpdateBoundingBox() {
 	if (!Entity->IsAlive())

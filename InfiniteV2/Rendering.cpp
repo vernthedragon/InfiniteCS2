@@ -4,6 +4,7 @@
 #include "Features.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "STB_Image.h"
+#include <imgui_freetype.h>
 #define NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = Math::InvSqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0
 #define FIXNORMAL2F_MAX_INVLEN2          100.0f // 500.0f (see #4053, #3366)
 #define FIXNORMAL2F(VX,VY)               { float d2 = VX*VX + VY*VY; if (d2 > 0.000001f) { float inv_len2 = 1.0f / d2; if (inv_len2 > FIXNORMAL2F_MAX_INVLEN2) inv_len2 = FIXNORMAL2F_MAX_INVLEN2; VX *= inv_len2; VY *= inv_len2; } } (void)0
@@ -172,6 +173,17 @@ void Render::DrawString(float x, float y, Col color, ImFont* font, unsigned int 
 		pos.x--;
 		DrawList->AddText(pos, outline_clr.u32(), message);
 	}
+	else if (flags & Render::dropshadow) {
+		Col outline_clr = Col(0, 0, 0, color[3] * 0.34f);
+		pos.y += 0.5f;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.x += 0.5f;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.y -= 1.f;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.x -= 1.f;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+	}
 
 	DrawList->AddText(pos, color.u32(), message);
 	ImGui::PopFont();
@@ -226,13 +238,24 @@ void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned i
 	{
 		Col outline_clr = Col(0, 0, 0, color[3]);
 		pos.y++;
-		DrawList->AddText(pos, outline_clr.u32(), output);
+		DrawList->AddText(pos, outline_clr.u32(), message);
 		pos.x++;
-		DrawList->AddText(pos, outline_clr.u32(), output);
+		DrawList->AddText(pos, outline_clr.u32(), message);
 		pos.y--;
-		DrawList->AddText(pos, outline_clr.u32(), output);
+		DrawList->AddText(pos, outline_clr.u32(), message);
 		pos.x--;
-		DrawList->AddText(pos, outline_clr.u32(), output);
+		DrawList->AddText(pos, outline_clr.u32(), message);
+	}
+	else if (flags & Render::dropshadow) {
+		Col outline_clr = Col(0, 0, 0, color[3] * 0.34f);
+		pos.y++;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.x++;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.y -= 2;
+		DrawList->AddText(pos, outline_clr.u32(), message);
+		pos.x -= 2;
+		DrawList->AddText(pos, outline_clr.u32(), message);
 	}
 
 	DrawList->AddText(pos, color.u32(), output);
@@ -423,10 +446,11 @@ void Render::Initialize() {
 	builder.BuildRanges(&ranges);
 
 	ImFontConfig cfg{};
-	cfg.OversampleH = 2.f;
-	
+	cfg.OversampleH = cfg.OversampleV = 2;
+	cfg.PixelSnapH = false;
 
 	io.Fonts->Clear();
+	cfg.FontBuilderFlags = ImGuiFreeType::RasterizerFlags::LightHinting;
 	Fonts::MenuMain50 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/NirmalaB.ttf", 28.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 	Fonts::MenuIcons50 = io.Fonts->AddFontFromMemoryTTF(FontIcons, FontIconsLength, 20.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 	Fonts::MenuThin50 = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/corbel.ttf", 18.f * 0.5f, &cfg, io.Fonts->GetGlyphRangesCyrillic());
@@ -450,7 +474,27 @@ void Render::Initialize() {
 	Fonts::MenuMain = Fonts::MenuMain100;
 	Fonts::MenuIcons = Fonts::MenuIcons100;
 	Fonts::MenuThin = Fonts::MenuThin100;
-	io.Fonts->Build();
+
+	static const ImWchar GlobalRange[] =
+	{
+		0x0020, 0x00FF, // Basic Latin + Latin Supplement
+		0x2000, 0x206F, // General Punctuation
+		0x3000, 0x30FF, // CJK Symbols and Punctuations, Hiragana, Katakana
+		0x31F0, 0x31FF, // Katakana Phonetic Extensions
+		0xFF00, 0xFFEF, // Half-width characters
+		0x4e00, 0x9FAF, // CJK Ideograms
+		0x0400, 0x052F, // Cyrillic + Cyrillic Supplement
+		0x2DE0, 0x2DFF, // Cyrillic Extended-A
+		0xA640, 0xA69F, // Cyrillic Extended-B
+		0,
+	};
+
+	cfg.FontBuilderFlags = ImGuiFreeType::RasterizerFlags::MonoHinting | ImGuiFreeType::RasterizerFlags::Monochrome; //pixelate sharp
+	Fonts::ESPName = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/corbel.ttf", 14, &cfg, GlobalRange); //since their name might have Chinese/Japanese/Russion
+	Fonts::ESP = io.Fonts->AddFontFromMemoryTTF(PixelFont, sizeof(PixelFontLength), 10, &cfg, io.Fonts->GetGlyphRangesCyrillic());
+
+//	io.Fonts->Build(); //ALL I DID IS CHANGE THIS ONE LINE SO WE BUILD WITH FREETYPE NOW
+	ImGuiFreeType::BuildFontAtlas(io.Fonts, 0x00);
 
 	//build table used for shapes with a curve
 	if (SinCosTable.empty()) {
@@ -485,4 +529,6 @@ namespace Fonts {
 	ImFont* MenuThin100 = nullptr;
 	ImFont* MenuThin140 = nullptr;
 	ImFont* MenuThin170 = nullptr;
+	ImFont* ESP = nullptr;
+	ImFont* ESPName = nullptr;
 };

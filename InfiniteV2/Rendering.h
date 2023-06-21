@@ -17,7 +17,8 @@ namespace Render {
 		outline = 1 << 0,
 		centered_x = 1 << 1,
 		centered_y = 1 << 2,
-		centered_xy = centered_x | centered_y
+		centered_xy = centered_x | centered_y,
+		dropshadow = 1 << 3
 	};
 	void DoRender(ID3D11Device* Device, ID3D11DeviceContext* Context, HWND Window, ID3D11RenderTargetView* RenderView);
 	void GradientCircle(float x, float y, float radius, Col inner, Col outer, bool antialiased = false);
@@ -74,4 +75,7 @@ namespace Fonts {
 	extern ImFont* MenuMain170;
 	extern ImFont* MenuThin170;
 	extern ImFont* MenuIcons170;
+
+	extern ImFont* ESP;
+	extern ImFont* ESPName;
 };

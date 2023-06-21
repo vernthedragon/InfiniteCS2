@@ -179,6 +179,7 @@
     <ClCompile Include="Entities.cpp" />
     <ClCompile Include="EntList.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
+    <ClCompile Include="Imgui\imgui_freetype.cpp" />
     <ClCompile Include="Nades.cpp" />
     <ClCompile Include="Players.cpp" />
     <ClCompile Include="Exception.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="CSGlobalVars.h" />
     <ClInclude Include="Entities.h" />
+    <ClInclude Include="Imgui\imgui_freetype.h" />
     <ClInclude Include="Visuals.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Features.h" />
@@ -286,7 +288,7 @@
     <Text Include="NotesForDevelopers.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="freetype\objs\freetype.lib" />
+    <Library Include="freetype\include\freetype.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

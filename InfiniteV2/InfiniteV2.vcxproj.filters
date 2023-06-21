@@ -218,6 +218,9 @@
     <ClCompile Include="CursorControl.cpp">
       <Filter>Client\Hooks\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Imgui\imgui_freetype.cpp">
+      <Filter>Rendering\ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">
@@ -409,15 +412,18 @@
     <ClInclude Include="CGameUIService.h">
       <Filter>SDK\Interfaces</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="freetype\objs\freetype.lib">
+    <ClInclude Include="Imgui\imgui_freetype.h">
       <Filter>Rendering\ImGui</Filter>
-    </Library>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="NotesForDevelopers.txt">
       <Filter>Entry</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="freetype\include\freetype.lib">
+      <Filter>Rendering\ImGui</Filter>
+    </Library>
   </ItemGroup>
 </Project>

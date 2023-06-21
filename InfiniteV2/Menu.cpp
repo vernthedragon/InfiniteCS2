@@ -712,6 +712,11 @@ void CMenu::OnRender() {
 		KeybindsAlpha = Math::Clamp(KeybindsAlpha + ((((Config->MenuOpen && Config->MenuSettings.Keybinds) || (ShouldRender && !EmptyBinds)) ? 1 : -1) * 0.00980392156 * AnimationModifier), 0.f, 1.f);
 	}
 
+   // Render::DrawString(500, 500, Col(255, 255, 255, 255), Fonts::ESPName, Render::dropshadow | Render::centered_y, "dropshadow");
+	//Render::DrawString(500, 600, Col(255, 255, 255, 255), Fonts::ESPName, Render::outline | Render::centered_y, "outline");
+
+	//Render::DrawString(600, 500, Col(255, 255, 255, 255), Fonts::ESP, Render::dropshadow | Render::centered_y, "dropshadow");
+	//Render::DrawString(600, 600, Col(255, 255, 255, 255), Fonts::ESP, Render::outline | Render::centered_y, "outline");
 }
 void CMenu::RenderSubtab(float x, float y, CSubTab _this, float& animation) {
 
