@@ -24,18 +24,18 @@ void DrawESPLocal(PlayerRecord* Record) {
 		DrawBox(Record->Box.x, Record->Box.y, Record->Box.w, Record->Box.h, Config->Players[2].BoxCol, Col(0, 0, 0, 0.58824f * Config->Players[2].BoxCol[3]), 1.f, 3.f);
 
 	if (Config->Players[2].HP) {
-		float HpPercent = Record->Box.h - ((Record->Box.h * Record->HP) * 0.017f);
-		Record->AnimatedHP = (Record->AnimatedHP + (HpPercent - Record->AnimatedHP) * 0.01f * Menu->AnimationModifier);
+		float HpPercent = Record->Box.h - ((Record->Box.h * Record->AnimatedHP) * 0.01f);
+		Record->AnimatedHP = (Record->AnimatedHP + (Record->HP - Record->AnimatedHP) * 0.01f * Menu->AnimationModifier);
 		Col HpCol = Config->Players[2].OverrideHP ? Config->Players[2].HPCol : Col(255.f - (Record->HP * 2.55f), Record->HP * 2.55f, 0, 255);
 
 
 		Render::FilledRect(Record->Box.x - 5.5f, Record->Box.y - 1.f, 2.8f, Record->Box.h + 2.f, Col(80, 80, 80, HpCol[3] * 0.49f));
-		Render::FilledRect(Record->Box.x - 5.f, Record->Box.y + Record->AnimatedHP, 1.8f, Record->Box.h - Record->AnimatedHP, HpCol);
+		Render::FilledRect(Record->Box.x - 5.f, Record->Box.y + HpPercent, 1.8f, Record->Box.h - HpPercent, HpCol);
 
 		char hps[6] = "";
 		sprintf_s(hps, "%i", Record->HP);
 		if (Record->HP <= 99)
-			Render::DrawString(Record->Box.x - 4.f, Record->Box.y + Record->AnimatedHP - 3.f,
+			Render::DrawString(Record->Box.x - 4.f, Record->Box.y + HpPercent - 3.f,
 				Col(255, 255, 255, 255), Fonts::ESP, Render::centered_x | Render::outline, hps);
 
 	}
