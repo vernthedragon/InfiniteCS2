@@ -2,14 +2,15 @@
 #include "Rendering.h"
 CGameHandler* GameHandler = new CGameHandler();
 void PlayerRecord::UpdateData() {
-	if (!Entity->IsAlive())
+	HP = Entity->m_iHealth();
+	if (HP <= 0)
 		return;
 	Controller = nullptr;
 	Controller = Entity->m_hController().Get<IController>();
 
 	IsScoped = Entity->m_bIsScoped();
 	IsFlashed = Entity->m_flFlashMaxAlpha() != 0.f;
-	HP = Entity->m_iHealth();
+
 	HasDefuser = Entity->m_bHasDefuser();
 	if (!Controller)
 		return;
@@ -53,15 +54,23 @@ void CGameHandler::ForAllNades(void(*Function)(NadeRecord*)) {
 	}
 }
 void CGameHandler::ForAllPlayers(void(*Function)(PlayerRecord*)) {
+
+	if (!local || !localcontroller)
+		return;
+
 	std::unique_lock lock(mutex);
-	auto LocalTeam = local->m_iTeamNum();
+
 	for (auto& Player : Players) 
 		Function(&(Player.second));
 	
 }
 void CGameHandler::ForAllPlayers(void(*Opponent)(PlayerRecord*), void(*Teammate)(PlayerRecord*), void(*Local)(PlayerRecord*)) {
+
+	if (!local || !localcontroller)
+		return;
+
 	std::unique_lock lock(mutex);
-	auto LocalTeam = local->m_iTeamNum();
+
 	bool ScanOpponent = Opponent != nullptr;
 	bool ScanTeam = Teammate != nullptr;
 	bool ScanLocal = Local != nullptr;
@@ -156,6 +165,9 @@ void CGameHandler::RemoveEntity(IEntityInstance* Instance, CHandle Handle) {
 }
 
 void CGameHandler::Update(int Stage) {
+
+	Connected = g_Engine->IsConnected();
+	InGame = g_Engine->IsInGame();
 
 	if (Stage != ClientFrameStage_t::FRAME_NET_UPDATE_START)
 		return;

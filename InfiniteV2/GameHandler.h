@@ -29,14 +29,12 @@ public:
 		Handle = handle;
 		Entity = player;
 		Controller = player->m_hController().Get<IController>();
-		ESPAlpha = 0.f;
 	}
 	void UpdateData();
 	void UpdateBoundingBox();
 	IPlayer* Entity;
 	IController* Controller;
 	float AnimatedHP;
-	float ESPAlpha;
 	bool IsScoped;
 	bool IsFlashed;
 	int Money;
@@ -86,5 +84,7 @@ public:
 	float VelocityLength;
 	float VelocityLength2D;
 	bool Alive;
+	bool InGame;
+	bool Connected;
 };
 extern CGameHandler* GameHandler;
