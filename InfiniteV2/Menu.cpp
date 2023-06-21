@@ -49,8 +49,44 @@ static const char* SubtabText[] = {
 	"Results"
 };
 
+bool IsLocalTab() {
+	return Menu->ConfigureForType == 2;
+}
+
+bool IsLocalESPTab() {
+	return IsLocalTab() && Config->Players[2].ESP;
+}
+
+bool IsLocalESPFlagsTab() {
+	return IsLocalESPTab() && Config->Players[2].ESPFlags;
+}
+
+bool IsTeamTab() {
+	return Menu->ConfigureForType == 1;
+}
+
+bool IsTeamESPTab() {
+	return IsTeamTab() && Config->Players[1].ESP;
+}
+
+bool IsTeamESPFlagsTab() {
+	return IsTeamESPTab() && Config->Players[1].ESPFlags;
+}
+
+bool IsEnemyTab() {
+	return Menu->ConfigureForType == 0;
+}
+
+bool IsEnemyESPTab() {
+	return IsEnemyTab() && Config->Players[0].ESP;
+}
+
+bool IsEnemyESPFlagsTab() {
+	return IsEnemyESPTab() && Config->Players[0].ESPFlags;
+}
 
 
+int CurrentTabIterator = 0;
 void CMenu::SetupUser() {
 	ConfigureForType = 0;
 
@@ -99,7 +135,43 @@ void CMenu::SetupUser() {
 	Childs[MOVEMENT][LEFT].New(new Switch("Auto Bunnyhop", &Config->Movement.Bunnyhop));
 	Childs[MOVEMENT][LEFT].New(new Switch("Quick Stop", &Config->Movement.QuickStop));
 
-	ConfigureForTypeSelect = new Select("", { "Opponents", "Teammates", "Local" }, &ConfigureForType);
+
+	for (int i = 0; i < 3; i++) {
+		CurrentTabIterator = i;
+		Childs[ESP][LEFT].New(new Switch("Enable", &Config->Players[i].ESP, CurrentTabIterator == 0 ? IsEnemyTab : CurrentTabIterator == 1 ? IsTeamTab : IsLocalTab));
+		Childs[ESP][LEFT].New(new Switch("Name", &Config->Players[i].Name, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new ColorPicker("Name Colour", 105.f, &Config->Players[i].NameCol, Childs[ESP][LEFT].GetLastAddedElement()));
+		Childs[ESP][LEFT].New(new Switch("Health Bar", &Config->Players[i].HP, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Settings(105.f, 280.f, 48.f, Childs[ESP][LEFT].GetLastAddedElement(), [](Child* a) {
+			int b = CurrentTabIterator;
+			a->New(new Switch("Override Colour", &Config->Players[b].OverrideHP, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+			a->New(new ColorPicker("Colour", 105.f, &Config->Players[b].HPCol, a->GetLastAddedElement()));
+			}, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Switch("Weapon", &Config->Players[i].Weapon, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Settings(105.f, 200.f, 108.f, Childs[ESP][LEFT].GetLastAddedElement(), [](Child* a) {
+			int b = CurrentTabIterator;
+			a->New(new MultiSelect("Type", {"Icon", "Text"}, &Config->Players[b].WeaponType, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+			a->New(new Text("Icon Colour"));
+			a->New(new ColorPicker("Icon Colour", 105.f, &Config->Players[b].WeaponIcon, a->GetLastAddedElement()));
+			a->New(new Text("Text Colour"));
+			a->New(new ColorPicker("Text Colour", 105.f, &Config->Players[b].WeaponCol, a->GetLastAddedElement()));
+			}, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Switch("Ammo", &Config->Players[i].Ammo, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new ColorPicker("Ammo Colour", 105.f, &Config->Players[i].AmmoCol, Childs[ESP][LEFT].GetLastAddedElement()));
+		Childs[ESP][LEFT].New(new Switch("Flags", &Config->Players[i].Ammo, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Switch("Armour", &Config->Players[i].Armour, CurrentTabIterator == 0 ? IsEnemyESPFlagsTab : CurrentTabIterator == 1 ? IsTeamESPFlagsTab : IsLocalESPFlagsTab));
+		Childs[ESP][LEFT].New(new ColorPicker("Armour Colour", 105.f, &Config->Players[i].ArmourCol, Childs[ESP][LEFT].GetLastAddedElement()));
+		Childs[ESP][LEFT].New(new Switch("Money", &Config->Players[i].Money, CurrentTabIterator == 0 ? IsEnemyESPFlagsTab : CurrentTabIterator == 1 ? IsTeamESPFlagsTab : IsLocalESPFlagsTab));
+		Childs[ESP][LEFT].New(new ColorPicker("Money Colour", 105.f, &Config->Players[i].MoneyCol, Childs[ESP][LEFT].GetLastAddedElement()));
+		Childs[ESP][LEFT].New(new Switch("Scoped", &Config->Players[i].Scoped, CurrentTabIterator == 0 ? IsEnemyESPFlagsTab : CurrentTabIterator == 1 ? IsTeamESPFlagsTab : IsLocalESPFlagsTab));
+		Childs[ESP][LEFT].New(new ColorPicker("Scoped Colour", 105.f, &Config->Players[i].ScopedCol, Childs[ESP][LEFT].GetLastAddedElement()));
+		Childs[ESP][LEFT].New(new Switch("Flashed", &Config->Players[i].Flashed, CurrentTabIterator == 0 ? IsEnemyESPFlagsTab : CurrentTabIterator == 1 ? IsTeamESPFlagsTab : IsLocalESPFlagsTab));
+		Childs[ESP][LEFT].New(new ColorPicker("Flashed Colour", 105.f, &Config->Players[i].FlashedCol, Childs[ESP][LEFT].GetLastAddedElement()));
+		Childs[ESP][LEFT].New(new Switch("Ping", &Config->Players[i].Ping, CurrentTabIterator == 0 ? IsEnemyESPFlagsTab : CurrentTabIterator == 1 ? IsTeamESPFlagsTab : IsLocalESPFlagsTab));
+		Childs[ESP][LEFT].New(new ColorPicker("Ping Colour", 105.f, &Config->Players[i].PingCol, Childs[ESP][LEFT].GetLastAddedElement()));
+	}
+
+	ConfigureForTypeSelect = new Select("", { "Enemies", "Team", "Local" }, &ConfigureForType);
 
 	SetuppedUser = true;
 	SubtabChangeAnimation = 0.f;
@@ -518,6 +590,13 @@ void CMenu::Draw() {
 
 			Render::RoundedRect(x - TextSize1.x * 0.5f, y - TextSize1.y * 0.5f, TextSize1.x + 22.f * Menu->Scale, TextSize1.y + 10.f * Menu->Scale, Col(100, 104, 110, Alpha), 1.f * Menu->Scale, 6.f * Menu->Scale);
 			Render::DrawString(x + 11.f * Menu->Scale, y + 3.f * Menu->Scale, Col(255, 255, 255, Alpha), Fonts::MenuMain, Render::centered_xy, "Save");
+		
+			if (CurrentTab == CTabs::PLAYERS) {
+				x = Pos.x + 62.5f * Scale - (ConfigureForType == 0 ? 78.f * Scale : ConfigureForType == 2 ? 89.f * Scale : 89.f * Scale);
+				y = Pos.y + (438.f + 20.f * SubtabChangeAnimation) * Scale;
+				bool Disable = Binder.Parent != nullptr;
+				ConfigureForTypeSelect->Draw(x, y, Vec2(150.f, 28.f), Alpha * GUIAnimations::Ease(SubtabChangeAnimation), MouseClick, MousePress, Disable);
+			}
 		}
 		if (SearchAnimation > 0.f) {
 			
@@ -769,12 +848,7 @@ void CMenu::RenderTab(float x, float y, CTabs _this, float& animation) {
 		Childs[CurrentSubtab][RIGHT].OpenAnimation = 0.f;
 	}
 
-	if (ThisSelected && _this == CTabs::PLAYERS) {
-		float x = Pos.x + 62.5f * Scale - (ConfigureForType == 0 ? 70.f * Scale : ConfigureForType == 2 ? 79.f * Scale : 72.f * Scale);
-		float y = Pos.y + (438.f + 20.f * SubtabChangeAnimation) * Scale  ;
-		bool Disable = Binder.Parent != nullptr;
-		ConfigureForTypeSelect->Draw(x, y, Vec2(150.f, 28.f), Alpha * GUIAnimations::Ease(SubtabChangeAnimation), MouseClick, MousePress, Disable);
-	}
+	
 
 	if((Hovered && animation < 1.f) || (!Hovered && animation > 0.f))
 		animation = Math::Clamp(animation + ((Hovered ? 1 : -1) * 0.00442f * AnimationModifier), 0.f, 1.f);
