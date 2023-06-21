@@ -164,6 +164,8 @@ void Render::DrawString(float x, float y, Col color, ImFont* font, unsigned int 
 	if (flags & Render::outline)
 	{
 		Col outline_clr = Col(0, 0, 0, color[3]);
+		if(flags & Render::dropshadow)
+			outline_clr[3] *= 0.38f;
 		pos.y++;
 		DrawList->AddText(pos, outline_clr.u32(), message);
 		pos.x++;
@@ -174,7 +176,7 @@ void Render::DrawString(float x, float y, Col color, ImFont* font, unsigned int 
 		DrawList->AddText(pos, outline_clr.u32(), message);
 	}
 	else if (flags & Render::dropshadow) {
-		Col outline_clr = Col(0, 0, 0, color[3] * 0.34f);
+		Col outline_clr = Col(0, 0, 0, color[3] * 0.38f);
 		pos.y += 0.5f;
 		DrawList->AddText(pos, outline_clr.u32(), message);
 		pos.x += 0.5f;
@@ -237,6 +239,8 @@ void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned i
 	if (flags & Render::outline)
 	{
 		Col outline_clr = Col(0, 0, 0, color[3]);
+		if (flags & Render::dropshadow)
+			outline_clr[3] *= 0.38f;
 		pos.y++;
 		DrawList->AddText(pos, outline_clr.u32(), message);
 		pos.x++;
@@ -247,14 +251,14 @@ void Render::DrawStringFmt(float x, float y, Col color, ImFont* font, unsigned i
 		DrawList->AddText(pos, outline_clr.u32(), message);
 	}
 	else if (flags & Render::dropshadow) {
-		Col outline_clr = Col(0, 0, 0, color[3] * 0.34f);
-		pos.y++;
+		Col outline_clr = Col(0, 0, 0, color[3] * 0.38f);
+		pos.y += 0.5f;
 		DrawList->AddText(pos, outline_clr.u32(), message);
-		pos.x++;
+		pos.x += 0.5f;
 		DrawList->AddText(pos, outline_clr.u32(), message);
-		pos.y -= 2;
+		pos.y -= 1.f;
 		DrawList->AddText(pos, outline_clr.u32(), message);
-		pos.x -= 2;
+		pos.x -= 1.f;
 		DrawList->AddText(pos, outline_clr.u32(), message);
 	}
 
@@ -490,7 +494,7 @@ void Render::Initialize() {
 	};
 
 	cfg.FontBuilderFlags = ImGuiFreeType::RasterizerFlags::MonoHinting | ImGuiFreeType::RasterizerFlags::Monochrome; //pixelate sharp
-	Fonts::ESPName = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/corbel.ttf", 14, &cfg, GlobalRange); //since their name might have Chinese/Japanese/Russion
+	Fonts::ESPName = io.Fonts->AddFontFromFileTTF("C:/windows/fonts/verdana.ttf", 13, &cfg, GlobalRange); //since their name might have Chinese/Japanese/Russion
 	Fonts::ESP = io.Fonts->AddFontFromMemoryTTF(PixelFont, sizeof(PixelFontLength), 10, &cfg, io.Fonts->GetGlyphRangesCyrillic());
 
 //	io.Fonts->Build(); //ALL I DID IS CHANGE THIS ONE LINE SO WE BUILD WITH FREETYPE NOW

@@ -381,7 +381,7 @@ void CConfig::ResetValues() {
 		this->Players[i].Armour = false;
 		this->Players[i].ArmourCol = Col(255, 255, 255, 255);
 		this->Players[i].Money = false;
-		this->Players[i].MoneyCol = Col(198, 255, 74, 255);
+		this->Players[i].MoneyCol = Col(200, 255, 18, 255);
 		this->Players[i].Scoped = false;
 		this->Players[i].ScopedCol = Col(255, 255, 255, 255);
 		this->Players[i].Flashed = false;
