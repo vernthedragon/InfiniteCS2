@@ -215,7 +215,7 @@
     <ClCompile Include="Weapons.cpp">
       <Filter>Client\Features\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="CursorControll.cpp">
+    <ClCompile Include="CursorControl.cpp">
       <Filter>Client\Hooks\Engine</Filter>
     </ClCompile>
   </ItemGroup>

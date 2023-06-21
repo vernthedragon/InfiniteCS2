@@ -175,7 +175,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Col.cpp" />
     <ClCompile Include="Config.cpp" />
-    <ClCompile Include="CursorControll.cpp" />
+    <ClCompile Include="CursorControl.cpp" />
     <ClCompile Include="Entities.cpp" />
     <ClCompile Include="EntList.cpp" />
     <ClCompile Include="Entrypoint.cpp" />
