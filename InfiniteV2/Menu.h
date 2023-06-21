@@ -118,6 +118,7 @@ public:
 	Col MainTheme;
 	bool LastRelativeMouseMode;
 	int ConfigureForType;
+	int LastConfigureForType;
 	Select* ConfigureForTypeSelect;
 };
 

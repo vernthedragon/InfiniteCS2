@@ -11,73 +11,251 @@ void DrawBox(int x, int y, int w, int h, Col col, Col back, float thick = 1.f, f
 	Render::Line(x, y + h, x + w, y + h, col, thick);
 	Render::Line(x, y, x, y + h, col, thick);
 }
-void DrawESPPerPlayer(PlayerRecord* Record) {
+void DrawESPLocal(PlayerRecord* Record) {
 	//now we dont do any sanity checks for the entity pointer since cs removes the entity after we removed it from our game handler
-	if (!Record->Entity->IsAlive()) {
-		Record->AnimatedHP = 0.f;
+	GUIAnimations::Animate(Record->ESPAlpha, Record->HP != 0);
+	if (Record->ESPAlpha == 0.f)
 		return;
-	}
+
 
 	Record->UpdateBoundingBox();
 
 	if (!Record->BoundingBoxInView)
 		return;
 
-	DrawBox(Record->Box.x, Record->Box.y, Record->Box.w, Record->Box.h, Col(255, 255, 255, 255), Col(0, 0, 0, 150), 1.f, 3.f);
+	if (Config->Players[2].Box)
+		DrawBox(Record->Box.x, Record->Box.y, Record->Box.w, Record->Box.h, Config->Players[2].BoxCol.Manage(Record->ESPAlpha), Col(0, 0, 0, 0.58824f).Manage(Record->ESPAlpha * Config->Players[2].BoxCol[3]), 1.f, 3.f);
+
+	if (Config->Players[2].HP) {
+		float HpPercent = Record->Box.h - ((Record->Box.h * Record->HP) * 0.017f);
+		Record->AnimatedHP = (Record->AnimatedHP + (HpPercent - Record->AnimatedHP) * 0.01f * Menu->AnimationModifier);
+		Col HpCol = Config->Players[2].OverrideHP ? Config->Players[2].HPCol : Col(255.f - (Record->HP * 2.55f), Record->HP * 2.55f, 0, 255);
 
 
-	float HpPercent = Record->Box.h - ((Record->Box.h * Record->HP) * 0.017f);
-	Record->AnimatedHP = (Record->AnimatedHP + (HpPercent - Record->AnimatedHP) * 0.01f * Menu->AnimationModifier);
-
-	if (Record->AnimatedHP > 0.f && Record->AnimatedHP < 100.f) {
-		Render::FilledRect(Record->Box.x - 5.5f, Record->Box.y - 1.f, 2.8f, Record->Box.h + 2.f, Col(80, 80, 80, 255 * 0.49f));
-		Render::FilledRect(Record->Box.x - 5.f, Record->Box.y + Record->AnimatedHP, 1.8f, Record->Box.h - Record->AnimatedHP, Col(255.f - (Record->HP * 2.55f), Record->HP * 2.55f, 0, 255));
+		Render::FilledRect(Record->Box.x - 5.5f, Record->Box.y - 1.f, 2.8f, Record->Box.h + 2.f, Col(80, 80, 80, HpCol[3] * 0.49f * Record->ESPAlpha));
+		Render::FilledRect(Record->Box.x - 5.f, Record->Box.y + Record->AnimatedHP, 1.8f, Record->Box.h - Record->AnimatedHP, HpCol.Manage(Record->ESPAlpha));
 
 		char hps[6] = "";
 		sprintf_s(hps, "%i", Record->HP);
 		if (Record->HP <= 99)
 			Render::DrawString(Record->Box.x - 4.f, Record->Box.y + Record->AnimatedHP - 3.f,
-				Col(255, 255, 255, 255), Fonts::ESP, Render::centered_x | Render::outline, hps);
+				Col(255, 255, 255, 255 * Record->ESPAlpha), Fonts::ESP, Render::centered_x | Render::outline, hps);
+
 	}
 	if (!Record->Controller)
 		return;
 
+	if (Config->Players[2].Name)
+		Render::DrawString(Record->Box.x + Record->Box.w * 0.5f, Record->Box.y - 14.f, Config->Players[2].NameCol.Manage(Record->ESPAlpha), Fonts::ESPName, Render::dropshadow | Render::centered_x, Record->Controller->m_sSanitizedPlayerName());
 
-	Render::DrawString(Record->Box.x + Record->Box.w * 0.5f, Record->Box.y - 14.f, Col(255, 255, 255, 255), Fonts::ESPName, Render::dropshadow | Render::centered_x, Record->Controller->m_sSanitizedPlayerName());
-
+	if (!Config->Players[2].ESPFlags)
+		return;
 	std::string Written = "";
-
-	if (Record->HasHelmet) {
-		Written += "H";
-	}
-
-	if (Record->HasKevlar) {
-		Written += "K";
-	}
-	
 	int rightcount = 0;
+	if (Config->Players[2].Armour) {
+		if (Record->HasHelmet)
+			Written += "H";
 
-	if (Written != "") {
-		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Col(255, 255, 255, 255), Fonts::ESP, Render::outline, Written.c_str());
+		if (Record->HasKevlar)
+			Written += "K";
+
+		if (Written != "")
+			Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[2].ArmourCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
+	}
+	if (Config->Players[2].Money) {
+		Written = "$";
+		Written += std::to_string(Record->Money);
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[2].MoneyCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
 	}
 
+	if (Config->Players[2].Scoped && Record->IsScoped)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[2].ScopedCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "ZOOM");
+
+	if (Config->Players[2].Flashed && Record->IsFlashed)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[2].FlashedCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "BLIND");
+
+	if (Config->Players[2].Defuser && Record->HasDefuser)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[2].DefuserCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "BLIND");
+
+
+	if (Config->Players[2].Ping) {
+		Written = std::to_string(Record->Ping);
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[2].PingCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
+	}
+}
+void DrawESPTeamates(PlayerRecord* Record) {
+	//now we dont do any sanity checks for the entity pointer since cs removes the entity after we removed it from our game handler
+	GUIAnimations::Animate(Record->ESPAlpha, Record->HP != 0);
+	if (Record->ESPAlpha == 0.f)
+		return;
+
+
+	Record->UpdateBoundingBox();
+
+	if (!Record->BoundingBoxInView)
+		return;
+
+	if (Config->Players[1].Box)
+		DrawBox(Record->Box.x, Record->Box.y, Record->Box.w, Record->Box.h, Config->Players[1].BoxCol.Manage(Record->ESPAlpha), Col(0, 0, 0, 0.58824f).Manage(Record->ESPAlpha * Config->Players[1].BoxCol[3]), 1.f, 3.f);
+
+	if (Config->Players[1].HP) {
+		float HpPercent = Record->Box.h - ((Record->Box.h * Record->HP) * 0.017f);
+		Record->AnimatedHP = (Record->AnimatedHP + (HpPercent - Record->AnimatedHP) * 0.01f * Menu->AnimationModifier);
+		Col HpCol = Config->Players[1].OverrideHP ? Config->Players[1].HPCol : Col(255.f - (Record->HP * 2.55f), Record->HP * 2.55f, 0, 255);
+
+
+		Render::FilledRect(Record->Box.x - 5.5f, Record->Box.y - 1.f, 2.8f, Record->Box.h + 2.f, Col(80, 80, 80, HpCol[3] * 0.49f * Record->ESPAlpha));
+		Render::FilledRect(Record->Box.x - 5.f, Record->Box.y + Record->AnimatedHP, 1.8f, Record->Box.h - Record->AnimatedHP, HpCol.Manage(Record->ESPAlpha));
+
+		char hps[6] = "";
+		sprintf_s(hps, "%i", Record->HP);
+		if (Record->HP <= 99)
+			Render::DrawString(Record->Box.x - 4.f, Record->Box.y + Record->AnimatedHP - 3.f,
+				Col(255, 255, 255, 255 * Record->ESPAlpha), Fonts::ESP, Render::centered_x | Render::outline, hps);
+
+	}
+	if (!Record->Controller)
+		return;
+
+	if (Config->Players[1].Name)
+		Render::DrawString(Record->Box.x + Record->Box.w * 0.5f, Record->Box.y - 14.f, Config->Players[1].NameCol.Manage(Record->ESPAlpha), Fonts::ESPName, Render::dropshadow | Render::centered_x, Record->Controller->m_sSanitizedPlayerName());
+
+	if (!Config->Players[1].ESPFlags)
+		return;
+	std::string Written = "";
+	int rightcount = 0;
+	if (Config->Players[1].Armour) {
+		if (Record->HasHelmet)
+			Written += "H";
+
+		if (Record->HasKevlar)
+			Written += "K";
+
+		if (Written != "")
+			Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[1].ArmourCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
+	}
+	if (Config->Players[1].Money) {
+		Written = "$";
+		Written += std::to_string(Record->Money);
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[1].MoneyCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
+	}
+
+	if (Config->Players[1].Scoped && Record->IsScoped)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[1].ScopedCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "ZOOM");
+
+	if (Config->Players[1].Flashed && Record->IsFlashed)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[1].FlashedCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "BLIND");
+
+	if (Config->Players[1].Defuser && Record->HasDefuser)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[1].DefuserCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "BLIND");
+
+
+	if (Config->Players[1].Ping) {
+		Written = std::to_string(Record->Ping);
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[1].PingCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
+	}
+}
+void DrawESPOpponents(PlayerRecord* Record) {
+	//now we dont do any sanity checks for the entity pointer since cs removes the entity after we removed it from our game handler
+	GUIAnimations::Animate(Record->ESPAlpha, Record->HP != 0);
+	if (Record->ESPAlpha == 0.f) 
+		return;
 	
-	Written = "$";
-	Written += std::to_string(Record->Money);
-	Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Col(198, 255, 74, 255), Fonts::ESP, Render::outline, Written.c_str());
+
+	Record->UpdateBoundingBox();
+
+	if (!Record->BoundingBoxInView)
+		return;
 	
+	if(Config->Players[0].Box)
+		DrawBox(Record->Box.x, Record->Box.y, Record->Box.w, Record->Box.h, Config->Players[0].BoxCol.Manage(Record->ESPAlpha), Col(0, 0, 0, 0.58824f).Manage(Record->ESPAlpha * Config->Players[0].BoxCol[3]), 1.f, 3.f);
 
-	if(Record->IsScoped)
-		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Col(255, 255, 255, 255), Fonts::ESP, Render::outline, "ZOOM");
+	if (Config->Players[0].HP) {
+		float HpPercent = Record->Box.h - ((Record->Box.h * Record->HP) * 0.017f);
+		Record->AnimatedHP = (Record->AnimatedHP + (HpPercent - Record->AnimatedHP) * 0.01f * Menu->AnimationModifier);
+		Col HpCol = Config->Players[0].OverrideHP ? Config->Players[0].HPCol : Col(255.f - (Record->HP * 2.55f), Record->HP * 2.55f, 0, 255);
+		
 
-	if (Record->IsFlashed)
-		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Col(255, 255, 255, 255), Fonts::ESP, Render::outline, "BLIND");
+			Render::FilledRect(Record->Box.x - 5.5f, Record->Box.y - 1.f, 2.8f, Record->Box.h + 2.f, Col(80, 80, 80, HpCol[3] * 0.49f * Record->ESPAlpha));
+			Render::FilledRect(Record->Box.x - 5.f, Record->Box.y + Record->AnimatedHP, 1.8f, Record->Box.h - Record->AnimatedHP, HpCol.Manage(Record->ESPAlpha));
 
-	Written = std::to_string(Record->Ping);
-	Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Col(255, 255, 255, 255), Fonts::ESP, Render::outline, Written.c_str());
+			char hps[6] = "";
+			sprintf_s(hps, "%i", Record->HP);
+			if (Record->HP <= 99)
+				Render::DrawString(Record->Box.x - 4.f, Record->Box.y + Record->AnimatedHP - 3.f,
+				Col(255, 255, 255, 255 * Record->ESPAlpha), Fonts::ESP, Render::centered_x | Render::outline, hps);
+		
+	}
+	if (!Record->Controller)
+		return;
+
+	if(Config->Players[0].Name)
+		Render::DrawString(Record->Box.x + Record->Box.w * 0.5f, Record->Box.y - 14.f, Config->Players[0].NameCol.Manage(Record->ESPAlpha), Fonts::ESPName, Render::dropshadow | Render::centered_x, Record->Controller->m_sSanitizedPlayerName());
+
+	if (!Config->Players[0].ESPFlags)
+		return;
+	std::string Written = "";
+	int rightcount = 0;
+	if (Config->Players[0].Armour) {
+		if (Record->HasHelmet) 
+			Written += "H";
+
+		if (Record->HasKevlar) 
+			Written += "K";
+
+		if (Written != "") 
+			Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[0].ArmourCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
+	}
+	if (Config->Players[0].Money) {
+		Written = "$";
+		Written += std::to_string(Record->Money);
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[0].MoneyCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
+	}
+
+	if(Config->Players[0].Scoped && Record->IsScoped)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[0].ScopedCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "ZOOM");
+
+	if (Config->Players[0].Flashed && Record->IsFlashed)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[0].FlashedCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "BLIND");
+	
+	if (Config->Players[0].Defuser && Record->HasDefuser)
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[0].DefuserCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, "BLIND");
+
+	
+	if (Config->Players[0].Ping) {
+		Written = std::to_string(Record->Ping);
+		Render::DrawString(Record->Box.x + Record->Box.w + 4.f, Record->Box.y + (rightcount++ * 8), Config->Players[0].PingCol.Manage(Record->ESPAlpha), Fonts::ESP, Render::outline, Written.c_str());
+	}
 }
 
 
 void Visuals::DoPlayers() {
-	GameHandler->ForAllOpponents(DrawESPPerPlayer);
+	if (Config->Players[0].ESP && !Config->Players[1].ESP && !Config->Players[2].ESP) {
+		GameHandler->ForAllOpponents(DrawESPOpponents);
+		return;
+	}
+
+	if (Config->Players[1].ESP && !Config->Players[0].ESP && !Config->Players[2].ESP) {
+		GameHandler->ForAllTeamates(DrawESPTeamates);
+		return;
+	}
+
+	if (Config->Players[2].ESP && !Config->Players[1].ESP && !Config->Players[0].ESP) {
+		GameHandler->ForLocalPlayer(DrawESPLocal); 
+		return;
+	}
+
+
+	void(*Local)(PlayerRecord*) = nullptr;
+	void(*Team)(PlayerRecord*) = nullptr;
+	void(*Enemy)(PlayerRecord*) = nullptr;
+
+	if (Config->Players[0].ESP)
+		Enemy = DrawESPOpponents;
+	if (Config->Players[1].ESP)
+		Team = DrawESPTeamates;
+	if (Config->Players[2].ESP)
+		Local = DrawESPLocal;
+
+	GameHandler->ForAllPlayers(Enemy, Team, Local);
 }

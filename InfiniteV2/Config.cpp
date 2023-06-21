@@ -388,5 +388,9 @@ void CConfig::ResetValues() {
 		this->Players[i].FlashedCol = Col(255, 255, 255, 255);
 		this->Players[i].Ping = false;
 		this->Players[i].PingCol = Col(255, 255, 255, 255);
+		this->Players[i].Box = false;
+		this->Players[i].BoxCol = Col(255, 255, 255, 255);
+		this->Players[i].Defuser = false;
+		this->Players[i].DefuserCol = Col(255, 255, 255, 255);
 	}
 }

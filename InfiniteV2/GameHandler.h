@@ -16,6 +16,11 @@ public:
 	float SimulationTime = 0.f;
 
 };
+enum TeamType_t : unsigned char {
+	TT_OPPONENTS = 0,
+	TT_TEAMMATE = 1,
+	TT_LOCAL = 2
+};
 class PlayerRecord : public BasicRecord {
 public:
 	PlayerRecord() {};
@@ -24,12 +29,14 @@ public:
 		Handle = handle;
 		Entity = player;
 		Controller = player->m_hController().Get<IController>();
+		ESPAlpha = 0.f;
 	}
 	void UpdateData();
 	void UpdateBoundingBox();
 	IPlayer* Entity;
 	IController* Controller;
 	float AnimatedHP;
+	float ESPAlpha;
 	bool IsScoped;
 	bool IsFlashed;
 	int Money;
@@ -37,6 +44,8 @@ public:
 	int Ping;
 	bool HasHelmet;
 	bool HasKevlar;
+	bool HasDefuser;
+	int TeamType;
 };
 class NadeRecord : public BasicRecord {
 public:
@@ -60,6 +69,9 @@ public:
 	void ForAllOpponents(void(* Function)(PlayerRecord*));
 	void ForAllTeamates(void(*Function)(PlayerRecord*));
 	void ForAllNades(void(*Function)(NadeRecord*));
+	void ForAllPlayers(void(*Function)(PlayerRecord*));
+	void ForAllPlayers(void(*Opponent)(PlayerRecord*), void(*Teammate)(PlayerRecord*), void(*Local)(PlayerRecord*));
+	void ForLocalPlayer(void(*Function)(PlayerRecord*));
 	std::map<unsigned int, PlayerRecord> Players; //ordered
 	std::map<unsigned int, NadeRecord> Nades;
 	//std::map<unsigned int, NadeRecord> Weapons; //i believe all C_Weapon... is dropped weapon too

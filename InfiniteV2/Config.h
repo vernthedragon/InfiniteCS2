@@ -81,6 +81,8 @@ public:
 	struct Players_t {
 		//esp
 		bool ESP;
+		bool Box;
+		Col BoxCol;
 		bool Name;
 		Col NameCol;
 		bool HP;
@@ -103,6 +105,8 @@ public:
 		Col FlashedCol;
 		bool Ping;
 		Col PingCol;
+		bool Defuser;
+		Col DefuserCol;
 	};
 	Players_t Players[3]; //0 = Enemies, 1 = Teamates, 2 = Localplayer
 	struct MenuSettings_t {

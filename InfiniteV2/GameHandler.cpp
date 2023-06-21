@@ -6,7 +6,29 @@ void PlayerRecord::UpdateData() {
 		return;
 	Controller = nullptr;
 	Controller = Entity->m_hController().Get<IController>();
-	
+
+	IsScoped = Entity->m_bIsScoped();
+	IsFlashed = Entity->m_flFlashMaxAlpha() != 0.f;
+	HP = Entity->m_iHealth();
+	HasDefuser = Entity->m_bHasDefuser();
+	if (!Controller)
+		return;
+
+	if (Controller->m_pInGameMoneyServices())
+		Money = Controller->m_pInGameMoneyServices()->m_iAccount();
+	Ping = Controller->m_iPing();
+	HasHelmet = Controller->m_bPawnHasHelmet();
+	HasKevlar = Controller->m_iPawnArmor() != 0;
+
+	if (!GameHandler->local)
+		return;
+
+	if (Entity == GameHandler->local)
+		TeamType = TeamType_t::TT_LOCAL;
+	else if (Entity->m_iTeamNum() == GameHandler->local->m_iTeamNum())
+		TeamType = TeamType_t::TT_TEAMMATE;
+	else
+		TeamType = TeamType_t::TT_OPPONENTS;
 }
 void PlayerRecord::UpdateBoundingBox() {
 	if (!Entity->IsAlive())
@@ -30,6 +52,34 @@ void CGameHandler::ForAllNades(void(*Function)(NadeRecord*)) {
 		Function(&(Nade.second));
 	}
 }
+void CGameHandler::ForAllPlayers(void(*Function)(PlayerRecord*)) {
+	std::unique_lock lock(mutex);
+	auto LocalTeam = local->m_iTeamNum();
+	for (auto& Player : Players) 
+		Function(&(Player.second));
+	
+}
+void CGameHandler::ForAllPlayers(void(*Opponent)(PlayerRecord*), void(*Teammate)(PlayerRecord*), void(*Local)(PlayerRecord*)) {
+	std::unique_lock lock(mutex);
+	auto LocalTeam = local->m_iTeamNum();
+	bool ScanOpponent = Opponent != nullptr;
+	bool ScanTeam = Teammate != nullptr;
+	bool ScanLocal = Local != nullptr;
+	for (auto& Player : Players) {
+		if (ScanOpponent && Player.second.TeamType == TeamType_t::TT_OPPONENTS)
+		{
+			Opponent(&Player.second);
+		}
+		else if (ScanTeam && Player.second.TeamType == TeamType_t::TT_TEAMMATE)
+		{
+			Teammate(&Player.second);
+		}
+		else if (ScanLocal && Player.second.TeamType == TeamType_t::TT_LOCAL)
+		{
+			Local(&Player.second);
+		}
+	}
+}
 void CGameHandler::ForAllOpponents(void(*Function)(PlayerRecord*)) {
 
 	if (!local || !localcontroller)
@@ -38,11 +88,18 @@ void CGameHandler::ForAllOpponents(void(*Function)(PlayerRecord*)) {
 	std::unique_lock lock(mutex);
 	auto LocalTeam = local->m_iTeamNum();
 	for (auto& Player : Players) {
-		if (Player.second.Entity->m_iTeamNum() == LocalTeam)
+		if (Player.second.TeamType == TeamType_t::TT_OPPONENTS)
 			continue;
 
 		Function(&(Player.second));
 	}
+}
+void CGameHandler::ForLocalPlayer(void(*Function)(PlayerRecord*)) {
+	if (!local || !localcontroller)
+		return;
+	std::unique_lock lock(mutex);
+	unsigned int LocalKey = local->GetRefEHandle().m_Index;
+	Function(&Players[LocalKey]);
 }
 void CGameHandler::ForAllTeamates(void(*Function)(PlayerRecord*)) {
 
@@ -52,7 +109,7 @@ void CGameHandler::ForAllTeamates(void(*Function)(PlayerRecord*)) {
 	std::unique_lock lock(mutex);
 	auto LocalTeam = local->m_iTeamNum();
 	for (auto& Player : Players) {
-		if (Player.second.Entity->m_iTeamNum() != LocalTeam)
+		if (Player.second.TeamType == TeamType_t::TT_TEAMMATE)
 			continue;
 
 		if (Player.second.Entity == local)
