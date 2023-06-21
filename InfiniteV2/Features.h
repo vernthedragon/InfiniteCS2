@@ -5,3 +5,5 @@
 #include "AntiAim.h"
 #include "AutoWall.h"
 #include "Rendering.h"
+#include "Menu.h"
+#include "Client.h"

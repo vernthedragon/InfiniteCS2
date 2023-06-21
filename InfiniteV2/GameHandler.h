@@ -29,7 +29,7 @@ public:
 	void UpdateBoundingBox();
 	IPlayer* Entity;
 	IController* Controller;
-	const char* PlayerName;
+	float AnimatedHP;
 };
 class NadeRecord : public BasicRecord {
 public:
