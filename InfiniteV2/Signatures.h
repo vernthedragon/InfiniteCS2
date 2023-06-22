@@ -4,6 +4,9 @@
 #define FRAME_STAGE_NOTIFY "48 89 5C 24 ? 56 48 83 EC 30 8B 05 ? ? ? ? 8D 5A FF 3B C2 48"
 #define LEVEL_INIT "48 89 5C 24 ? 57 48 83 EC ? 48 8B 0D ? ? ? ? 48 8B DA 45 33 C9"
 #define SEND_MOVE "48 89 5C 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 8D 55"
+#define RENDER_START "4C 8B DC 49 89 5B 10 49 89 6B 18 49 89 73 20 57 48 83 EC 70 48 8B F9" //void *__fastcall sub_18072BE10(__int64 a1)
+#define FIRE_EVENT_CLIENT_SIDE "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 70 48 8B F1 49 8B F9 41" //void __fastcall sub_1806A9B40(__int64 a1, __int64 a2, int a3, __int64 a4, int a5)
+#define OVERRIDE_VIEW "48 8B 05 ? ? ? ? 4C 8D 0D ? ? ? ? F2 0F 11 74 24 ? 4C 8D 05 ? ? ? ? BA ? ? ? ? 8B" //__int64 __fastcall sub_180529970(__int64 *a1)
 
 #define GET_CONTROLLER_BY_INDEX "81 FA ? ? ? ? 77 3B 8B C2"
 #define GET_LOCAL_PLAYER "48 83 EC ? 83 F9 ? 75 ? 48 8B 0D ? ? ? ? 48 8D 54 24 ? 48 8B 01 FF 90 ? ? ? ? 8B 08 48 63 C1 48 8D 0D ? ? ? ? 48 8B 0C C1"
@@ -16,7 +19,7 @@
 #define COMPUTE_HITBOX_SURROUNDING_BOX "E9 ? ? ? ? F6 43 5B FD"
 
 #define GET_MATRICES_FOR_VIEW "40 53 48 81 EC ? ? ? ? 49 8B C1"
-#define FIRE_EVENT_CLIENT_SIDE "48 89 5C 24 ? 56 57 41 54 48 83 EC 30"
+#define FIRE_EVENT_CLIENT_SIDE2 "48 89 5C 24 ? 56 57 41 54 48 83 EC 30"
 
 
 #define SET_VIEW_ANGLES "F2 41 0F 10 00 48 63 C2 48 69 D0"

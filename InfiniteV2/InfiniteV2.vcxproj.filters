@@ -221,6 +221,9 @@
     <ClCompile Include="Imgui\imgui_freetype.cpp">
       <Filter>Rendering\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="RenderStart.cpp">
+      <Filter>Client\Hooks\Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InitializeThread.h">

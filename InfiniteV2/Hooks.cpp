@@ -12,7 +12,7 @@ namespace Hooks {
 
 	FrameStageNotify_t oFrameStageNotify = nullptr;
 	LevelInit_t oLevelInit = nullptr;
-
+	RenderStart_t oRenderStart = nullptr;;
 
 	void Setup() {
 
@@ -65,6 +65,16 @@ namespace Hooks {
 		if (MH_CreateHook(Target, FrameStageNotify, reinterpret_cast<void**>(&oFrameStageNotify)) != MH_OK)
 			throw IException("Failed to Hook FrameStageNotify", 0);
 		if (oFrameStageNotify == nullptr)
+			throw IException("Failed to Find oFrameStageNotify", 0);
+
+		Target = nullptr;
+		Target = Client->FindPattern(GetModuleHandleA("client.dll"), RENDER_START);
+		oRenderStart = nullptr;
+		if (Target == nullptr)
+			throw IException("Failed to Find FrameStageNotify", 0);
+		if (MH_CreateHook(Target, RenderStart, reinterpret_cast<void**>(&oRenderStart)) != MH_OK)
+			throw IException("Failed to Hook FrameStageNotify", 0);
+		if (oRenderStart == nullptr)
 			throw IException("Failed to Find oFrameStageNotify", 0);
 		
 

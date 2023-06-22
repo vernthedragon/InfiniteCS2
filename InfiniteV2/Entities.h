@@ -319,9 +319,17 @@ public:
     OFFSET(m_bEligibleForScreenHighlight, 0x50, bool);
     OFFSET(m_bGlowing, 0x51, bool);
 };
+class IGlowService {
+public:
+    SCHEMA("CCSPlayer_GlowServices", "m_bGlowing", m_bGlowing, bool);
+    SCHEMA("CCSPlayer_GlowServices", "m_iGlowType", m_iGlowType, int);
+    SCHEMA("CCSPlayer_GlowServices", "m_glowColorOverride", m_glowColorOverride, Col);
+    SCHEMA("CCSPlayer_GlowServices", "m_bFlashing", m_bFlashing, bool);
+};
 class IPlayer : public IEntity
 {
 public:
+    SCHEMA("C_CSPlayerPawn", "m_pGlowServices", m_pGlowServices, IGlowService*);
     SCHEMA("C_BasePlayerPawn", "m_pWeaponServices", m_pWeaponServices, IWeaponServices*);
     SCHEMA("C_BasePlayerPawn", "m_pCameraServices", m_pCameraServices, ICameraServices*);
     SCHEMA("CCSPlayer_ItemServices", "m_bHasDefuser", m_bHasDefuser, bool);

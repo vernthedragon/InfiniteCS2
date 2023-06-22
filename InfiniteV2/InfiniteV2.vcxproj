@@ -209,6 +209,7 @@
     <ClCompile Include="GameHandler.cpp" />
     <ClCompile Include="RenderHook.cpp" />
     <ClCompile Include="Rendering.cpp" />
+    <ClCompile Include="RenderStart.cpp" />
     <ClCompile Include="Schema.cpp" />
     <ClCompile Include="Trace.cpp" />
     <ClCompile Include="Utl.cpp" />

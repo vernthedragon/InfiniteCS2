@@ -80,6 +80,8 @@ public:
 
 	struct World_t {
 		bool Enable;
+		bool Camera;
+		int FOV;
 		unsigned int Removals;
 	};
 	World_t World;

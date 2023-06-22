@@ -162,16 +162,6 @@ void DrawESPOpponents(PlayerRecord* Record) {
 
 	if (!Record->BoundingBoxInView)
 		return;
-
-	if (Config->Players[0].Glow) {
-		if (Record->Entity->IsAlive()) {
-			Record->Entity->m_Glow().m_bGlowing() = true;
-			Record->Entity->m_Glow().m_fGlowColor() = Vec3(Config->Players[0].GlowCol[0], Config->Players[0].GlowCol[1], Config->Players[0].GlowCol[2]);
-			Record->Entity->m_Glow().m_glowColorOverride() = Config->Players[0].GlowCol;
-			Record->Entity->m_Glow().m_bFlashing() = Config->Players[0].GlowFlash;
-			Record->Entity->m_Glow().m_iGlowType() = Config->Players[0].GlowType;
-		}
-	}
 	
 	if(Config->Players[0].Box)
 		DrawBox(Record->Box.x, Record->Box.y, Record->Box.w, Record->Box.h, Config->Players[0].BoxCol, Col(0, 0, 0, 0.58824f * Config->Players[0].BoxCol[3]), 1.f, 3.f);

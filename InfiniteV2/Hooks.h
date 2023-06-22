@@ -64,4 +64,8 @@ namespace Hooks {
 	using LevelInit_t = bool(__thiscall*)(void*);
 	extern LevelInit_t oLevelInit;
 	std::int64_t __fastcall LevelInit(void* ecx, std::int64_t a2);
+
+	using RenderStart_t = void(__thiscall*)(void*);
+	extern RenderStart_t oRenderStart;
+	void __fastcall RenderStart(void* This);
 };
