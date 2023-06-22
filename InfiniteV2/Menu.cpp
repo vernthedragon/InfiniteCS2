@@ -85,6 +85,13 @@ bool IsEnemyESPFlagsTab() {
 	return IsEnemyESPTab() && Config->Players[0].ESPFlags;
 }
 
+bool IsEnemyESPFlagsTab() {
+	return IsEnemyESPTab() && Config->Players[0].ESPFlags;
+}
+
+bool IsWorldEnable() {
+	return Config->World.Enable;
+}
 
 int CurrentTabIterator = 0;
 void CMenu::SetupUser() {
@@ -139,25 +146,36 @@ void CMenu::SetupUser() {
 	for (int i = 0; i < 3; i++) {
 		CurrentTabIterator = i;
 		Childs[ESP][LEFT].New(new Switch("Enable", &Config->Players[i].ESP, CurrentTabIterator == 0 ? IsEnemyTab : CurrentTabIterator == 1 ? IsTeamTab : IsLocalTab));
-		Childs[ESP][LEFT].New(new Switch("Box", &Config->Players[i].Box, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Switch("Glow", &Config->Players[i].Glow, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Settings(105.f, 280.f, 101.f, Childs[ESP][LEFT].GetLastAddedElement(), [](Child* a) {
+			int b = CurrentTabIterator;
+			a->New(new Text("Colour"));
+			a->New(new ColorPicker("Colour", 105.f, &Config->Players[b].GlowCol, a->GetLastAddedElement()));
+			a->New(new Select("Glow Type", {"Default"}, &Config->Players[b].GlowType));
+			a->New(new Switch("Glow Flash", &Config->Players[b].GlowFlash));
+			}, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Switch("Box", &Config->Players[i].Box));
 		Childs[ESP][LEFT].New(new ColorPicker("Box Colour", 105.f, &Config->Players[i].BoxCol, Childs[ESP][LEFT].GetLastAddedElement()));
-		Childs[ESP][LEFT].New(new Switch("Name", &Config->Players[i].Name, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Switch("Name", &Config->Players[i].Name));
 		Childs[ESP][LEFT].New(new ColorPicker("Name Colour", 105.f, &Config->Players[i].NameCol, Childs[ESP][LEFT].GetLastAddedElement()));
-		Childs[ESP][LEFT].New(new Switch("Health Bar", &Config->Players[i].HP, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		Childs[ESP][LEFT].New(new Switch("Health Bar", &Config->Players[i].HP));
 		Childs[ESP][LEFT].New(new Settings(105.f, 280.f, 45.f, Childs[ESP][LEFT].GetLastAddedElement(), [](Child* a) {
 			int b = CurrentTabIterator;
-			a->New(new Switch("Override Colour", &Config->Players[b].OverrideHP, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+			a->New(new Switch("Override Colour", &Config->Players[b].OverrideHP));
 			a->New(new ColorPicker("Colour", 105.f, &Config->Players[b].HPCol, a->GetLastAddedElement()));
 			}, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+	
 		Childs[ESP][LEFT].New(new Switch("Weapon", &Config->Players[i].Weapon, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+		
 		Childs[ESP][LEFT].New(new Settings(105.f, 200.f, 105.f, Childs[ESP][LEFT].GetLastAddedElement(), [](Child* a) {
 			int b = CurrentTabIterator;
-			a->New(new MultiSelect("Type", {"Icon", "Text"}, &Config->Players[b].WeaponType, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+			a->New(new MultiSelect("Type", {"Icon", "Text"}, &Config->Players[b].WeaponType));
 			a->New(new Text("Icon Colour"));
 			a->New(new ColorPicker("Icon Colour", 105.f, &Config->Players[b].WeaponIcon, a->GetLastAddedElement()));
 			a->New(new Text("Text Colour"));
 			a->New(new ColorPicker("Text Colour", 105.f, &Config->Players[b].WeaponCol, a->GetLastAddedElement()));
 			}, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
+
 		Childs[ESP][LEFT].New(new Switch("Ammo", &Config->Players[i].Ammo, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));
 		Childs[ESP][LEFT].New(new ColorPicker("Ammo Colour", 105.f, &Config->Players[i].AmmoCol, Childs[ESP][LEFT].GetLastAddedElement()));
 		Childs[ESP][LEFT].New(new Switch("Flags", &Config->Players[i].ESPFlags, CurrentTabIterator == 0 ? IsEnemyESPTab : CurrentTabIterator == 1 ? IsTeamESPTab : IsLocalESPTab));

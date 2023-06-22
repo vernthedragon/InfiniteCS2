@@ -365,7 +365,49 @@ void CConfig::ResetValues() {
 	this->MenuSettings.KeybindsBackground2 = Col(255, 255, 255, 6);
 	this->MenuSettings.KeybindsText = Col(255, 255, 255, 255);
 
+	this->World.Enable = false;
+	this->World.Removals = 0;
+
+	this->Nades.ESP = false;
+	this->Nades.Glow = false;
+	this->Nades.GlowCol = Col(170, 170, 255, 200);
+	this->Nades.GlowType = 0;
+	this->Nades.GlowFlash = false;
+	this->Nades.Box = false;
+	this->Nades.BoxCol = Col(255, 255, 255, 255);
+	this->Nades.Name = false;
+	this->Nades.NameCol = Col(255, 255, 255, 255);
+	this->Nades.TimeLeftBar = false;
+	this->Nades.TimeLeftBarCol = Col(255, 160, 160, 255);
+	this->Nades.Flags = 0;
+	this->Nades.FlagsCol = Col(255, 255, 255, 255);
+
+	this->Nades.Smoke = false;
+	this->Nades.SmokeTimer = false;
+	this->Nades.SmokeRange = false;
+	this->Nades.OverrideSmokeCol = false;
+	this->Nades.SmokeCol = Col(255, 255, 255, 255);
+	this->Nades.SmokeTheme = Col(170,170,255, 255);
+
+	this->Nades.PredictNade = false;
+	this->Nades.PredictNadeCol = Col(170, 170, 255, 255);
+	this->Nades.WarnNade = false;
+	this->Nades.ShowNadeRadius = false;
+	this->Nades.ShowTrail = false;
+	this->Nades.WarnNadeCol = Col(170, 170, 255, 255);
+
+	this->Nades.Molotov = false;
+	this->Nades.MolotovTimer = false;
+	this->Nades.FireRange = false;
+	this->Nades.OverrideFireCol = false;
+	this->Nades.FireCol = Col(255, 255, 255, 255);
+	this->Nades.MolotovTheme = Col(170, 170, 255, 255);
+
 	for (int i = 0; i < 3; i++) {
+		this->Players[i].Glow = false;
+		this->Players[i].GlowCol = Col(170, 170, 255, 200);
+		this->Players[i].GlowType = 0;
+		this->Players[i].GlowFlash = false;
 		this->Players[i].Name = false;
 		this->Players[i].NameCol = Col(255,255,255,255);
 		this->Players[i].HP = false;
@@ -392,5 +434,6 @@ void CConfig::ResetValues() {
 		this->Players[i].BoxCol = Col(255, 255, 255, 255);
 		this->Players[i].Defuser = false;
 		this->Players[i].DefuserCol = Col(255, 255, 255, 255);
+		
 	}
 }

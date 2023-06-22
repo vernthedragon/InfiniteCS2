@@ -242,6 +242,15 @@ public:
     SCHEMA("C_SmokeGrenadeProjectile", "m_vSmokeDetonationPos", m_vSmokeDetonationPos, Vec3);
     SCHEMA("C_SmokeGrenadeProjectile", "m_bSmokeEffectSpawned", m_bSmokeEffectSpawned, bool);
 };
+class IInferno
+{
+public:
+    SCHEMA("C_Inferno", "m_fireCount", m_fireCount, int);
+    SCHEMA("C_Inferno", "m_fireXDelta", m_fireXDelta, int*);
+    SCHEMA("C_Inferno", "m_fireZDelta", m_fireZDelta, int*);
+    SCHEMA("C_Inferno", "m_fireYDelta", m_fireYDelta, int*);
+    SCHEMA("C_Inferno", "m_bFireIsBurning", m_bFireIsBurning, bool*);
+};
 class IInGameServiceMoneyController
 {
 public:

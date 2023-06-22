@@ -78,9 +78,55 @@ public:
 
 	Movement_t Movement;
 
+	struct World_t {
+		bool Enable;
+		unsigned int Removals;
+	};
+	World_t World;
+	struct Nade_t {
+		bool ESP;
+		bool Glow;
+		Col GlowCol;
+		int GlowType;
+		bool GlowFlash;
+		bool Box;
+		Col BoxCol;
+		bool Name;
+		Col NameCol;
+		bool TimeLeftBar;
+		Col TimeLeftBarCol;
+		unsigned int Flags;
+		Col FlagsCol;
+
+		bool Smoke;
+		bool SmokeTimer;
+		bool SmokeRange;
+		bool OverrideSmokeCol;
+		Col SmokeCol;
+		Col SmokeTheme;
+
+		bool PredictNade;
+		Col PredictNadeCol;
+		bool WarnNade;
+		bool ShowNadeRadius;
+		bool ShowTrail;
+		Col WarnNadeCol;
+
+		bool Molotov;
+		bool MolotovTimer;
+		bool FireRange;
+		bool OverrideFireCol;
+		Col FireCol;
+		Col MolotovTheme;
+	};
+	Nade_t Nades;
 	struct Players_t {
 		//esp
 		bool ESP;
+		bool Glow;
+		Col GlowCol;
+		int GlowType;
+		bool GlowFlash;
 		bool Box;
 		Col BoxCol;
 		bool Name;
