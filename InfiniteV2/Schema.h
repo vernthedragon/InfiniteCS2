@@ -28,9 +28,28 @@ namespace SchemaSystem
     bool Initialize();
     std::uint16_t GetSchema(std::string class_name, std::string property_name);
 }
+#define OFFSET(function, offset, type) \
+__forceinline type& function() \
+{ \
+    return *reinterpret_cast<type*>(reinterpret_cast<std::uint64_t>(this) + offset); \
+} \
 
 #define SCHEMA(class_name, property_name, function, type) \
 __forceinline type& function() \
+{ \
+    std::uint32_t offset = SchemaSystem::GetSchema(class_name, property_name);  \
+    return *reinterpret_cast<type*>(reinterpret_cast<std::uint64_t>(this) + offset); \
+} \
+
+#define SCHEMANOINLINE(class_name, property_name, function, type) \
+type& function() \
+{ \
+    std::uint32_t offset = SchemaSystem::GetSchema(class_name, property_name);  \
+    return *reinterpret_cast<type*>(reinterpret_cast<std::uint64_t>(this) + offset); \
+} \
+
+#define SCHEMAPREFERINLINE(class_name, property_name, function, type) \
+inline type& function() \
 { \
     std::uint32_t offset = SchemaSystem::GetSchema(class_name, property_name);  \
     return *reinterpret_cast<type*>(reinterpret_cast<std::uint64_t>(this) + offset); \

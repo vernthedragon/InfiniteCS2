@@ -7,6 +7,7 @@
 #include "Skeleton.h"
 #include "CHandle.h"
 #include "ISchemaSystem.h"
+#include "QAngle.h"
 
 #define	LIFE_ALIVE				0
 #define	LIFE_DYING				1
@@ -28,6 +29,7 @@
 
 typedef float GameTime_t;
 typedef int GameTick_t;
+typedef int WeaponState_t;
 //USERCMD BUTTONS
 enum buttons_t : std::uint32_t
 {
@@ -139,11 +141,7 @@ public:
     SCHEMA("CEconEntity", "m_nFallbackPaintKit", m_nFallbackPaintKit, std::int32_t);
 };
 
-class IWeaponServices
-{
-public:
-    SCHEMA("CPlayer_WeaponServices", "m_hMyWeapons", m_hMyWeapons, IEconEntity*);
-};
+
 struct BoundingBox {
     float x, y, w, h;
 };
@@ -164,6 +162,94 @@ public:
     }
     const char* GetType();
     SCHEMA("CEntityInstance", "m_pEntity", m_pEntity, IEntityIdentity*);
+};
+class IPostProcessing
+{
+public:
+    SCHEMA("C_PostProcessingVolume", "m_flFadeDuration", m_flFadeDuration, float);
+    SCHEMA("C_PostProcessingVolume", "m_flMinLogExposure", m_flMinLogExposure, float);
+    SCHEMA("C_PostProcessingVolume", "m_flMaxLogExposure", m_flMaxLogExposure, float);
+    SCHEMA("C_PostProcessingVolume", "m_flMinExposure", m_flMinExposure, float);
+    SCHEMA("C_PostProcessingVolume", "m_flMaxExposure", m_flMaxExposure, float);
+    SCHEMA("C_PostProcessingVolume", "m_flExposureCompensation", m_flExposureCompensation, float);
+    SCHEMA("C_PostProcessingVolume", "m_flExposureFadeSpeedUp", m_flExposureFadeSpeedUp, float);
+    SCHEMA("C_PostProcessingVolume", "m_flExposureFadeSpeedDown", m_flExposureFadeSpeedDown, float);
+    SCHEMA("C_PostProcessingVolume", "m_flTonemapEVSmoothingRange", m_flTonemapEVSmoothingRange, float);
+    SCHEMA("C_PostProcessingVolume", "m_flRate", m_flRate, float);
+    SCHEMA("C_PostProcessingVolume", "m_flTonemapPercentTarget", m_flTonemapPercentTarget, float);
+    SCHEMA("C_PostProcessingVolume", "m_flTonemapPercentBrightPixels", m_flTonemapPercentBrightPixels, float);
+    SCHEMA("C_PostProcessingVolume", "m_flTonemapMinAvgLum", m_flTonemapMinAvgLum, float);
+    SCHEMA("C_PostProcessingVolume", "m_bMaster", m_bMaster, bool);
+    SCHEMA("C_PostProcessingVolume", "m_bExposureControl", m_bExposureControl, bool);
+};
+class IToneMapController
+{
+public:
+    SCHEMA("C_TonemapController2", "m_flAutoExposureMin", m_flAutoExposureMin, float);
+    SCHEMA("C_TonemapController2", "m_flAutoExposureMax", m_flAutoExposureMax, float);
+};
+class IColorCorrection
+{
+public:
+    SCHEMA("C_ColorCorrection", "m_bEnabled", m_bEnabled, bool);
+    SCHEMA("C_ColorCorrection", "m_bMaster", m_bMaster, bool);
+};
+class fogparams_t
+{
+public:
+    OFFSET(colorPrimary, 0x14, Col);
+    OFFSET(colorSecondary, 0x18, Col);
+    OFFSET(colorPrimaryLerpTo, 0x1C, Col);
+    OFFSET(colorSecondaryLerpTo, 0x20, Col);
+    OFFSET(start, 0x24, float);
+    OFFSET(end, 0x28, float);
+    OFFSET(farz, 0x2C, float);
+    OFFSET(maxdensity, 0x30, float);
+    OFFSET(exponent, 0x34, float);
+    OFFSET(startLerpTo, 0x44, float);
+    OFFSET(endLerpTo, 0x48, float);
+    OFFSET(maxdensityLerpTo, 0x4C, float);
+    OFFSET(enable, 0x64, bool);
+    OFFSET(blend, 0x65, bool);
+};
+class ICameraServices
+{
+public:
+    SCHEMA("CPlayer_CameraServices", "m_iFOV", m_iFOV, int);
+    SCHEMA("CPlayer_CameraServices", "m_iFOVStart", m_iFOVStart, int);
+    SCHEMA("CPlayer_CameraServices", "m_vecPunchAngle", m_vecPunchAngle, QAngle);
+    SCHEMA("CPlayer_CameraServices", "m_vecPunchAngleVel", m_vecPunchAngleVel, QAngle);
+    SCHEMA("CPlayer_CameraServices", "m_nPunchAngleJoltTick", m_nPunchAngleJoltTick, GameTick_t);
+    SCHEMA("CPlayer_CameraServices", "m_nPunchAngleJoltTickClientSide", m_nPunchAngleJoltTickClientSide, GameTick_t);
+    SCHEMA("CPlayer_CameraServices", "m_flOldPlayerZ", m_flOldPlayerZ, float);
+    SCHEMA("CPlayer_CameraServices", "m_flOldPlayerViewOffsetZ", m_flOldPlayerViewOffsetZ, float);
+    SCHEMA("CPlayer_CameraServices", "m_CurrentFog", m_CurrentFog, fogparams_t);
+    SCHEMA("CPlayer_CameraServices", "m_hActivePostProcessingVolume", m_hActivePostProcessingVolume, CHandle); // IPostProcessing
+    SCHEMA("CPlayer_CameraServices", "m_hColorCorrectionCtrl", m_hColorCorrectionCtrl, CHandle); //IColorCorrection
+    SCHEMA("CPlayer_CameraServices", "m_hTonemapController", m_hTonemapController, CHandle); //tonemap controller
+    SCHEMA("CPlayer_CameraServices", "m_bOverrideFogColor", m_bOverrideFogColor, bool*); //bool[5]
+    SCHEMA("CPlayer_CameraServices", "m_bOverrideFogStartEnd", m_bOverrideFogStartEnd, bool*);//bool[5]
+    SCHEMA("CPlayer_CameraServices", "m_OverrideFogColor", m_OverrideFogColor, Col*);//Col[5]
+    SCHEMA("CPlayer_CameraServices", "m_fOverrideFogStart", m_fOverrideFogStart, float*);//float[5]
+    SCHEMA("CPlayer_CameraServices", "m_fOverrideFogEnd", m_fOverrideFogEnd, float*);//float[5]
+};
+class ISmokeGrenade
+{
+public:
+    SCHEMA("C_SmokeGrenadeProjectile", "m_bDidSmokeEffect", m_bDidSmokeEffect, bool);
+    SCHEMA("C_SmokeGrenadeProjectile", "m_vSmokeColor", m_vSmokeColor, Vec3);
+    SCHEMA("C_SmokeGrenadeProjectile", "m_nSmokeEffectTickBegin", m_nSmokeEffectTickBegin, GameTick_t);
+    SCHEMA("C_SmokeGrenadeProjectile", "m_vSmokeDetonationPos", m_vSmokeDetonationPos, Vec3);
+    SCHEMA("C_SmokeGrenadeProjectile", "m_bSmokeEffectSpawned", m_bSmokeEffectSpawned, bool);
+};
+class IInGameServiceMoneyController
+{
+public:
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iAccount", m_iAccount, int);
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iStartAccount", m_iStartAccount, int);
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iTotalCashSpent", m_iTotalCashSpent, int);
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iCashSpentThisRound", m_iCashSpentThisRound, int);
+    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_nPreviousAccount", m_nPreviousAccount, int);
 };
 class IEntity : public IEntityInstance
 {
@@ -201,7 +287,7 @@ struct alignas(16) BoneData {
 };
 
 static_assert(sizeof(BoneData) == 0x20);
-
+class IWeaponServices;
 class INade : public IEntity {
 public:
     //C_BaseCSGrenadeProjectile
@@ -210,15 +296,31 @@ public:
    // SCHEMA("C_BaseCSGrenadeProjectile", "m_flSpawnTime", m_flSpawnTime, GameTime);
     SCHEMA("C_BaseCSGrenadeProjectile", "m_bExplodeEffectBegan", m_bExplodeEffectBegan, bool);
 };
+class GlowObject {
+public:
+    OFFSET(m_fGlowColor, 0x8, Vec3);
+    OFFSET(m_iGlowType, 0x30, int);
+    OFFSET(m_iGlowTeam, 0x34, int);
+    OFFSET(m_nGlowRange, 0x38, int);
+    OFFSET(m_nGlowRangeMin, 0x3C, int);
+    OFFSET(m_glowColorOverride, 0x40, Col);
+    OFFSET(m_bFlashing, 0x44, bool);
+    OFFSET(m_flGlowTime, 0x48, GameTime_t);
+    OFFSET(m_flGlowStartTime, 0x4C, GameTime_t);
+    OFFSET(m_bEligibleForScreenHighlight, 0x50, bool);
+    OFFSET(m_bGlowing, 0x51, bool);
+};
 class IPlayer : public IEntity
 {
 public:
     SCHEMA("C_BasePlayerPawn", "m_pWeaponServices", m_pWeaponServices, IWeaponServices*);
+    SCHEMA("C_BasePlayerPawn", "m_pCameraServices", m_pCameraServices, ICameraServices*);
     SCHEMA("CCSPlayer_ItemServices", "m_bHasDefuser", m_bHasDefuser, bool);
     SCHEMA("C_CSPlayerPawnBase", "m_bGunGameImmunity", m_bGunGameImmunity, bool);
     SCHEMA("C_BaseEntity", "m_iHealth", m_iHealth, std::int32_t);
     SCHEMA("C_BaseEntity", "m_iTeamNum", m_iTeamNum, std::uint8_t);
     SCHEMA("C_BaseModelEntity", "m_vecViewOffset", m_vecViewOffset, Vec3);
+    SCHEMA("C_BaseModelEntity", "m_Glow", m_Glow, GlowObject);
     SCHEMA("C_BasePlayerPawn", "m_hController", m_hController, CHandle);
     SCHEMA("C_BasePlayerPawn", "v_angle", v_angle, Vec3);
     SCHEMA("C_CSPlayerPawnBase", "m_bIsScoped", m_bIsScoped, bool);
@@ -243,16 +345,29 @@ public:
     }
 
 };
-
-class IInGameServiceMoneyController
+class IWeapon : public IEconEntity {
+public:
+    SCHEMA("C_BasePlayerWeapon", "m_iState", m_iState, WeaponState_t);
+    SCHEMA("C_BasePlayerWeapon", "m_iOldState", m_iOldState, WeaponState_t);
+    SCHEMA("C_BasePlayerWeapon", "m_iClip1", m_iClip1, int);
+    SCHEMA("C_BasePlayerWeapon", "m_iClip2", m_iClip2, int);
+    SCHEMA("C_BasePlayerWeapon", "m_nNextPrimaryAttackTick", m_nNextPrimaryAttackTick, GameTick_t);
+    SCHEMA("C_BasePlayerWeapon", "m_flNextPrimaryAttackTickRatio", m_flNextPrimaryAttackTickRatio, float);
+    SCHEMA("C_BasePlayerWeapon", "m_flNextSecondaryAttackTickRatio", m_flNextSecondaryAttackTickRatio, float);
+    SCHEMA("C_BasePlayerWeapon", "m_nNextSecondaryAttackTick", m_nNextSecondaryAttackTick, GameTick_t);
+    SCHEMA("C_BasePlayerWeapon", "m_pReserveAmmo", m_pReserveAmmo, /*int[2]*/ int*);
+};
+class IWeaponServices
 {
 public:
-    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iAccount", m_iAccount, int);
-    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iStartAccount", m_iStartAccount, int);
-    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iTotalCashSpent", m_iTotalCashSpent, int);
-    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_iCashSpentThisRound", m_iCashSpentThisRound, int);
-    SCHEMA("CCSPlayerController_InGameMoneyServices", "m_nPreviousAccount", m_nPreviousAccount, int);
+    SCHEMA("CPlayer_WeaponServices", "m_bAllowSwitchToNoWeapon", m_bAllowSwitchToNoWeapon, bool);
+    //SCHEMA("CPlayer_WeaponServices", "m_hMyWeapons", m_hMyWeapons, CHandle); dont ave the vector
+    SCHEMA("CPlayer_WeaponServices", "m_hActiveWeapon", m_hActiveWeapon, CHandle);
+    SCHEMA("CPlayer_WeaponServices", "m_hLastWeapon", m_hLastWeapon, CHandle);
+    SCHEMA("CPlayer_WeaponServices", "m_iAmmo", m_iAmmo, std::uint16_t*/*std::uint16_t[32]*/);
+    SCHEMA("CPlayer_WeaponServices", "m_bPreventWeaponPickup", m_bPreventWeaponPickup, bool);
 };
+
 class IController
 {
 public:
