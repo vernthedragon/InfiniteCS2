@@ -34,12 +34,9 @@ void __fastcall Hooks::RenderStart(void* a1) {
 		if (Config->World.Removals & 4)
 			if (GameHandler->local->m_pCameraServices())
 				if(GameHandler->local->m_pCameraServices()->m_hColorCorrectionCtrl().Get()) 
-					GameHandler->local->m_pCameraServices()->m_hColorCorrectionCtrl().Get<IColorCorrection>()->m_bMaster() = false;
+					GameHandler->local->m_pCameraServices()->m_hColorCorrectionCtrl().Get<IColorCorrection>()->m_bEnabled() = false;
 
-		if (Config->World.Removals & 8)
-			if (GameHandler->local->m_pCameraServices())
-				if (GameHandler->local->m_pCameraServices()->m_hActivePostProcessingVolume().Get())
-					GameHandler->local->m_pCameraServices()->m_hActivePostProcessingVolume().Get<IPostProcessing>()->m_bMaster() = false;
+
 	}
 
 	Hooks::oRenderStart(a1);

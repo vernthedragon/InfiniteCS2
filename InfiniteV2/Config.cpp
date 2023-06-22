@@ -367,6 +367,8 @@ void CConfig::ResetValues() {
 
 	this->World.Enable = false;
 	this->World.Removals = 0;
+	this->World.Camera = false;
+	this->World.FOV = 90;
 
 	this->Nades.ESP = false;
 	this->Nades.Glow = false;
