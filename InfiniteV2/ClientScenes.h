@@ -6,11 +6,11 @@ static int _Scene_Client_state = 0;
 //1 = chat/friends
 //2 = profile
 
-#define ADDTABS(scene) SCENE_ICONLARGE(20, 20, Col(180, 180, 255, 255), "m");\
-SCENE_INTERACTABLE_ICONMEDIUM(80, 20, Col(100, 100, 100, 255), Col(255, 255, 255, 255), "c", _Scene_Client_state = 0;);\
-SCENE_INTERACTABLE_ICONMEDIUM(600, 20, Col(100, 100, 100, 255), Col(255, 255, 255, 255), "L", _Scene_Client_state = 2;);\
+#define ADDTABS(scene) SCENE_ICONLARGE(20, 20, Col(255, 155, 155, 255), "m");\
+SCENE_INTERACTABLE_ICONMEDIUM(80, 20, _Scene_Client_state == 0 ?  Col(155, 155, 255, 255) : Col(100, 100, 100, 255), Col(255, 255, 255, 255), "c", _Scene_Client_state = 0;);\
+SCENE_INTERACTABLE_ICONMEDIUM(600, 20,_Scene_Client_state == 2 ?  Col(155, 155, 255, 255) : Col(100, 100, 100, 255), Col(255, 255, 255, 255), "L", _Scene_Client_state = 2;);\
 SCENE_INTERACTABLE_ICONMEDIUM(660, 20, Col(145, 11, 1, 255), Col(252, 53, 53, 255), "d", Menu->InClient = false;);\
-SCENE_TEXTXSMALL(5, 482, Col(255,255,255,40), "Infinite Hub V1.0");\
+SCENE_TEXTXSMALL(5, 482, Col(255,255,255,40), "Infinite Hub");\
 
 SCENE_BEGIN(HomeScreen) {
 	SCENE_INIT(HomeScreen);
