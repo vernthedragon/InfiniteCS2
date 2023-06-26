@@ -6,7 +6,8 @@
 
 uint64_t __fastcall Hooks::RelativeMouseMode(IInputSystem* InputSys, bool Enable) {
 	InputSystemVMTHook->GetOriginal(oRelativeMouseMode, IInputSystemVTable::RELATIVEMOUSEMODE);
-	Menu->LastRelativeMouseMode = Enable;
+	if(!Menu->InLastRelativeMouseMode)
+		Menu->LastRelativeMouseMode = Enable;
 
 	if(Config->MenuOpen)
 		return oRelativeMouseMode(InputSys, false);

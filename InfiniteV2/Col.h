@@ -156,7 +156,19 @@ public:
 		Color[2] = (Color[2] * 0.5);
 		return *this;
 	}
-
+	const Col& BlendFloat(const Col& col2, float percent)
+	{
+		Col Difference (col2[0] - Color[0], col2[1] - Color[1], col2[2] - Color[2], col2[3] - Color[3]);
+		Difference[0] *= percent;
+		Difference[1] *= percent;
+		Difference[2] *= percent;
+		Difference[3] *= percent;
+		Difference[0] += Color[0];
+		Difference[1] += Color[1];
+		Difference[2] += Color[2];
+		Difference[3] += Color[3];
+		return Difference;
+	}
 	const Col& LinearBlendConditional(const int& r, const int& g, const int& b, const bool& ShouldBlend)
 	{
 		if (!ShouldBlend)

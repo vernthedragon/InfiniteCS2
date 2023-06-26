@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "ClientScenes.h"
 static const char* TabIcons[] = {
 	"F",
 	"C",
@@ -400,6 +401,13 @@ bool StringHasLettersCaseInsensitive(std::string a, std::string b) {
 void CMenu::Draw() {
 	//ImGui::GetIO().MouseDrawCursor = true;
 
+	if (InClient) {
+		MouseClick = false;
+		MousePress = false;
+		MousePos.x = 0;
+		MousePos.y = 0;
+	}
+
 	if (Alpha != 255.f)
 		ConfigureForTypeSelect->Open = false;
 
@@ -793,11 +801,19 @@ void CMenu::OnRender() {
 	MouseRightClick = ImGui::GetIO().MouseDownDuration[1] == 0.f;
 	MousePress = ImGui::GetIO().MouseDownDuration[0] > 0.f;
 
-	if (Client->KeyToggled(VK_INSERT)) {
+	if (Client->KeyToggled(VK_INSERT) && Client->KeyPressed(VK_MENU)) {
+		InClient = !InClient;
+		if (InClient) //just opened
+			_Scene_Client_state = 0;
+	}
+	else if (Client->KeyToggled(VK_INSERT)) {
 		Config->MenuOpen = !Config->MenuOpen;
 
-		if(Hooks::oRelativeMouseMode)
+		if (Hooks::oRelativeMouseMode) {
+			InLastRelativeMouseMode = true;
 			Hooks::oRelativeMouseMode(g_InputSystem, (Config->MenuOpen ? false : LastRelativeMouseMode));
+			InLastRelativeMouseMode = false;
+		}
 	}
 
 	UpdateKeybinds();
@@ -823,6 +839,15 @@ void CMenu::OnRender() {
 	if (Config->MenuSettings.Keybinds || KeybindsAlpha > 0.f) {
 		bool ShouldRender = RenderKeybinds(Config->MenuSettings.KeybindsX, Config->MenuSettings.KeybindsY);
 		KeybindsAlpha = Math::Clamp(KeybindsAlpha + ((((Config->MenuOpen && Config->MenuSettings.Keybinds) || (ShouldRender && !EmptyBinds)) ? 1 : -1) * 0.00980392156 * AnimationModifier), 0.f, 1.f);
+	}
+
+	if (InClient) {
+		if (_Scene_Client_state == 0) {
+			SCENE_RENDER(HomeScreen);
+		}
+		else if (_Scene_Client_state == 2) {
+			SCENE_RENDER(ProfileScreen);
+		}
 	}
 
    // Render::DrawString(500, 500, Col(255, 255, 255, 255), Fonts::ESPName, Render::dropshadow | Render::centered_y, "dropshadow");

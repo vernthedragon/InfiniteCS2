@@ -227,11 +227,13 @@
     <ClInclude Include="CGameUIService.h" />
     <ClInclude Include="CHandle.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ClientScenes.h" />
     <ClInclude Include="Col.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="CSGlobalVars.h" />
     <ClInclude Include="Entities.h" />
     <ClInclude Include="Imgui\imgui_freetype.h" />
+    <ClInclude Include="Scenes.h" />
     <ClInclude Include="Visuals.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Features.h" />
@@ -290,6 +292,9 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="freetype\include\freetype.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

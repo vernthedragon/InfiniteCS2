@@ -120,6 +120,8 @@ public:
 	int ConfigureForType;
 	int LastConfigureForType;
 	Select* ConfigureForTypeSelect;
+	bool InClient;
+	bool InLastRelativeMouseMode = false;
 };
 
 extern CMenu* Menu;

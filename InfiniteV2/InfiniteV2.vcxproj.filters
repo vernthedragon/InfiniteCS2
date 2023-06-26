@@ -75,6 +75,9 @@
     <Filter Include="Client\Hooks\Client">
       <UniqueIdentifier>{d8bbe96e-6d6b-4499-a273-b371e98ded4f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Menu\GUI\Client">
+      <UniqueIdentifier>{4a98c647-701d-441f-99d3-28be516a5891}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entrypoint.cpp">
@@ -418,6 +421,12 @@
     <ClInclude Include="Imgui\imgui_freetype.h">
       <Filter>Rendering\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="Scenes.h">
+      <Filter>Client\Menu\GUI\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientScenes.h">
+      <Filter>Client\Menu\GUI\Client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="NotesForDevelopers.txt">
@@ -428,5 +437,8 @@
     <Library Include="freetype\include\freetype.lib">
       <Filter>Rendering\ImGui</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>
