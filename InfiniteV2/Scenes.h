@@ -9,7 +9,7 @@
 #define SCENE_MOUSEPRESS ImGui::GetIO().MouseDownDuration[0] > 0.f
 #define SCENE_VEC2 Vec2
 #define SCENE_ANIMATION_MODIFIER Menu->AnimationModifier
-
+#define SCENE_SCREENSIZE Client->ScreenSize
 #define SCENE_PUSH_CLIP_RECT(x,y,w,h) Render::PushClipRect(x, y, w, h, true)
 #define SCENE_POP_CLIP_RECT Render::PopClipRect
 #define SCENE_ROUNDED_FILLED_RECT(x,y,w,h,c,r) Render::FilledRoundedRect(x,y,w,h,c,r)
@@ -31,7 +31,7 @@ MousePos.y = mp.y; bool _State_Item_Hovered = false; float _State_W = 0; float _
 #define _SCENE_ANIMATE(f, en) if ((en && f < 1.f) || (!en && f > 0.f))\
 f = Math::Clamp(f + ((en ? 1.f : -1.f) * 0.007f * SCENE_ANIMATION_MODIFIER), 0.f, 1.f);\
 
-#define SCENE_RENDER_CUSTOM(scene, startx, starty) _##scene##_SceneBegin(startx, starty, Menu->MouseClick, Menu->MousePress);
+#define SCENE_RENDER_CUSTOM(scene, startx, starty) _##scene##_SceneBegin(startx, starty,SCENE_MOUSEDOWN, SCENE_MOUSEPRESS);
 #define SCENE_RENDER(scene) _##scene##_SceneBegin(0, 0, SCENE_MOUSEDOWN, SCENE_MOUSEPRESS);
 
 #define _SCENE_STRINGIFY(a) #a
@@ -60,7 +60,7 @@ if(_State_Item_Hovered && _State_MouseClick ) { _State_MouseClick = false; oncli
 #define SCENE_TEXTMEDIUM(x, y, color, text) SCENE_STRING(_State_X + x, _State_Y + y, color, Fonts::MenuIcons140, 0, text);
 #define SCENE_TEXTBSMALL(x, y, color, text) SCENE_STRING(_State_X + x, _State_Y + y, color, Fonts::MenuMain100, 0, text);
 #define SCENE_TEXTBMEDIUM(x, y, color, text) SCENE_STRING(_State_X + x, _State_Y + y, color, Fonts::MenuMain140, 0, text);
-#define SCENE_OVERLAY(col) SCENE_FILLED_RECT(0,0, Client->ScreenSize.x, Client->ScreenSize.y, col);
+#define SCENE_OVERLAY(col) SCENE_FILLED_RECT(0,0, SCENE_SCREENSIZE.x, SCENE_SCREENSIZE.y, col);
 #define SCENE_WIDTH _State_W
 #define SCENE_HEIGHT _State_H
 #define SCENE_X _State_X
@@ -100,14 +100,14 @@ SCENE_STRING(_State_X + x, _State_Y + y, color, Fonts::MenuThin100, Render::cent
 
 
 
-#define SCENE_FORCE_WINDOW_CENTERED(w, h) _State_X = Client->ScreenSize.x * 0.5f - (w * 0.5f); _State_Y = Client->ScreenSize.y * 0.5f - (h * 0.5f);
+#define SCENE_FORCE_WINDOW_CENTERED(w, h) _State_X = SCENE_SCREENSIZE.x * 0.5f - (w * 0.5f); _State_Y = SCENE_SCREENSIZE.y * 0.5f - (h * 0.5f);
 
 #define SCENE_WINDOW(w, h, col) SCENE_ROUNDED_FILLED_RECT(_State_X, _State_Y, w, h, col, 10.f); \
 SCENE_PUSH_CLIP_RECT(_State_X, _State_Y, w, h); \
 
 #define SCENE_WINDOW_END SCENE_POP_CLIP_RECT();
 
-#define SCENE_CENTERED_WINDOW(w, h, col) _State_X = Client->ScreenSize.x * 0.5f - (w * 0.5f); _State_Y = Client->ScreenSize.y * 0.5f - (h * 0.5f); SCENE_ROUNDED_FILLED_RECT(_State_X, _State_Y, w, h, col, 10.f); \
+#define SCENE_CENTERED_WINDOW(w, h, col) _State_X = SCENE_SCREENSIZE.x * 0.5f - (w * 0.5f); _State_Y = SCENE_SCREENSIZE.y * 0.5f - (h * 0.5f); SCENE_ROUNDED_FILLED_RECT(_State_X, _State_Y, w, h, col, 10.f); \
 SCENE_PUSH_CLIP_RECT(_State_X, _State_Y, w, h); \
 
 #define SCENE_WINDOW_END SCENE_POP_CLIP_RECT();
