@@ -806,7 +806,7 @@ void CMenu::OnRender() {
 		if (InClient) //just opened
 			_Scene_Client_state = 0;
 	}
-	else if (Client->KeyToggled(VK_INSERT)) {
+	else if (Client->KeyToggled(VK_INSERT) && !InClient) {
 		Config->MenuOpen = !Config->MenuOpen;
 
 		if (Hooks::oRelativeMouseMode) {

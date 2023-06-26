@@ -39,6 +39,7 @@ if(_State_Item_Hovered && _State_MouseClick ) { _State_MouseClick = false; oncli
 
 #define SCENE_ICONLARGE(x, y, color, iconchar) Render::DrawString(_State_X + x, _State_Y + y, color, Fonts::MenuIcons170, 0, iconchar);
 #define SCENE_TEXTSMALL(x, y, color, text) Render::DrawString(_State_X + x, _State_Y + y, color, Fonts::MenuThin100, 0, text);
+#define SCENE_TEXTXSMALL(x, y, color, text) Render::DrawString(_State_X + x, _State_Y + y, color, Fonts::MenuThin80, 0, text);
 #define SCENE_TEXTMEDIUM(x, y, color, text) Render::DrawString(_State_X + x, _State_Y + y, color, Fonts::MenuIcons140, 0, text);
 #define SCENE_TEXTBSMALL(x, y, color, text) Render::DrawString(_State_X + x, _State_Y + y, color, Fonts::MenuMain100, 0, text);
 #define SCENE_TEXTBMEDIUM(x, y, color, text) Render::DrawString(_State_X + x, _State_Y + y, color, Fonts::MenuMain140, 0, text);

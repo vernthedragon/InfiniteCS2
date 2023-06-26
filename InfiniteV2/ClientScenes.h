@@ -10,7 +10,7 @@ static int _Scene_Client_state = 0;
 SCENE_INTERACTABLE_ICONMEDIUM(80, 20, Col(100, 100, 100, 255), Col(255, 255, 255, 255), "c", _Scene_Client_state = 0;);\
 SCENE_INTERACTABLE_ICONMEDIUM(600, 20, Col(100, 100, 100, 255), Col(255, 255, 255, 255), "L", _Scene_Client_state = 2;);\
 SCENE_INTERACTABLE_ICONMEDIUM(660, 20, Col(145, 11, 1, 255), Col(252, 53, 53, 255), "d", Menu->InClient = false;);\
-SCENE_TEXTSMALL(5, 489, Col(100,100,100,180), "Infinite.dev | Client V1 | Build: Release");\
+SCENE_TEXTXSMALL(5, 482, Col(255,255,255,40), "Infinite Hub V1.0");\
 
 SCENE_BEGIN(HomeScreen) {
 	SCENE_INIT(HomeScreen);
@@ -38,10 +38,10 @@ SCENE_BEGIN(ProfileScreen) {
 
 	ADDTABS(ProfileScreen);
 
-	SCENE_ICONLARGE(270, 200, Col(255, 255, 255, 255), "L");
-	SCENE_TEXTBSMALL(306, 195, Col(170, 170, 255, 255), "Chiyo");
-	SCENE_TEXTSMALL(306, 225, Col(255,255, 255, 255), "Developer");
-	SCENE_PARAGRAPHSMALLCENTERED(337, 263, Col(200, 200, 200, 255), 30, "Hello there! I am the administrator for Infinite.dev!\n\nJoined: Mon, June 26, 2023 at 14:25");
+	SCENE_ICONLARGE(270, 140, Col(255, 255, 255, 255), "L");
+	SCENE_TEXTBSMALL(306, 135, Col(170, 170, 255, 255), "Chiyo");
+	SCENE_TEXTSMALL(306, 165, Col(255,255, 255, 255), "Developer");
+	SCENE_PARAGRAPHSMALLCENTERED(337, 203, Col(200, 200, 200, 255), 40, "Hello there! I am the administrator for Infinite.dev!\n\nJoined: Mon, June 26, 2023 at 14:25");
 
 	SCENE_WINDOW_END
 }
