@@ -16,7 +16,7 @@
 #define SCENE_FILLED_RECT(x,y,w,h,c) Render::FilledRect(x,y,w,h,c)
 #define SCENE_STRING(x,y,c,f,fl,t) Render::DrawString(x,y,c,f,fl,t)
 #define SCENE_CLAMPPTR(a,b,c) Math::ClampPtr(a,b,c);
-#define SCENE_GL_SCROLL SCENE_GL_SCROLL
+#define SCENE_GL_SCROLL Client->ScrollAmmount
 #define SCENE_COLOR_BLEND_FLOAT(c1,c2,p) c1.BlendFloat(c2, p)
 
 #define SCENE_BEGIN(scene) void _##scene##_SceneBegin(float _State_X, float _State_Y, bool _State_MouseClick, bool _State_MouseDrag)
