@@ -18,6 +18,8 @@
 #define SCENE_CLAMPPTR(a,b,c) Math::ClampPtr(a,b,c);
 #define SCENE_GL_SCROLL Client->ScrollAmmount
 #define SCENE_COLOR_BLEND_FLOAT(c1,c2,p) c1.BlendFloat(c2, p)
+#define SCENE_EDIT_TEXT_ANIM Menu->EditTextAnimation
+#define SCENE_CURTIME Menu->CurrentClock
 
 #define SCENE_BEGIN(scene) void _##scene##_SceneBegin(float _State_X, float _State_Y, bool _State_MouseClick, bool _State_MouseDrag)
 #define SCENE_INIT(scene) SCENE_VEC2 MousePos = SCENE_VEC2(0,0); POINT mp;\
@@ -40,19 +42,19 @@ f = Math::Clamp(f + ((en ? 1.f : -1.f) * 0.007f * SCENE_ANIMATION_MODIFIER), 0.f
 _State_Item_Hovered = _SCENE_INREGION(_State_X + x - 6, _State_Y + y - 6, 32, 32); \
 SCENE_STRING(_State_X + x, _State_Y + y, SCENE_COLOR_BLEND_FLOAT(color, hoveredcolor, _InteractableIcon_##x##y##animation_float), Fonts::MenuIcons100, 0, iconchar); \
 _SCENE_ANIMATE(_InteractableIcon_##x##y##animation_float, _State_Item_Hovered);\
-if(_State_Item_Hovered && _State_MouseClick ) { _State_MouseClick = false; onclick } \
+if(_State_Item_Hovered && _State_MouseClick ) { /*_State_MouseClick = false;*/ onclick } \
 
 #define SCENE_INTERACTABLE_ICONMEDIUM(x, y, color, hoveredcolor, iconchar, onclick) static float _InteractableIcon_##x##y##animation_float = 0; \
 _State_Item_Hovered = _SCENE_INREGION(_State_X + x - 6, _State_Y + y - 6, 32, 32); \
 SCENE_STRING(_State_X + x, _State_Y + y,SCENE_COLOR_BLEND_FLOAT(color, hoveredcolor, _InteractableIcon_##x##y##animation_float), Fonts::MenuIcons140, 0, iconchar); \
 _SCENE_ANIMATE(_InteractableIcon_##x##y##animation_float, _State_Item_Hovered);\
-if(_State_Item_Hovered && _State_MouseClick ) { _State_MouseClick = false; onclick } \
+if(_State_Item_Hovered && _State_MouseClick ) { /*_State_MouseClick = false;*/ onclick } \
 
 #define SCENE_INTERACTABLE_ICONLARGE(x, y, color, hoveredcolor, iconchar, onclick) static float _InteractableIcon_##x##y##animation_float = 0; \
 _State_Item_Hovered = _SCENE_INREGION(_State_X + x - 6, _State_Y + y - 6, 32, 32); \
 SCENE_STRING(_State_X + x, _State_Y + y, SCENE_COLOR_BLEND_FLOAT(color, hoveredcolor, _InteractableIcon_##x##y##animation_float), Fonts::MenuIcons170, 0, iconchar); \
 _SCENE_ANIMATE(_InteractableIcon_##x##y##animation_float, _State_Item_Hovered);\
-if(_State_Item_Hovered && _State_MouseClick ) { _State_MouseClick = false; onclick } \
+if(_State_Item_Hovered && _State_MouseClick ) { /*_State_MouseClick = false;*/ onclick } \
 
 #define SCENE_ICONLARGE(x, y, color, iconchar) SCENE_STRING(_State_X + x, _State_Y + y, color, Fonts::MenuIcons170, 0, iconchar);
 #define SCENE_TEXTSMALL(x, y, color, text) SCENE_STRING(_State_X + x, _State_Y + y, color, Fonts::MenuThin100, 0, text);
@@ -140,5 +142,104 @@ AnimatedScroll = (AnimatedScroll + (ScrollableY - AnimatedScroll) * 0.02f * SCEN
 #define SCENE_SCROLLRENDER(x,y,w,h) { float OffsetY = (AnimatedScroll / ScrollMax) * (ScrollMax - h);\
 SCENE_ROUNDED_FILLED_RECT(x, y + OffsetY, w, h, Col(0, 3, 6, MaxAlpha), 4.5f); }\
 
+#define SCENE_INTERACTABLE_TEXTSMALL(x,y,w,h,color, hoveredcolor,ptr, placeholder, onenter) {static bool AcceptText = false; static float HoverAnimation = 0.f; std::string Written = ptr;\
+if(Written == "" && !AcceptText)\
+Written = placeholder;\
+ _State_Item_Hovered = _SCENE_INREGION(_State_X + x - 8 , _State_Y + y - 8 , w + 8, h+ 8); \
+if(_State_Item_Hovered && _State_MouseClick ) { /*_State_MouseClick = false;*/ AcceptText = true; SCENE_EDIT_TEXT_ANIM = SCENE_CURTIME; } else if(_State_MouseClick) {AcceptText = false;}\
+if(AcceptText) { ImGui::GetIO().WantTextInput = true;\
+	if ((int((SCENE_CURTIME - SCENE_EDIT_TEXT_ANIM) * 0.0019f) % 2) == 0)\
+		Written += "|";\
+	if (ImGui::GetIO().InputQueueCharacters.Size > 0) {\
+		for (auto c : ImGui::GetIO().InputQueueCharacters) {\
+			if (c == VK_RETURN) {\
+				AcceptText = false;\
+				onenter   \
+				continue;\
+			}\
+			if (c == VK_ESCAPE) {\
+				AcceptText = false;\
+				continue;\
+			}\
+			else if (c == VK_BACK)\
+				ptr = ptr.substr(0, ptr.size() - 1);\
+			else if (c != VK_TAB) {\
+				if (ptr.size() < 40)\
+					ptr += (unsigned char)c;\
+			}\
+		}\
+	}\
+}\
+\
+_SCENE_ANIMATE(HoverAnimation, _State_Item_Hovered || AcceptText);\
+SCENE_STRING(_State_X + x, _State_Y + y,  SCENE_COLOR_BLEND_FLOAT(color, hoveredcolor, HoverAnimation), Fonts::MenuThin100, 0, Written.c_str());}\
 
 
+#define SCENE_INTERACTABLE_TEXTXSMALL(x,y,w,h,color, hoveredcolor,ptr, placeholder, onenter) {static bool AcceptText = false; static float HoverAnimation = 0.f; std::string Written = ptr;\
+if(Written == "" && !AcceptText)\
+Written = placeholder;\
+ _State_Item_Hovered = _SCENE_INREGION(_State_X + x - 8 , _State_Y + y - 8 , w + 8, h+ 8); \
+if(_State_Item_Hovered && _State_MouseClick ) { /*_State_MouseClick = false;*/ AcceptText = true; SCENE_EDIT_TEXT_ANIM = SCENE_CURTIME; } else if(_State_MouseClick) {AcceptText = false;}\
+if(AcceptText) { ImGui::GetIO().WantTextInput = true;\
+	if ((int((SCENE_CURTIME - SCENE_EDIT_TEXT_ANIM) * 0.0019f) % 2) == 0)\
+		Written += "|";\
+	if (ImGui::GetIO().InputQueueCharacters.Size > 0) {\
+		for (auto c : ImGui::GetIO().InputQueueCharacters) {\
+			if (c == VK_RETURN) {\
+				AcceptText = false;\
+				onenter   \
+				continue;\
+			}\
+			if (c == VK_ESCAPE) {\
+				AcceptText = false;\
+				continue;\
+			}\
+			else if (c == VK_BACK)\
+				ptr = ptr.substr(0, ptr.size() - 1);\
+			else if (c != VK_TAB) {\
+				if (ptr.size() < 40)\
+					ptr += (unsigned char)c;\
+			}\
+		}\
+	}\
+}\
+\
+_SCENE_ANIMATE(HoverAnimation, _State_Item_Hovered || AcceptText);\
+SCENE_STRING(_State_X + x, _State_Y + y,  SCENE_COLOR_BLEND_FLOAT(color, hoveredcolor, HoverAnimation), Fonts::MenuThin80, 0, Written.c_str());}\
+
+
+#define SCENE_INTERACTABLE_TEXTMEDIUM(x,y,w,h,color, hoveredcolor,ptr, placeholder, onenter) {static bool AcceptText = false; static float HoverAnimation = 0.f; std::string Written = ptr;\
+if(Written == "" && !AcceptText)\
+Written = placeholder;\
+ _State_Item_Hovered = _SCENE_INREGION(_State_X + x - 8 , _State_Y + y - 8 , w + 8, h+ 8); \
+if(_State_Item_Hovered && _State_MouseClick ) { /*_State_MouseClick = false;*/ AcceptText = true; SCENE_EDIT_TEXT_ANIM = SCENE_CURTIME; } else if(_State_MouseClick) {AcceptText = false;}\
+if(AcceptText) { ImGui::GetIO().WantTextInput = true;\
+	if ((int((SCENE_CURTIME - SCENE_EDIT_TEXT_ANIM) * 0.0019f) % 2) == 0)\
+		Written += "|";\
+	if (ImGui::GetIO().InputQueueCharacters.Size > 0) {\
+		for (auto c : ImGui::GetIO().InputQueueCharacters) {\
+			if (c == VK_RETURN) {\
+				AcceptText = false;\
+				onenter   \
+				continue;\
+			}\
+			if (c == VK_ESCAPE) {\
+				AcceptText = false;\
+				continue;\
+			}\
+			else if (c == VK_BACK)\
+				ptr = ptr.substr(0, ptr.size() - 1);\
+			else if (c != VK_TAB) {\
+				if (ptr.size() < 40)\
+					ptr += (unsigned char)c;\
+			}\
+		}\
+	}\
+}\
+\
+_SCENE_ANIMATE(HoverAnimation, _State_Item_Hovered || AcceptText);\
+SCENE_STRING(_State_X + x, _State_Y + y,  SCENE_COLOR_BLEND_FLOAT(color, hoveredcolor, HoverAnimation), Fonts::MenuThin140, 0, Written.c_str());}\
+
+#define SCENE_CUSTOM_CODE(x) x
+#define SCENE_PUSH_ANIMATIONF(name, defaul) static float name = defaul;
+#define SCENE_MOUSEPOS MousePos
