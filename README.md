@@ -1,4 +1,37 @@
-#### New devs please read Code Example and Optimization Below
+
+<p align="center">
+ <h2 align="center">Infinite CS:2 Client</h2>
+ <p align="center"></p>
+</p>
+
+<p align="center">
+ 
+ <a href="https://en.wikipedia.org/wiki/C%2B%2B">
+      <img src="https://img.shields.io/badge/language-C%2B%2B-%23f34b7d.svg?style=for-the-badge&logo=appveyor"/>
+    </a>
+    <a href="https://en.wikipedia.org/wiki/Microsoft_Windows">
+      <img src="https://img.shields.io/badge/platform-Windows-0078d7.svg?style=for-the-badge&logo=appveyor"/>
+    </a>
+ 
+ <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games">
+      <img src="https://img.shields.io/badge/arch-x86-red.svg?style=for-the-badge&logo=appveyor"/>
+    </a>
+ 
+ <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games">
+      <img src="https://img.shields.io/badge/License-MIT-e49eff?style=for-the-badge&logo=appveyor"/>
+    </a>
+ 
+ 
+    
+  </p>
+
+## Background
+
+I wrote this way back in 2023 when CS:2 just released. Back then I had quite alot of free time on my hands which I spent creating cheats for multiple games (other than this). Quite the hobby of mine. However, now I am quite lacking in spare time required to even finish the version for CS:2. So enjoy the source code, which is somewhat good and bad at the same time. The source (by now) is definetely outdated and will not run in the latest CS:2 version, however pull-requests are welcome to fix that.
+
+## Some Information
+
+This source has quite the sentimental value to me as it was my hobby during my early teen years to create these cheats. The GUI is very well made and a bit inspired by Neverlose, and has similar binding features to it, albeit the terrible implementation I did.
 
 ### To Do List
 
