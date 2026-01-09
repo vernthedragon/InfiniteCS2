@@ -33,16 +33,12 @@ I wrote this way back in 2023 when CS:2 just released. Back then I had quite alo
 
 This source has quite the sentimental value to me as it was my hobby during my early teen years to create these cheats. The GUI is very well made and a bit inspired by Neverlose, and has similar binding features to it, albeit the terrible implementation I did.
 
-### To Do List
+### Most of the source is out of date
 
-- Add Hooks
-- Improve SDK
-
-
-### Broken
-
-- AutoStrafe
-
+![Reference](https://raw.githubusercontent.com/vernthedragon/InfiniteCS2/refs/heads/main/ref1.png)
+![Reference](https://raw.githubusercontent.com/vernthedragon/InfiniteCS2/refs/heads/main/ref2.png)
+![Reference](https://raw.githubusercontent.com/vernthedragon/InfiniteCS2/refs/heads/main/ref3.png)
+![Reference](https://raw.githubusercontent.com/vernthedragon/InfiniteCS2/refs/heads/main/ref4.png)
 
 
 ## Optimization and Code Example
