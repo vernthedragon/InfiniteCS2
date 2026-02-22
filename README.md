@@ -27,7 +27,7 @@
 
 ## Background
 
-I wrote this way back in 2023 when CS:2 just released. Back then I had quite alot of free time on my hands which I spent creating cheats for multiple games (other than this). Quite the hobby of mine. However, now I am quite lacking in spare time required to even finish the version for CS:2. So enjoy the source code, which is somewhat good and bad at the same time. The source (by now) is definetely outdated and will not run in the latest CS:2 version, however pull-requests are welcome to fix that.
+I wrote this way back in 2023 when CS:2 just released. Back then I had quite alot of free time on my hands which I spent creating cheats for hacker vs hacker. Quite the hobby of mine. However, now I am quite lacking in spare time required to even finish the version for CS:2. So enjoy the source code, which is somewhat good and bad at the same time. The source (by now) is definetely outdated and will not run in the latest CS:2 version, however pull-requests are welcome to fix that.
 
 ## Some Information
 
