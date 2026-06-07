@@ -27,11 +27,9 @@
 
 ## Background
 
-I wrote this way back in 2023 when CS:2 just released. Back then I had quite alot of free time on my hands which I spent creating cheats for hacker vs hacker. Quite the hobby of mine. However, now I am quite lacking in spare time required to even finish the version for CS:2. So enjoy the source code, which is somewhat good and bad at the same time. The source (by now) is definetely outdated and will not run in the latest CS:2 version, however pull-requests are welcome to fix that.
+This project was developed in 2023 shortly following the release of Counter-Strike 2, undertaken as a personal research endeavour into Windows internals, reverse engineering, and low-level game engine analysis during a period of significant free time. The primary objective was to gain a deep practical understanding of how modern game engines manage memory, how internal DLL injection operates at a low level within a live process, and how anticheat systems identify and respond to such techniques — knowledge that is directly applicable to the development and hardening of anticheat systems themselves.
+The project is now largely outdated relative to the current state of CS2, as the game has undergone significant updates since development ceased, and the source code is no longer functional against the latest version. Pull requests to update compatibility are welcome. The GUI implementation, while self-admittedly imperfect in certain areas, was heavily inspired by professional-grade cheat clients and served as a meaningful exercise in designing responsive, feature-rich interfaces within a constrained, performance-critical environment.
 
-## Some Information
-
-This source has quite the sentimental value to me as it was my hobby during my early teen years to create these cheats. The GUI is very well made and a bit inspired by Neverlose, and has similar binding features to it, albeit the terrible implementation I did.
 
 ### Most of the source is out of date
 
